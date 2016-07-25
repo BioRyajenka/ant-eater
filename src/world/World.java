@@ -244,8 +244,4 @@ public class World {
 		field[width / 2][height / 2].setIndividual(antEater);
 		antEater.setPosition(width / 2, height / 2, Util.nextInt(4));
 	}
-
-	public WorldSnapshot takeSnapshot() {
-		return new WorldSnapshot(this);
-	}
 }
