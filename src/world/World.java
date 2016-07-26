@@ -26,7 +26,7 @@ public class World {
 	protected float mutationProbability;
 	// protected int eliteSize;
 
-	protected Individual antEater;
+	public Individual antEater;
 	private Iterator<Individual> antEaterIterator;
 	protected List<Individual> antEaters = new ArrayList<>();
 	protected List<Individual> ants = new ArrayList<>();
@@ -52,11 +52,12 @@ public class World {
 		}
 
 		for (int i = 0; i < antEatersNumber; i++) {
-			antEaters.add(new Individual(this, antEaterSight, maxStatesInMachine));
+			antEaters.add(new Individual(this, antEaterSight, maxStatesInMachine,
+					"ant-eater " + i));
 		}
 
 		for (int i = 0; i < antsNumber; i++) {
-			ants.add(new Individual(this, antSight, maxStatesInMachine));
+			ants.add(new Individual(this, antSight, maxStatesInMachine, "ant " + i));
 		}
 
 		antEaterIterator = antEaters.iterator();
@@ -145,17 +146,25 @@ public class World {
 		int x = pos.x;
 		int y = pos.y;
 		int rot = pos.rot;
-		
-		if (rot == 0) x--;
-		if (rot == 1) y++;
-		if (rot == 2) x++;
-		if (rot == 3) y--;
-		
-		if (x >= height) x -= height;
-		if (x < 0) x += height;
-		if (y >= width) y -= width;
-		if (y < 0) y += width;
-		
+
+		if (rot == 0)
+			x--;
+		if (rot == 1)
+			y++;
+		if (rot == 2)
+			x++;
+		if (rot == 3)
+			y--;
+
+		if (x >= height)
+			x -= height;
+		if (x < 0)
+			x += height;
+		if (y >= width)
+			y -= width;
+		if (y < 0)
+			y += width;
+
 		return new Position(x, y, rot);
 	}
 

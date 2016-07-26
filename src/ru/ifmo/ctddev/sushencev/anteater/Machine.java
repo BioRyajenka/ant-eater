@@ -33,7 +33,7 @@ public class Machine {
 
 	public Machine(int maxStates) {
 		this.maxStates = maxStates;
-		final int states = Util.nextInt(maxStates);
+		final int states = Util.nextInt(maxStates) + 1;
 		data = new ArrayList<>();
 		for (int i = 0; i < states; i++) {
 			data.add(new State());
@@ -46,12 +46,14 @@ public class Machine {
 				s.links.add(new Pair<>(next, out));
 			}
 		}
+		
+		refresh();
 	}
 
 	public Machine(int maxStates, List<State> data) {
 		this.maxStates = maxStates;
 		this.data = data;
-
+		
 		refresh();
 	}
 

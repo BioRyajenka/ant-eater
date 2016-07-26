@@ -35,7 +35,7 @@ public class EightCellsSight implements Sight {
 					? 1 : -1) {
 				for (int dy = rot == 0 ? -2 : 2; rot == 0 ? dy <= 2
 						: dy >= -2; dy += rot == 0 ? 1 : -1) {
-					if (Util.mdist(0, 0, dx, dy) <= 2) {
+					if (Util.mdist(0, 0, dx, dy) <= 2 && (dx != 0 || dy != 0)) {
 						mask = processCell(x, y, dx, dy, world, i++, mask);
 					}
 				}
@@ -47,13 +47,14 @@ public class EightCellsSight implements Sight {
 						: dy <= 0; dy += rot == 1 ? -1 : 1) {
 					for (int dx = rot == 1 ? -2 : 2; rot == 1 ? dx <= 2
 							: dx >= -2; dx += rot == 1 ? 1 : -1) {
-						if (Util.mdist(0, 0, dx, dy) <= 2) {
+						if (Util.mdist(0, 0, dx, dy) <= 2 && (dx != 0 || dy != 0)) {
 							mask = processCell(x, y, dx, dy, world, i++, mask);
 						}
 					}
 				}
 			}
 		}
+		
 		return new InputSignal(mask);
 	}
 

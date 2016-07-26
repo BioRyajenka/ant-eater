@@ -20,8 +20,16 @@ public class Individual {
 		chromosome.refresh();
 	}
 	
-	public Individual(World habitat, Sight sight, int maxStates) {
+	private String tag;
+	
+	public Individual(World habitat, Sight sight, int maxStates, String tag) {
 		this(habitat, sight, new Machine(maxStates));
+		this.tag = tag;
+	}
+	
+	@Override
+	public String toString() {
+		return tag;
 	}
 	
 	public Individual(World habitat, Sight sight, Machine chromosome) {
