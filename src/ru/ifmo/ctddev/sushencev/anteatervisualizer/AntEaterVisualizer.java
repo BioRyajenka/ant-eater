@@ -37,14 +37,14 @@ import javax.swing.event.ChangeListener;
 
 import ru.ifmo.ctddev.sushencev.anteater.World;
 
-public class AntEaterVisualizator {
+public class AntEaterVisualizer {
 	private JFrame frame;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					AntEaterVisualizator window = new AntEaterVisualizator();
+					AntEaterVisualizer window = new AntEaterVisualizer();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -53,7 +53,7 @@ public class AntEaterVisualizator {
 		});
 	}
 
-	public AntEaterVisualizator() {
+	public AntEaterVisualizer() {
 		initialize();
 	}
 
