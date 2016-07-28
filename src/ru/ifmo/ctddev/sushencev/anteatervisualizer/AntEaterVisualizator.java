@@ -173,7 +173,7 @@ public class AntEaterVisualizator {
 			}
 		});
 
-		JButton nextFrameButton = new JButton("Next frame");
+		nextFrameButton = new JButton("Next frame");
 		nextFrameButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int i = frameComboBox.getSelectedIndex();
