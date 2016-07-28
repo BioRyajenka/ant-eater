@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -65,7 +67,7 @@ public class AntEaterVisualizator {
 	private JComboBox<Integer> antEaterComboBox;
 	private JComboBox<Integer> tryComboBox;
 	private JComboBox<Integer> frameComboBox;
-	
+
 	private FieldCanvas canvas;
 
 	/**
@@ -380,16 +382,23 @@ public class AntEaterVisualizator {
 		List<Frame> temp = new ArrayList<>();
 
 		// reading all of the frames
-		while (ois.available() != 0) {
-			Map<String, Integer> description = (Map<String, Integer>) ois.readObject();
-			World world = (World) ois.readObject();
-			temp.add(new Frame(description, world));
+		while (true) {
+			try {
+				Map<String, Integer> description = (Map<String, Integer>) ois
+						.readObject();
+				World world = (World) ois.readObject();
+				temp.add(new Frame(description, world));
+			} catch (Exception e) {
+				break;
+			}
 		}
 
 		// sorting them
-
 		data = new HashMap<>();
 		temp.forEach(f -> addFrame(f));
+
+		Set<Integer> set = temp.stream().map(f -> f.description.get("generation"))
+				.collect(Collectors.toSet());
 
 		//
 

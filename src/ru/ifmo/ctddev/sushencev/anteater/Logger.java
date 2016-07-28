@@ -35,6 +35,7 @@ public class Logger implements AutoCloseable {
 		}
 		oos.writeObject(description);
 		oos.writeObject(world);
+		oos.reset();
 	}
 
 	@Override

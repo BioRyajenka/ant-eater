@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import ru.ifmo.ctddev.sushencev.anteater.Cell.Type;
 import ru.ifmo.ctddev.sushencev.anteater.Individual.Position;
-import ru.ifmo.ctddev.sushencev.anteater.Machine.OutputSignal;
+import ru.ifmo.ctddev.sushencev.anteater.Automata.OutputSignal;
 import ru.ifmo.ctddev.sushencev.anteater.Util.Pair;
 
 public class World implements Serializable {

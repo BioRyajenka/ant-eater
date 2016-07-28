@@ -2,7 +2,7 @@ package ru.ifmo.ctddev.sushencev.anteater;
 
 import java.io.Serializable;
 
-import ru.ifmo.ctddev.sushencev.anteater.Machine.OutputSignal;
+import ru.ifmo.ctddev.sushencev.anteater.Automata.OutputSignal;
 import ru.ifmo.ctddev.sushencev.anteater.Util.Pair;
 
 public class Individual implements Serializable {
@@ -11,7 +11,7 @@ public class Individual implements Serializable {
 	private Position position = null;
 	private World habitat;
 	private transient Sight sight;
-	private transient Machine chromosome;
+	private transient Automata chromosome;
 	
 	private int ate = 0;
 	
@@ -25,7 +25,7 @@ public class Individual implements Serializable {
 	private String tag;
 	
 	public Individual(World habitat, Sight sight, int maxStates, String tag) {
-		this(habitat, sight, new Machine(maxStates));
+		this(habitat, sight, new Automata(maxStates));
 		this.tag = tag;
 	}
 	
@@ -34,7 +34,7 @@ public class Individual implements Serializable {
 		return tag;
 	}
 	
-	public Individual(World habitat, Sight sight, Machine chromosome) {
+	public Individual(World habitat, Sight sight, Automata chromosome) {
 		this.habitat = habitat;
 		this.sight = sight;
 		this.chromosome = chromosome;
@@ -76,7 +76,7 @@ public class Individual implements Serializable {
 	}
 	
 	public Pair<Individual, Individual> cross(Individual match) {
-		Pair<Machine, Machine> res = chromosome.cross(match.chromosome);
+		Pair<Automata, Automata> res = chromosome.cross(match.chromosome);
 		Individual first = new Individual(habitat, sight, res.first);
 		Individual second = new Individual(habitat, sight, res.second);
 		return new Pair<Individual, Individual>(first, second);

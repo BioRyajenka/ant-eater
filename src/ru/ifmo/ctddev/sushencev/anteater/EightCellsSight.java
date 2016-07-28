@@ -3,7 +3,7 @@ package ru.ifmo.ctddev.sushencev.anteater;
 import java.util.function.Predicate;
 
 import ru.ifmo.ctddev.sushencev.anteater.Individual.Position;
-import ru.ifmo.ctddev.sushencev.anteater.Machine.InputSignal;
+import ru.ifmo.ctddev.sushencev.anteater.Automata.InputSignal;
 
 public class EightCellsSight implements Sight {
 	private Predicate<Cell> isFoodFunction;

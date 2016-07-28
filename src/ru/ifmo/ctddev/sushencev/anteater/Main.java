@@ -8,13 +8,6 @@ import java.util.List;
 import ru.ifmo.ctddev.sushencev.anteater.Cell.Type;
 
 public class Main {
-	public static void main2(String[] args) throws IOException {
-		List<Integer> l = Arrays.asList(1, 2);
-		Iterator<Integer> it = l.iterator();
-		System.out.println(it.next());
-		System.out.println(it.next());
-	}
-
 	public static void main(String[] args) throws IOException {
 		int width = 26;
 		int height = 26;
@@ -47,6 +40,7 @@ public class Main {
 		logger.updatePresets("frames", steps);
 
 		for (int gen = 0; gen < generations; gen++) {
+			System.out.println("Age " + gen);
 			logger.updateDescription("generation", gen);
 			for (int aei = 0; aei < antEaterPopulationSize; aei++) {
 				logger.updateDescription("ant-eater", aei);
@@ -63,7 +57,6 @@ public class Main {
 					w.nextAntEater();
 				}
 			}
-			System.out.println("Age " + gen);
 			w.nextAge();
 		}
 
