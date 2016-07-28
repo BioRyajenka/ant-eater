@@ -141,6 +141,8 @@ public class AntEaterVisualizator {
 				int i = frameComboBox.getSelectedIndex();
 				if (i + 1 < frameComboBox.getItemCount()) {
 					frameComboBox.setSelectedIndex(i + 1);
+				} else {
+					pause();
 				}
 			}
 		});
@@ -547,21 +549,24 @@ public class AntEaterVisualizator {
 
 	}
 	
+	private void enableComponents(boolean play) {
+		pauseButton.setEnabled(play);
+		playButton.setEnabled(!play);
+		generationComboBox.setEnabled(!play);
+		antEaterComboBox.setEnabled(!play);
+		tryComboBox.setEnabled(!play);
+		frameComboBox.setEnabled(!play);
+		prevFrameButton.setEnabled(!play);
+		nextFrameButton.setEnabled(!play);
+	}
+	
 	private void pause() {
 		playState = PlayState.PAUSE;
-		pauseButton.setEnabled(false);
-		playButton.setEnabled(true);
-		frameComboBox.setEnabled(true);
-		prevFrameButton.setEnabled(true);
-		nextFrameButton.setEnabled(true);
+		enableComponents(false);
 	}
 	
 	private void play() {
 		playState = PlayState.PLAY;
-		pauseButton.setEnabled(true);
-		playButton.setEnabled(false);
-		frameComboBox.setEnabled(false);
-		prevFrameButton.setEnabled(false);
-		nextFrameButton.setEnabled(false);
+		enableComponents(true);
 	}
 }
