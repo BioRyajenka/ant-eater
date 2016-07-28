@@ -1,6 +1,10 @@
 package ru.ifmo.ctddev.sushencev.anteater;
 
-public class Cell {
+import java.io.Serializable;
+
+public class Cell implements Serializable {
+	private static final long serialVersionUID = -5883510131012824967L;
+
 	public enum Type {
 		FOOD, NOTHING
 	}

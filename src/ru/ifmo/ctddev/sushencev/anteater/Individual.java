@@ -1,15 +1,17 @@
 package ru.ifmo.ctddev.sushencev.anteater;
 
+import java.io.Serializable;
+
 import ru.ifmo.ctddev.sushencev.anteater.Machine.OutputSignal;
 import ru.ifmo.ctddev.sushencev.anteater.Util.Pair;
-import world.Sight;
-import world.World;
 
-public class Individual {
+public class Individual implements Serializable {
+	private static final long serialVersionUID = -87288283039935538L;
+
 	private Position position = null;
 	private World habitat;
-	private Sight sight;
-	private Machine chromosome;
+	private transient Sight sight;
+	private transient Machine chromosome;
 	
 	private int ate = 0;
 	
@@ -80,7 +82,8 @@ public class Individual {
 		return new Pair<Individual, Individual>(first, second);
 	}
 	
-	public static class Position {
+	public static class Position implements Serializable {
+		private static final long serialVersionUID = 2386106987285149034L;
 		public int x, y;
 		/**
 		 * 0 up

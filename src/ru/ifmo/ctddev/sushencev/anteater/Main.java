@@ -6,10 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import ru.ifmo.ctddev.sushencev.anteater.Cell.Type;
-import world.EightCellsSight;
-import world.Logger;
-import world.Sight;
-import world.World;
 
 public class Main {
 	public static void main2(String[] args) throws IOException {
@@ -44,16 +40,20 @@ public class Main {
 
 		String logFileName = "log" + Util.nextInt(1000_000_000);
 		Logger logger = new Logger(logFileName);
+		
+		logger.updatePresets("generations", generations);
+		logger.updatePresets("ant-eaters", antEaterPopulationSize);
+		logger.updatePresets("tries", tries);
+		logger.updatePresets("frames", steps);
 
 		for (int gen = 0; gen < generations; gen++) {
-			logger.updateDescription("generation", gen + "/" + generations);
+			logger.updateDescription("generation", gen);
 			for (int aei = 0; aei < antEaterPopulationSize; aei++) {
-				logger.updateDescription("ant eater number", aei + "/"
-						+ antEaterPopulationSize);
+				logger.updateDescription("ant-eater", aei);
 				for (int tri = 0; tri < tries; tri++) {
-					logger.updateDescription("try", tri + "/" + tries);
+					logger.updateDescription("try", tri);
 					for (int step = 0; step < steps; step++) {
-						logger.updateDescription("step", step + "/" + steps);
+						logger.updateDescription("frame", step);
 						logger.saveWorldSnapshot(w);
 						w.doStep();
 					}
