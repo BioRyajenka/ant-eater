@@ -1,9 +1,6 @@
 package ru.ifmo.ctddev.sushencev.anteater;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 
 import ru.ifmo.ctddev.sushencev.anteater.Cell.Type;
 

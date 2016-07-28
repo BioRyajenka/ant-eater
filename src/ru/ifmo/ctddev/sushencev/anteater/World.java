@@ -257,4 +257,8 @@ public class World implements Serializable {
 	public Cell[][] getField() {
 		return field;
 	}
+	
+	public Individual getCurrentAntEater() {
+		return antEater;
+	}
 }
