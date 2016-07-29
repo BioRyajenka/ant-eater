@@ -37,12 +37,13 @@ public class Main {
 		logger.updatePresets("frames", steps);
 
 		for (int gen = 0; gen < generations; gen++) {
-			System.out.println("Age " + gen);
+			Util.log("Age " + gen);
 			logger.updateDescription("generation", gen);
 			for (int aei = 0; aei < antEaterPopulationSize; aei++) {
 				logger.updateDescription("ant-eater", aei);
 				for (int tri = 0; tri < tries; tri++) {
 					logger.updateDescription("try", tri);
+					Util.log("try " + tri);
 					for (int step = 0; step < steps; step++) {
 						logger.updateDescription("frame", step);
 						logger.saveWorldSnapshot(w);

@@ -95,6 +95,10 @@ public class World implements Serializable {
 	private void refreshWorld() {
 		clearWorld();
 		generateFood(foodAmount);
+		
+		ants.forEach(a -> a.refreshAutomata());
+		antEater.refreshAutomata();
+		
 		placeAnts();
 		placeAntEater();
 	}
@@ -147,28 +151,37 @@ public class World implements Serializable {
 		int y = pos.y;
 		int rot = pos.rot;
 
-		if (rot == 0) x--;
-		if (rot == 1) y++;
-		if (rot == 2) x++;
-		if (rot == 3) y--;
+		if (rot == 0)
+			x--;
+		if (rot == 1)
+			y++;
+		if (rot == 2)
+			x++;
+		if (rot == 3)
+			y--;
 
-		if (x >= height) x -= height;
-		if (x < 0) x += height;
-		if (y >= width) y -= width;
-		if (y < 0) y += width;
+		if (x >= height)
+			x -= height;
+		if (x < 0)
+			x += height;
+		if (y >= width)
+			y -= width;
+		if (y < 0)
+			y += width;
 
 		return new Position(x, y, rot);
 	}
 
 	private void createNextGeneration(List<Individual> indivs) {
+		Util.log("Creating next generation");
 		// sorting downwards
 		indivs.sort((a, b) -> Integer.compare(b.getEatenFoodAmount(), a
 				.getEatenFoodAmount()));
-				/*// elitism
-				List<Individual> elite = new ArrayList<>();
-				for (int i = 0; i < eliteSize; i++) {
-					elite.add(ants.get(i));
-				}*/
+		/*// elitism
+		List<Individual> elite = new ArrayList<>();
+		for (int i = 0; i < eliteSize; i++) {
+			elite.add(ants.get(i));
+		}*/
 
 		// crossingover
 		int summaryFitness = indivs.stream().collect(Collectors.summingInt(i -> i
@@ -233,8 +246,8 @@ public class World implements Serializable {
 			throw new RuntimeException("too many ants for such small field");
 		}
 		Iterator<Individual> it = ants.iterator();
-		doNTimes(ants.size(), (x, y) -> field[x][y].isOccupied() || (x == width / 2
-				&& y == height / 2), (x, y) -> {
+		doNTimes(ants.size(), (x, y) -> field[x][y].isOccupied() || field[x][y]
+				.getType() == Type.FOOD || (x == width / 2 && y == height / 2), (x, y) -> {
 					Individual ant = it.next();
 					field[x][y].setIndividual(ant);
 					ant.setPosition(x, y, Util.nextInt(4));
@@ -245,19 +258,19 @@ public class World implements Serializable {
 		field[width / 2][height / 2].setIndividual(antEater);
 		antEater.setPosition(width / 2, height / 2, Util.nextInt(4));
 	}
-	
+
 	public int getWidth() {
 		return width;
 	}
-	
+
 	public int getHeight() {
 		return height;
 	}
-	
+
 	public Cell[][] getField() {
 		return field;
 	}
-	
+
 	public Individual getCurrentAntEater() {
 		return antEater;
 	}

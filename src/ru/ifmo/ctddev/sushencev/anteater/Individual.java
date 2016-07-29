@@ -19,6 +19,10 @@ public class Individual implements Serializable {
 
 	public void refresh() {
 		ate = 0;
+		refreshAutomata();
+	}
+	
+	public void refreshAutomata() {
 		chromosome.refresh();
 	}
 	
@@ -65,6 +69,10 @@ public class Individual implements Serializable {
 	
 	public Position getPosition() {
 		return position;
+	}
+	
+	public Automata getChromosome() {
+		return chromosome;
 	}
 	
 	public void die() {

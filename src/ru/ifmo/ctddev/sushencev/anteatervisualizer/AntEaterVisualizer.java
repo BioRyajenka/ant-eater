@@ -61,19 +61,19 @@ public class AntEaterVisualizer {
 	private JComboBox<Integer> antEaterComboBox;
 	private JComboBox<Integer> tryComboBox;
 	private JComboBox<Integer> frameComboBox;
-	
+
 	private JButton playButton;
 	private JButton pauseButton;
-	
+
 	private JButton prevFrameButton;
 	private JButton nextFrameButton;
 
 	private FieldCanvas canvas;
-	
+
 	private enum PlayState {
 		PLAY, PAUSE;
 	}
-	
+
 	private PlayState playState;
 
 	private void initialize() {
@@ -90,7 +90,9 @@ public class AntEaterVisualizer {
 		JPanel worldTab = new JPanel();
 		tabbedPane.addTab("World", null, worldTab, null);
 
-		canvas = new FieldCanvas();
+		JLabel descriptionLabel = new JLabel("Individual description");
+
+		canvas = new FieldCanvas(descriptionLabel);
 
 		JLabel generationLabel = new JLabel("Generation");
 
@@ -155,13 +157,15 @@ public class AntEaterVisualizer {
 		jftf.setColumns(2);
 
 		// from 0 to 9, in 1.0 steps start value 5
-		SpinnerNumberModel model = new SpinnerNumberModel(1.0, 1.0, 10.0, 1.0);
+		SpinnerNumberModel model = new SpinnerNumberModel(10.0, 1.0, 50.0, 1.0);
 		frameSpinner.setModel(model);
 		frameSpinner.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				timer.setDelay((int) (1000 / (double) frameSpinner.getValue()));
 			}
 		});
+
+		timer.setDelay((int) model.getNumber().doubleValue());
 
 		JLabel playSpeedLabel = new JLabel("Play speed, fps");
 
@@ -209,7 +213,7 @@ public class AntEaterVisualizer {
 				frameComboBox.setSelectedIndex(0);
 			}
 		});
-		
+
 		GroupLayout gl_worldTab = new GroupLayout(worldTab);
 		gl_worldTab.setHorizontalGroup(gl_worldTab.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_worldTab.createSequentialGroup().addGap(10).addComponent(
@@ -222,17 +226,17 @@ public class AntEaterVisualizer {
 																Alignment.LEADING)
 														.addComponent(antEaterLabel,
 																GroupLayout.DEFAULT_SIZE,
-																145, Short.MAX_VALUE)
+																142, Short.MAX_VALUE)
 														.addComponent(generationLabel,
 																Alignment.TRAILING,
 																GroupLayout.DEFAULT_SIZE,
-																145, Short.MAX_VALUE)
+																142, Short.MAX_VALUE)
 														.addComponent(tryLabel,
 																GroupLayout.DEFAULT_SIZE,
-																145, Short.MAX_VALUE)
+																142, Short.MAX_VALUE)
 														.addComponent(frameLabel,
 																GroupLayout.DEFAULT_SIZE,
-																145, Short.MAX_VALUE))
+																142, Short.MAX_VALUE))
 												.addPreferredGap(
 														ComponentPlacement.RELATED)
 												.addGroup(gl_worldTab
@@ -257,7 +261,7 @@ public class AntEaterVisualizer {
 								.addGroup(gl_worldTab.createSequentialGroup()
 										.addPreferredGap(ComponentPlacement.RELATED)
 										.addComponent(playSpeedLabel).addPreferredGap(
-												ComponentPlacement.RELATED, 117,
+												ComponentPlacement.RELATED, 78,
 												Short.MAX_VALUE).addComponent(
 														frameSpinner,
 														GroupLayout.PREFERRED_SIZE,
@@ -273,18 +277,22 @@ public class AntEaterVisualizer {
 												GroupLayout.PREFERRED_SIZE)
 										.addPreferredGap(ComponentPlacement.RELATED)
 										.addComponent(stopButton,
-												GroupLayout.DEFAULT_SIZE, 60,
+												GroupLayout.DEFAULT_SIZE,
+												GroupLayout.DEFAULT_SIZE,
 												Short.MAX_VALUE)).addGroup(gl_worldTab
 														.createSequentialGroup()
 														.addPreferredGap(
 																ComponentPlacement.RELATED)
 														.addComponent(prevFrameButton,
 																GroupLayout.DEFAULT_SIZE,
-																101, Short.MAX_VALUE)
+																100, Short.MAX_VALUE)
 														.addGap(9).addComponent(
 																nextFrameButton,
 																GroupLayout.DEFAULT_SIZE,
-																102, Short.MAX_VALUE)))
+																100, Short.MAX_VALUE))
+								.addGroup(gl_worldTab.createSequentialGroup()
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(descriptionLabel)))
 						.addContainerGap()));
 		gl_worldTab.setVerticalGroup(gl_worldTab.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_worldTab.createSequentialGroup().addContainerGap().addGroup(
@@ -353,7 +361,10 @@ public class AntEaterVisualizer {
 														.createParallelGroup(
 																Alignment.BASELINE)
 														.addComponent(nextFrameButton)
-														.addComponent(prevFrameButton))))
+														.addComponent(prevFrameButton))
+												.addPreferredGap(
+														ComponentPlacement.RELATED)
+												.addComponent(descriptionLabel)))
 						.addContainerGap()));
 		worldTab.setLayout(gl_worldTab);
 
@@ -434,10 +445,10 @@ public class AntEaterVisualizer {
 	private void loadFile(File file) throws IOException, ClassNotFoundException {
 		FileInputStream fis = new FileInputStream(file);
 		ObjectInputStream ois = new ObjectInputStream(fis);
-		
+
 		//
 		applyPresets((Map<String, Integer>) ois.readObject());
-		
+
 		List<Frame> temp = new ArrayList<>();
 
 		// reading all of the frames
@@ -548,7 +559,7 @@ public class AntEaterVisualizer {
 	private void applyPresets(Map<String, Integer> readObject) {
 
 	}
-	
+
 	private void enableComponents(boolean play) {
 		pauseButton.setEnabled(play);
 		playButton.setEnabled(!play);
@@ -559,12 +570,12 @@ public class AntEaterVisualizer {
 		prevFrameButton.setEnabled(!play);
 		nextFrameButton.setEnabled(!play);
 	}
-	
+
 	private void pause() {
 		playState = PlayState.PAUSE;
 		enableComponents(false);
 	}
-	
+
 	private void play() {
 		playState = PlayState.PLAY;
 		enableComponents(true);

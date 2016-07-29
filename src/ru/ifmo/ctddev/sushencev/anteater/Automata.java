@@ -1,11 +1,14 @@
 package ru.ifmo.ctddev.sushencev.anteater;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import ru.ifmo.ctddev.sushencev.anteater.Util.Pair;
 
-public class Automata {
+public class Automata implements Serializable {
+	private static final long serialVersionUID = -9202081597965540637L;
+
 	public static class InputSignal {
 		private static final int SIGNALS_NUMBER = 256;
 
@@ -68,6 +71,7 @@ public class Automata {
 	}
 
 	public Pair<Automata, Automata> cross(Automata rhs) {
+		Util.log("crossing automata");
 		// crossover points 1 and 2
 		int cp1, cp2;
 
@@ -121,6 +125,7 @@ public class Automata {
 	}
 
 	public void mutate() {
+		Util.log("mutating automata");
 		Pair<Integer, OutputSignal> p = data.get(Util.nextInt(data.size())).links.get(
 				Util.nextInt(InputSignal.SIGNALS_NUMBER));
 		if (Util.dice(.5f)) {
@@ -134,7 +139,21 @@ public class Automata {
 
 	private State curState;
 
-	private static class State {
-		List<Pair<Integer, OutputSignal>> links = new ArrayList<>();
+	private static class State implements Serializable {
+		private static final long serialVersionUID = -8396697025935926778L;
+		transient List<Pair<Integer, OutputSignal>> links = new ArrayList<>();
+	}
+	
+	public int getCurStateNumber() {
+		for (int i = 0; i < data.size(); i++) {
+			if (data.get(i) == curState) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	public int getStatesNumber() {
+		return data.size();
 	}
 }
