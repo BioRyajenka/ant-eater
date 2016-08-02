@@ -1,5 +1,6 @@
 package ru.ifmo.ctddev.sushencev.anteater;
 
+import java.io.Serializable;
 import java.util.Random;
 
 public class Util {
@@ -41,5 +42,9 @@ public class Util {
 
 	public static void log(String msg) {
 		System.out.println(msg);
+	}
+	
+	public interface SerializablePredicate<T> extends Serializable {
+		public boolean test(T t);
 	}
 }

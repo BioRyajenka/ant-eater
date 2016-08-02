@@ -39,4 +39,15 @@ public class Cell implements Serializable {
 	public Type getType() {
 		return type;
 	}
+	
+	@Override
+	public Cell clone() {
+		try {
+			Cell res = new Cell(type);
+			res.individual = individual;
+			return res;
+		} catch (Exception e) {
+		}
+		return null;
+	}
 }

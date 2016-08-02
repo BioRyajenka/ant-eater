@@ -2,7 +2,9 @@ package ru.ifmo.ctddev.sushencev.anteater;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import ru.ifmo.ctddev.sushencev.anteater.Util.Pair;
 
@@ -32,46 +34,52 @@ public class Automata implements Serializable {
 		LEFT, RIGHT, FORWARD;
 	}
 
-	private int maxStates;
+	private transient int maxStates;
+	private State[] data;
+	private State curState;
 
 	public Automata(int maxStates) {
 		this.maxStates = maxStates;
 		final int states = Util.nextInt(maxStates) + 1;
-		data = new ArrayList<>();
+		data = new State[states];
 		for (int i = 0; i < states; i++) {
-			data.add(new State());
+			data[i] = new State();
 		}
 		for (State s : data) {
 			for (int i = 0; i < InputSignal.SIGNALS_NUMBER; i++) {
 				int next = Util.nextInt(states);
-				OutputSignal out = OutputSignal.values()[Util.nextInt(
-						OutputSignal.values().length)];
-				s.links.add(new Pair<>(next, out));
+				s.nextState[i] = next;
+				s.output[i] = Util.nextInt(OutputSignal.values().length);
 			}
 		}
-		
+
 		refresh();
 	}
 
-	public Automata(int maxStates, List<State> data) {
+	public Automata(int maxStates, State[] data) {
 		this.maxStates = maxStates;
 		this.data = data;
-		
+
 		refresh();
 	}
 
 	public OutputSignal doStep(InputSignal inputSignal) {
-		Pair<Integer, OutputSignal> p = curState.links.get(inputSignal.mask);
-		curState = data.get(p.first);
-		return p.second;
+		int nextState = curState.nextState[inputSignal.mask];
+		int output = curState.output[inputSignal.mask];
+		curState = data[nextState];
+		return OutputSignal.values()[output];
 	}
 
 	public void refresh() {
-		curState = data.get(0);
+		curState = data[0];
+	}
+
+	private List<State> copySubArrayToList(State[] data, int from, int to) {
+		return Arrays.stream(Arrays.copyOfRange(data, from, to)).map(s -> s.copy())
+				.collect(Collectors.toList());
 	}
 
 	public Pair<Automata, Automata> cross(Automata rhs) {
-		Util.log("crossing automata");
 		// crossover points 1 and 2
 		int cp1, cp2;
 
@@ -79,31 +87,30 @@ public class Automata implements Serializable {
 		int l1, r1, l2, r2;
 
 		do {
-			cp1 = Util.nextInt(this.data.size());
-			cp2 = Util.nextInt(rhs.data.size());
+			cp1 = Util.nextInt(this.data.length);
+			cp2 = Util.nextInt(rhs.data.length);
 
 			l1 = cp1;
-			r1 = this.data.size() - l1;
+			r1 = this.data.length - l1;
 			l2 = cp2;
-			r2 = rhs.data.size() - l2;
+			r2 = rhs.data.length - l2;
 		} while (l1 + r2 > maxStates || l2 + r1 > maxStates);
 
-		List<State> p1s1 = this.data.subList(0, l1);
-		List<State> p1s2 = this.data.subList(l1, l1 + r1);
-		List<State> p2s1 = rhs.data.subList(0, l2);
-		List<State> p2s2 = rhs.data.subList(l2, l2 + r2);
+		List<State> p1s1 = copySubArrayToList(this.data, 0, l1);
+		List<State> p1s2 = copySubArrayToList(this.data, l1, l1 + r1);
+		List<State> p2s1 = copySubArrayToList(rhs.data, 0, l2);
+		List<State> p2s2 = copySubArrayToList(rhs.data, l2, l2 + r2);
 
 		redirectLinks(p1s1, 0, 0, l1, l1 + r2);
 		redirectLinks(p2s2, l1, l2, l2 + r2, l1 + r2);
-		List<State> newC1 = new ArrayList<>(p1s1);
-		newC1.addAll(new ArrayList<>(p2s2));
+		p1s1.addAll(new ArrayList<>(p2s2));
 
 		redirectLinks(p2s1, 0, 0, l2, l2 + r1);
 		redirectLinks(p1s2, l2, l1, l1 + r1, l2 + r1);
-		List<State> newC2 = new ArrayList<>(p2s1);
-		newC2.addAll(new ArrayList<>(p1s2));
+		p2s1.addAll(new ArrayList<>(p1s2));
 
-		return new Pair<>(new Automata(maxStates, newC1), new Automata(maxStates, newC2));
+		return new Pair<>(new Automata(maxStates, p1s1.toArray(new State[p1s1.size()])), 
+						new Automata(maxStates, p2s1.toArray(new State[p2s1.size()])));
 	}
 
 	/**
@@ -112,48 +119,53 @@ public class Automata implements Serializable {
 	private void redirectLinks(List<State> list, int newFrom, int prevFrom, int prevTo,
 			int newSize) {
 		for (State s : list) {
-			for (Pair<Integer, OutputSignal> p : s.links) {
-				if (p.first >= prevFrom && p.first < prevTo) {
+			for (int i = 0; i < InputSignal.SIGNALS_NUMBER; i++) {
+				int nextState = s.nextState[i];
+				if (nextState >= prevFrom && nextState < prevTo) {
 					// internal link
-					p.first -= prevFrom - newFrom;
+					nextState -= prevFrom - newFrom;
 				} else {
 					// external link
-					p.first = Util.nextInt(newSize);
+					nextState = Util.nextInt(newSize);
 				}
+				s.nextState[i] = nextState;
 			}
 		}
 	}
 
 	public void mutate() {
-		Util.log("mutating automata");
-		Pair<Integer, OutputSignal> p = data.get(Util.nextInt(data.size())).links.get(
-				Util.nextInt(InputSignal.SIGNALS_NUMBER));
+		State s = data[Util.nextInt(data.length)];
+		int gen = Util.nextInt(InputSignal.SIGNALS_NUMBER);
 		if (Util.dice(.5f)) {
-			p.first = Util.nextInt(data.size());
+			s.nextState[gen] = Util.nextInt(InputSignal.SIGNALS_NUMBER);
 		} else {
-			p.second = OutputSignal.values()[Util.nextInt(OutputSignal.values().length)];
+			s.output[gen] = Util.nextInt(OutputSignal.values().length);
 		}
 	}
 
-	private List<State> data;
-
-	private State curState;
-
 	private static class State implements Serializable {
 		private static final long serialVersionUID = -8396697025935926778L;
-		transient List<Pair<Integer, OutputSignal>> links = new ArrayList<>();
+		int[] nextState = new int[InputSignal.SIGNALS_NUMBER];
+		int[] output = new int[InputSignal.SIGNALS_NUMBER];
+
+		public State copy() {
+			State res = new State();
+			res.nextState = Arrays.copyOf(nextState, nextState.length);
+			res.output = Arrays.copyOf(output, output.length);
+			return res;
+		}
 	}
-	
+
 	public int getCurStateNumber() {
-		for (int i = 0; i < data.size(); i++) {
-			if (data.get(i) == curState) {
+		for (int i = 0; i < data.length; i++) {
+			if (data[i] == curState) {
 				return i;
 			}
 		}
 		return -1;
 	}
-	
+
 	public int getStatesNumber() {
-		return data.size();
+		return data.length;
 	}
 }

@@ -5,13 +5,10 @@ import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.EOFException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.swing.GroupLayout;
@@ -35,7 +32,12 @@ import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import ru.ifmo.ctddev.sushencev.anteater.World;
+import ru.ifmo.ctddev.sushencev.anteater.EncodedField;
+import ru.ifmo.ctddev.sushencev.anteater.Individual;
+import ru.ifmo.ctddev.sushencev.anteater.LogLoader;
+import ru.ifmo.ctddev.sushencev.anteater.Util;
+import ru.ifmo.ctddev.sushencev.anteater.Util.Pair;
+import ru.ifmo.ctddev.sushencev.anteater.WorldRepeater;
 
 public class AntEaterVisualizer {
 	private JFrame frame;
@@ -100,7 +102,7 @@ public class AntEaterVisualizer {
 		generationComboBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				updateGeneration();
+				selectGeneration();
 			}
 		});
 
@@ -110,7 +112,7 @@ public class AntEaterVisualizer {
 		antEaterComboBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				updateAntEater();
+				selectAntEater();
 			}
 		});
 
@@ -120,7 +122,7 @@ public class AntEaterVisualizer {
 		tryComboBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				updateTry();
+				selectTry();
 			}
 		});
 
@@ -130,7 +132,7 @@ public class AntEaterVisualizer {
 		frameComboBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				updateFrame();
+				selectFrame();
 			}
 		});
 
@@ -152,8 +154,7 @@ public class AntEaterVisualizer {
 
 		JSpinner frameSpinner = new JSpinner();
 		Component mySpinnerEditor = frameSpinner.getEditor();
-		JFormattedTextField jftf = ((JSpinner.DefaultEditor) mySpinnerEditor)
-				.getTextField();
+		JFormattedTextField jftf = ((JSpinner.DefaultEditor) mySpinnerEditor).getTextField();
 		jftf.setColumns(2);
 
 		// from 0 to 9, in 1.0 steps start value 5
@@ -165,7 +166,7 @@ public class AntEaterVisualizer {
 			}
 		});
 
-		timer.setDelay((int) model.getNumber().doubleValue());
+		timer.setDelay(1000 / (int) model.getNumber().doubleValue());
 
 		JLabel playSpeedLabel = new JLabel("Play speed, fps");
 
@@ -216,156 +217,133 @@ public class AntEaterVisualizer {
 
 		GroupLayout gl_worldTab = new GroupLayout(worldTab);
 		gl_worldTab.setHorizontalGroup(gl_worldTab.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_worldTab.createSequentialGroup().addGap(10).addComponent(
-						canvas, GroupLayout.PREFERRED_SIZE, 541,
-						GroupLayout.PREFERRED_SIZE).addGroup(gl_worldTab
-								.createParallelGroup(Alignment.LEADING).addGroup(
+				.addGroup(gl_worldTab.createSequentialGroup().addGap(10).addComponent(canvas,
+						GroupLayout.PREFERRED_SIZE, 541, GroupLayout.PREFERRED_SIZE).addGroup(
+								gl_worldTab.createParallelGroup(Alignment.LEADING).addGroup(
 										gl_worldTab.createSequentialGroup().addGap(10)
-												.addGroup(gl_worldTab
-														.createParallelGroup(
-																Alignment.LEADING)
-														.addComponent(antEaterLabel,
-																GroupLayout.DEFAULT_SIZE,
-																142, Short.MAX_VALUE)
-														.addComponent(generationLabel,
-																Alignment.TRAILING,
-																GroupLayout.DEFAULT_SIZE,
-																142, Short.MAX_VALUE)
+												.addGroup(gl_worldTab.createParallelGroup(
+														Alignment.LEADING).addComponent(
+																antEaterLabel,
+																GroupLayout.DEFAULT_SIZE, 142,
+																Short.MAX_VALUE).addComponent(
+																		generationLabel,
+																		Alignment.TRAILING,
+																		GroupLayout.DEFAULT_SIZE,
+																		142, Short.MAX_VALUE)
 														.addComponent(tryLabel,
-																GroupLayout.DEFAULT_SIZE,
-																142, Short.MAX_VALUE)
-														.addComponent(frameLabel,
-																GroupLayout.DEFAULT_SIZE,
-																142, Short.MAX_VALUE))
-												.addPreferredGap(
-														ComponentPlacement.RELATED)
-												.addGroup(gl_worldTab
-														.createParallelGroup(
-																Alignment.LEADING)
-														.addComponent(frameComboBox,
-																GroupLayout.PREFERRED_SIZE,
-																62,
+																GroupLayout.DEFAULT_SIZE, 142,
+																Short.MAX_VALUE).addComponent(
+																		frameLabel,
+																		GroupLayout.DEFAULT_SIZE,
+																		142, Short.MAX_VALUE))
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addGroup(gl_worldTab.createParallelGroup(
+														Alignment.LEADING).addComponent(
+																frameComboBox,
+																GroupLayout.PREFERRED_SIZE, 62,
 																GroupLayout.PREFERRED_SIZE)
 														.addComponent(tryComboBox,
-																GroupLayout.PREFERRED_SIZE,
-																62,
+																GroupLayout.PREFERRED_SIZE, 62,
 																GroupLayout.PREFERRED_SIZE)
 														.addComponent(antEaterComboBox,
-																GroupLayout.PREFERRED_SIZE,
-																62,
+																GroupLayout.PREFERRED_SIZE, 62,
 																GroupLayout.PREFERRED_SIZE)
 														.addComponent(generationComboBox,
-																GroupLayout.PREFERRED_SIZE,
-																62,
+																GroupLayout.PREFERRED_SIZE, 62,
 																GroupLayout.PREFERRED_SIZE)))
-								.addGroup(gl_worldTab.createSequentialGroup()
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(playSpeedLabel).addPreferredGap(
-												ComponentPlacement.RELATED, 78,
-												Short.MAX_VALUE).addComponent(
-														frameSpinner,
-														GroupLayout.PREFERRED_SIZE,
+										.addGroup(gl_worldTab.createSequentialGroup()
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(playSpeedLabel).addPreferredGap(
+														ComponentPlacement.RELATED, 78,
+														Short.MAX_VALUE).addComponent(
+																frameSpinner,
+																GroupLayout.PREFERRED_SIZE,
+																GroupLayout.DEFAULT_SIZE,
+																GroupLayout.PREFERRED_SIZE))
+										.addGroup(gl_worldTab.createSequentialGroup().addGap(
+												10).addComponent(playButton,
+														GroupLayout.PREFERRED_SIZE, 61,
+														GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(pauseButton,
+														GroupLayout.PREFERRED_SIZE, 75,
+														GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(stopButton,
 														GroupLayout.DEFAULT_SIZE,
-														GroupLayout.PREFERRED_SIZE))
-								.addGroup(gl_worldTab.createSequentialGroup().addGap(10)
-										.addComponent(playButton,
-												GroupLayout.PREFERRED_SIZE, 61,
-												GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(pauseButton,
-												GroupLayout.PREFERRED_SIZE, 75,
-												GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(stopButton,
-												GroupLayout.DEFAULT_SIZE,
-												GroupLayout.DEFAULT_SIZE,
-												Short.MAX_VALUE)).addGroup(gl_worldTab
-														.createSequentialGroup()
-														.addPreferredGap(
-																ComponentPlacement.RELATED)
-														.addComponent(prevFrameButton,
-																GroupLayout.DEFAULT_SIZE,
-																100, Short.MAX_VALUE)
-														.addGap(9).addComponent(
-																nextFrameButton,
-																GroupLayout.DEFAULT_SIZE,
-																100, Short.MAX_VALUE))
-								.addGroup(gl_worldTab.createSequentialGroup()
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(descriptionLabel)))
+														GroupLayout.DEFAULT_SIZE,
+														Short.MAX_VALUE)).addGroup(gl_worldTab
+																.createSequentialGroup()
+																.addPreferredGap(
+																		ComponentPlacement.RELATED)
+																.addComponent(prevFrameButton,
+																		GroupLayout.DEFAULT_SIZE,
+																		100, Short.MAX_VALUE)
+																.addGap(9).addComponent(
+																		nextFrameButton,
+																		GroupLayout.DEFAULT_SIZE,
+																		100, Short.MAX_VALUE))
+										.addGroup(gl_worldTab.createSequentialGroup()
+												.addPreferredGap(ComponentPlacement.RELATED)
+												.addComponent(descriptionLabel)))
 						.addContainerGap()));
 		gl_worldTab.setVerticalGroup(gl_worldTab.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_worldTab.createSequentialGroup().addContainerGap().addGroup(
-						gl_worldTab.createParallelGroup(Alignment.LEADING).addComponent(
-								canvas, GroupLayout.DEFAULT_SIZE,
-								GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addGroup(
-										gl_worldTab.createSequentialGroup().addGroup(
+						gl_worldTab.createParallelGroup(Alignment.LEADING).addComponent(canvas,
+								GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
+								Short.MAX_VALUE).addGroup(gl_worldTab.createSequentialGroup()
+										.addGroup(gl_worldTab.createParallelGroup(
+												Alignment.BASELINE).addComponent(
+														generationLabel).addComponent(
+																generationComboBox,
+																GroupLayout.PREFERRED_SIZE,
+																GroupLayout.DEFAULT_SIZE,
+																GroupLayout.PREFERRED_SIZE))
+										.addPreferredGap(ComponentPlacement.RELATED).addGroup(
 												gl_worldTab.createParallelGroup(
 														Alignment.BASELINE).addComponent(
-																generationLabel)
-														.addComponent(generationComboBox,
-																GroupLayout.PREFERRED_SIZE,
-																GroupLayout.DEFAULT_SIZE,
-																GroupLayout.PREFERRED_SIZE))
-												.addPreferredGap(
-														ComponentPlacement.RELATED)
-												.addGroup(gl_worldTab
-														.createParallelGroup(
-																Alignment.BASELINE)
-														.addComponent(antEaterLabel)
-														.addComponent(antEaterComboBox,
-																GroupLayout.PREFERRED_SIZE,
-																GroupLayout.DEFAULT_SIZE,
-																GroupLayout.PREFERRED_SIZE))
-												.addPreferredGap(
-														ComponentPlacement.RELATED)
-												.addGroup(gl_worldTab
-														.createParallelGroup(
-																Alignment.BASELINE)
-														.addComponent(tryLabel)
-														.addComponent(tryComboBox,
-																GroupLayout.PREFERRED_SIZE,
-																GroupLayout.DEFAULT_SIZE,
-																GroupLayout.PREFERRED_SIZE))
-												.addPreferredGap(
-														ComponentPlacement.RELATED)
-												.addGroup(gl_worldTab
-														.createParallelGroup(
-																Alignment.BASELINE)
-														.addComponent(frameLabel)
-														.addComponent(frameComboBox,
-																GroupLayout.PREFERRED_SIZE,
-																GroupLayout.DEFAULT_SIZE,
-																GroupLayout.PREFERRED_SIZE))
-												.addPreferredGap(
-														ComponentPlacement.RELATED)
-												.addGroup(gl_worldTab
-														.createParallelGroup(
-																Alignment.TRAILING)
-														.addComponent(frameSpinner,
+																antEaterLabel).addComponent(
+																		antEaterComboBox,
+																		GroupLayout.PREFERRED_SIZE,
+																		GroupLayout.DEFAULT_SIZE,
+																		GroupLayout.PREFERRED_SIZE))
+										.addPreferredGap(ComponentPlacement.RELATED).addGroup(
+												gl_worldTab.createParallelGroup(
+														Alignment.BASELINE).addComponent(
+																tryLabel).addComponent(
+																		tryComboBox,
+																		GroupLayout.PREFERRED_SIZE,
+																		GroupLayout.DEFAULT_SIZE,
+																		GroupLayout.PREFERRED_SIZE))
+										.addPreferredGap(ComponentPlacement.RELATED).addGroup(
+												gl_worldTab.createParallelGroup(
+														Alignment.BASELINE).addComponent(
+																frameLabel).addComponent(
+																		frameComboBox,
+																		GroupLayout.PREFERRED_SIZE,
+																		GroupLayout.DEFAULT_SIZE,
+																		GroupLayout.PREFERRED_SIZE))
+										.addPreferredGap(ComponentPlacement.RELATED).addGroup(
+												gl_worldTab.createParallelGroup(
+														Alignment.TRAILING).addComponent(
+																frameSpinner,
 																GroupLayout.PREFERRED_SIZE,
 																GroupLayout.DEFAULT_SIZE,
 																GroupLayout.PREFERRED_SIZE)
 														.addComponent(playSpeedLabel))
-												.addPreferredGap(
-														ComponentPlacement.RELATED)
-												.addGroup(gl_worldTab
-														.createParallelGroup(
-																Alignment.BASELINE)
-														.addComponent(playButton)
-														.addComponent(stopButton)
+										.addPreferredGap(ComponentPlacement.RELATED).addGroup(
+												gl_worldTab.createParallelGroup(
+														Alignment.BASELINE).addComponent(
+																playButton).addComponent(
+																		stopButton)
 														.addComponent(pauseButton))
-												.addPreferredGap(
-														ComponentPlacement.RELATED)
-												.addGroup(gl_worldTab
-														.createParallelGroup(
-																Alignment.BASELINE)
-														.addComponent(nextFrameButton)
-														.addComponent(prevFrameButton))
-												.addPreferredGap(
-														ComponentPlacement.RELATED)
-												.addComponent(descriptionLabel)))
-						.addContainerGap()));
+										.addPreferredGap(ComponentPlacement.RELATED).addGroup(
+												gl_worldTab.createParallelGroup(
+														Alignment.BASELINE).addComponent(
+																nextFrameButton).addComponent(
+																		prevFrameButton))
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(descriptionLabel))).addContainerGap()));
 		worldTab.setLayout(gl_worldTab);
 
 		JPanel statisticsTab = new JPanel();
@@ -420,144 +398,107 @@ public class AntEaterVisualizer {
 	private Map<Integer, Generation> data;
 
 	private static class Generation {
-		Map<Integer, AntEater> antEaters;
-	}
+		WorldRepeater world;
+		Map<Integer, AntEater> antEaters = new HashMap<>();
 
-	private static class AntEater {
-		Map<Integer, Try> tries;
-	}
-
-	private static class Try {
-		Map<Integer, Frame> frames;
-	}
-
-	private static class Frame {
-		Map<String, Integer> description;
-		World world;
-
-		public Frame(Map<String, Integer> description, World world) {
-			this.description = description;
+		public Generation(WorldRepeater world) {
 			this.world = world;
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	private static class AntEater {
+		Map<Integer, EncodedField> tries = new HashMap<>();
+	}
+
 	private void loadFile(File file) throws IOException, ClassNotFoundException {
-		FileInputStream fis = new FileInputStream(file);
-		ObjectInputStream ois = new ObjectInputStream(fis);
-
-		//
-		applyPresets((Map<String, Integer>) ois.readObject());
-
-		List<Frame> temp = new ArrayList<>();
+		LogLoader logLoader = new LogLoader(file);
 
 		// reading all of the frames
+		data = new HashMap<>();
 		while (true) {
 			try {
-				Map<String, Integer> description = (Map<String, Integer>) ois
-						.readObject();
-				World world = (World) ois.readObject();
-				temp.add(new Frame(description, world));
-			} catch (Exception e) {
+				Pair<Map<String, Integer>, Pair<Individual[], Individual[]>> p = logLoader
+						.getNextGeneration();
+				int gen = p.first.get("gen");
+				Util.log("loading gen: " + gen);
+				data.put(gen, new Generation(new WorldRepeater(p.second.first,
+						p.second.second)));
+
+				Map<Integer, AntEater> aes = data.get(gen).antEaters;
+				for (int aei = 0; aei < 30; aei++) {
+					aes.putIfAbsent(aei, new AntEater());
+					for (int tri = 0; tri < 10; tri++) {
+						aes.get(aei).tries.put(tri, logLoader.getField());
+					}
+				}
+			} catch (EOFException | RuntimeException e) {
+				if (!(e.getCause() instanceof EOFException) && e.getCause() != null) {
+					e.getCause().printStackTrace();
+					System.exit(0);
+				}
 				break;
 			}
 		}
 
-		// sorting them
-		data = new HashMap<>();
-		temp.forEach(f -> addFrame(f));
-
 		//
 		generationComboBox.removeAllItems();
-		data.forEach((i, g) -> generationComboBox.addItem(i));
+		Util.log("loading: " + data.size());
+		data.forEach((i, g) -> {
+			Util.log("adding generation " + i);
+			generationComboBox.addItem(i);
+		});
 		generationComboBox.setSelectedIndex(0);
 
 		//
-		ois.close();
-		fis.close();
+		logLoader.close();
 	}
 
-	private void addFrame(Frame f) {
-		int gen = f.description.get("generation");
-		data.compute(gen, (k, v) -> {
-			if (v == null) {
-				v = new Generation();
-				v.antEaters = new HashMap<>();
-			}
-			addFrameToGeneration(v, f);
-			return v;
-		});
-	}
-
-	private void addFrameToGeneration(Generation g, Frame f) {
-		int aei = f.description.get("ant-eater");
-		g.antEaters.compute(aei, (k, v) -> {
-			if (v == null) {
-				v = new AntEater();
-				v.tries = new HashMap<>();
-			}
-			addFrameToAntEater(v, f);
-			return v;
-		});
-	}
-
-	private void addFrameToAntEater(AntEater ae, Frame f) {
-		int tri = f.description.get("try");
-		ae.tries.compute(tri, (k, v) -> {
-			if (v == null) {
-				v = new Try();
-				v.frames = new HashMap<>();
-			}
-			v.frames.put(f.description.get("frame"), f);
-			return v;
-		});
-	}
-
-	private void updateGeneration() {
+	private void selectGeneration() {
 		if (data == null || generationComboBox.getSelectedIndex() == -1)
 			return;
 		antEaterComboBox.removeAllItems();
 		int gen = (int) generationComboBox.getSelectedItem();
 		data.get(gen).antEaters.forEach((i, ae) -> antEaterComboBox.addItem(i));
 		antEaterComboBox.setSelectedIndex(0);
+
+		WorldRepeater world = data.get(gen).world;
+		canvas.setWorld(world);
 	}
 
-	private void updateAntEater() {
+	private void selectAntEater() {
 		if (data == null || antEaterComboBox.getSelectedIndex() == -1)
 			return;
 		int gen = (int) generationComboBox.getSelectedItem();
 		int aei = (int) antEaterComboBox.getSelectedItem();
 		tryComboBox.removeAllItems();
-		data.get(gen).antEaters.get(aei).tries.forEach((i, tri) -> tryComboBox.addItem(
-				i));
+		data.get(gen).antEaters.get(aei).tries.forEach((i, tri) -> tryComboBox.addItem(i));
 		tryComboBox.setSelectedIndex(0);
 	}
 
-	private void updateTry() {
+	private void selectTry() {
 		if (data == null || tryComboBox.getSelectedIndex() == -1)
 			return;
+		frameComboBox.removeAllItems();
+		for (int i = 0; i < 100; i++) {
+			frameComboBox.addItem(i);
+		}
 		int gen = (int) generationComboBox.getSelectedItem();
 		int aei = (int) antEaterComboBox.getSelectedItem();
 		int tri = (int) tryComboBox.getSelectedItem();
-		frameComboBox.removeAllItems();
-		data.get(gen).antEaters.get(aei).tries.get(tri).frames.forEach((i,
-				f) -> frameComboBox.addItem(i));
+		EncodedField field = data.get(gen).antEaters.get(aei).tries.get(tri);
+		WorldRepeater world = data.get(gen).world;
+		world.setField(field);
 		frameComboBox.setSelectedIndex(0);
 	}
 
-	private void updateFrame() {
+	private void selectFrame() {
 		if (data == null || frameComboBox.getSelectedIndex() == -1)
 			return;
 		int gen = (int) generationComboBox.getSelectedItem();
-		int aei = (int) antEaterComboBox.getSelectedItem();
-		int tri = (int) tryComboBox.getSelectedItem();
-		int fri = (int) frameComboBox.getSelectedItem();
-		Frame frame = data.get(gen).antEaters.get(aei).tries.get(tri).frames.get(fri);
-		canvas.setWorld(frame.world);
-	}
-
-	private void applyPresets(Map<String, Integer> readObject) {
-
+		WorldRepeater world = data.get(gen).world;
+		int frame = (int) frameComboBox.getSelectedItem();
+		world.goToStep(frame);
+		canvas.repaint();
 	}
 
 	private void enableComponents(boolean play) {

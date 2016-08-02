@@ -29,6 +29,19 @@ public class FieldCanvas extends Canvas {
 		addMouseListener(new MouseListener() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
+				if (field == null) {
+					return;
+				}
+				//Util.log("click (" + e.getX() + ":" + e.getY() + ")");
+				int i = e.getY() / sizeY;
+				int j = e.getX() / sizeX;
+				selectedIndividual = field[i][j].getIndividual();
+
+				if (selectedIndividual == null) {
+					descriptionLabel.setText("Individual description");
+				}
+
+				repaint();
 			}
 
 			@Override
@@ -45,19 +58,6 @@ public class FieldCanvas extends Canvas {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (field == null) {
-					return;
-				}
-				//Util.log("click (" + e.getX() + ":" + e.getY() + ")");
-				int i = e.getY() / sizeY;
-				int j = e.getX() / sizeX;
-				selectedIndividual = field[i][j].getIndividual();
-
-				if (selectedIndividual == null) {
-					descriptionLabel.setText("Individual description");
-				}
-
-				repaint();
 			}
 		});
 	}
@@ -197,18 +197,19 @@ public class FieldCanvas extends Canvas {
 								ind == selectedIndividual);
 					}
 					if (ind == selectedIndividual) {
-						StringBuilder sb = new StringBuilder();
+						StringBuilder sb = new StringBuilder("<html>");
 						sb.append("ate: ");
 						sb.append(ind.getEatenFoodAmount());
-						sb.append("\n");
+						sb.append("<br>");
 						Automata chr = ind.getChromosome();
 						if (chr != null) {
 							sb.append("currect state number: ");
 							sb.append(chr.getCurStateNumber());
-							sb.append("\n");
+							sb.append("<br>");
 							sb.append("states: ");
 							sb.append(chr.getStatesNumber());
 						}
+						sb.append("</html>");
 						descriptionLabel.setText(sb.toString());
 					}
 				} else if (c.getType() == Type.FOOD) {

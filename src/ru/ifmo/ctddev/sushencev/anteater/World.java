@@ -1,47 +1,40 @@
 package ru.ifmo.ctddev.sushencev.anteater;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
+import ru.ifmo.ctddev.sushencev.anteater.Automata.OutputSignal;
 import ru.ifmo.ctddev.sushencev.anteater.Cell.Type;
 import ru.ifmo.ctddev.sushencev.anteater.Individual.Position;
-import ru.ifmo.ctddev.sushencev.anteater.Automata.OutputSignal;
-import ru.ifmo.ctddev.sushencev.anteater.Util.Pair;
 
 public class World implements Serializable {
 	private static final long serialVersionUID = -1313054894531054367L;
 
-	private Cell[][] field;
+	protected transient Cell[][] field;
 
-	private int width;
-	private int height;
 	private int foodAmount;
 	private float crossingoverProbability;
 	private float mutationProbability;
-	// private int eliteSize;
 
-	private Individual antEater;
-	private transient Iterator<Individual> antEaterIterator;
-	private List<Individual> antEaters = new ArrayList<>();
-	private List<Individual> ants = new ArrayList<>();
+	protected Individual antEater;
+	protected int currentAntEater;
+	protected Individual[] antEaters;
+	protected Individual[] ants;
+	
+	private SelectionStrategy selectionStrategy;
 
 	public World(int width, int height, int foodAmount, int antsNumber,
 			int antEatersNumber, float crossingoverProbability,
-			float mutationProbability, /* int eliteSize,*/ int maxStatesInMachine,
-			Sight antSight, Sight antEaterSight) {
-		this.width = width;
-		this.height = height;
-
+			float mutationProbability, int maxStatesInMachine, Sight antSight, 
+			Sight antEaterSight, SelectionStrategy selectionStrategy) {
+		
 		this.foodAmount = foodAmount;
 		this.crossingoverProbability = crossingoverProbability;
 		this.mutationProbability = mutationProbability;
-		// this.eliteSize = eliteSize;
+		this.selectionStrategy = selectionStrategy;
 
 		field = new Cell[height][];
 		for (int i = 0; i < height; i++) {
@@ -51,56 +44,68 @@ public class World implements Serializable {
 			}
 		}
 
+		antEaters = new Individual[antEatersNumber];
 		for (int i = 0; i < antEatersNumber; i++) {
-			antEaters.add(new Individual(this, antEaterSight, maxStatesInMachine,
-					"ant-eater " + i));
+			antEaters[i] = new Individual(this, antEaterSight, maxStatesInMachine,
+					"ant-eater " + i);
 		}
 
+		ants = new Individual[antsNumber];
 		for (int i = 0; i < antsNumber; i++) {
-			ants.add(new Individual(this, antSight, maxStatesInMachine, "ant " + i));
+			ants[i] = new Individual(this, antSight, maxStatesInMachine, "ant " + i);
 		}
 
-		antEaterIterator = antEaters.iterator();
-		antEater = antEaterIterator.next();
+		onGenerationCreated();
+		
+		// see WorldRepeater's constructor
+		if (antEaters.length > 0) {
+			antEater = antEaters[currentAntEater = 0];
+		}
 
 		refreshWorld();
+	}
+	
+	protected void onGenerationCreated() {
+		
 	}
 
 	public void nextAge() {
 		createNextGeneration(ants);
 		createNextGeneration(antEaters);
 
-		// summaryFitness = new HashMap<>();
-
-		antEaterIterator = antEaters.iterator();
-		antEater = antEaterIterator.next();
+		onGenerationCreated();
+		
+		antEater = antEaters[currentAntEater = 0];
 
 		refreshWorld();
 	}
 
-	// private Map<Individual, Integer> summaryFitness = new HashMap<>();
-
 	public void nextAntEater() {
-		antEater = antEaterIterator.next();
+		antEater = antEaters[++currentAntEater];
 		refreshWorld();
 	}
 
 	public void nextTry() {
-		// ants.forEach(a -> summaryFitness.compute(a, (k, v) -> v == null ? a
-		// .getEatenFoodAmount() : v + a.getEatenFoodAmount()));
-
 		refreshWorld();
 	}
 
 	private void refreshWorld() {
+		if (field.length == 0) return;
+		
 		clearWorld();
 		generateFood(foodAmount);
-		
-		ants.forEach(a -> a.refreshAutomata());
+
+		Arrays.stream(ants).forEach(a -> a.refreshAutomata());
 		antEater.refreshAutomata();
-		
+
 		placeAnts();
 		placeAntEater();
+		
+		onWorldRefreshed();
+	}
+	
+	protected void onWorldRefreshed() {
+		
 	}
 
 	public void doStep() {
@@ -123,7 +128,7 @@ public class World implements Serializable {
 			break;
 		case FORWARD:
 			Position pos = getForwardPosition(i.getPosition());
-			Cell nc = field[pos.x][pos.y];
+			Cell nc = field[pos.y][pos.x];
 			if (i == antEater) {
 				if (nc.isOccupied()) {
 					nc.getIndividual().die();
@@ -140,80 +145,49 @@ public class World implements Serializable {
 				}
 			}
 			nc.setIndividual(i);
-			field[i.getPosition().x][i.getPosition().y].setIndividual(null);
+			field[i.getPosition().y][i.getPosition().x].setIndividual(null);
 			i.setPosition(pos);
 			break;
 		}
 	}
 
 	private Position getForwardPosition(Position pos) {
+		final int height = field.length;
+		final int width = field[0].length;
+		
 		int x = pos.x;
 		int y = pos.y;
 		int rot = pos.rot;
 
-		if (rot == 0)
-			x--;
-		if (rot == 1)
-			y++;
-		if (rot == 2)
-			x++;
-		if (rot == 3)
-			y--;
+		if (rot == 0) y--;
+		if (rot == 1) x++;
+		if (rot == 2) y++;
+		if (rot == 3) x--;
 
-		if (x >= height)
-			x -= height;
-		if (x < 0)
-			x += height;
-		if (y >= width)
-			y -= width;
-		if (y < 0)
-			y += width;
+		// torus
+		if (y >= height) y -= height;
+		if (y < 0) y += height;
+		if (x >= width) x -= width;
+		if (x < 0) x += width;
 
 		return new Position(x, y, rot);
 	}
 
-	private void createNextGeneration(List<Individual> indivs) {
-		Util.log("Creating next generation");
-		// sorting downwards
-		indivs.sort((a, b) -> Integer.compare(b.getEatenFoodAmount(), a
-				.getEatenFoodAmount()));
-		/*// elitism
-		List<Individual> elite = new ArrayList<>();
-		for (int i = 0; i < eliteSize; i++) {
-			elite.add(ants.get(i));
-		}*/
-
-		// crossingover
-		int summaryFitness = indivs.stream().collect(Collectors.summingInt(i -> i
-				.getEatenFoodAmount()));
-		for (int i = 0; i < indivs.size(); i++) {
-			Individual cur = indivs.get(i);
-			if (!Util.dice(crossingoverProbability)) {
-				continue;
-			}
-			float accFitness = (summaryFitness - cur.getEatenFoodAmount()) * Util.dice();
-			for (int j = 0; j < indivs.size(); j++) {
-				Individual match = indivs.get(j);
-				if (match == cur) {
-					continue;
-				}
-				accFitness -= match.getEatenFoodAmount();
-				if (accFitness <= 0) {
-					Pair<Individual, Individual> res = cur.cross(match);
-					indivs.set(i, res.first);
-					indivs.set(j, res.second);
-					break;
-				}
-			}
+	private void createNextGeneration(Individual[] indivs) {
+		// see WorldRepeater's constructor 
+		if (selectionStrategy == null) {
+			return;
 		}
+		indivs = selectionStrategy.doSelection(indivs, crossingoverProbability);
 
 		// mutation
-		indivs.stream().forEach(a -> {
-			if (Util.dice(mutationProbability))
+		Arrays.stream(indivs).forEach(a -> {
+			if (Util.dice(mutationProbability)) {
 				a.mutate();
+			}
 		});
 		// refresh
-		indivs.stream().forEach(a -> a.refresh());
+		Arrays.stream(indivs).forEach(a -> a.refresh());
 	}
 
 	private void clearWorld() {
@@ -225,6 +199,8 @@ public class World implements Serializable {
 
 	private void doNTimes(int n, BiFunction<Integer, Integer, Boolean> failFunction,
 			BiConsumer<Integer, Integer> action) {
+		final int height = field.length;
+		final int width = field[0].length;
 		for (int i = 0; i < n; i++) {
 			int x = Util.nextInt(width);
 			int y = Util.nextInt(height);
@@ -237,34 +213,32 @@ public class World implements Serializable {
 	}
 
 	private void generateFood(int foodAmount) {
-		doNTimes(foodAmount, (x, y) -> field[x][y].getType() == Type.FOOD, (x,
-				y) -> field[x][y].setType(Type.FOOD));
+		doNTimes(foodAmount, (x, y) -> field[y][x].getType() == Type.FOOD, (x,
+				y) -> field[y][x].setType(Type.FOOD));
 	}
 
 	private void placeAnts() {
-		if (width * height <= ants.size()) {
+		final int height = field.length;
+		final int width = field[0].length;
+		
+		if (width * height <= ants.length) {
 			throw new RuntimeException("too many ants for such small field");
 		}
-		Iterator<Individual> it = ants.iterator();
-		doNTimes(ants.size(), (x, y) -> field[x][y].isOccupied() || field[x][y]
-				.getType() == Type.FOOD || (x == width / 2 && y == height / 2), (x, y) -> {
+		Iterator<Individual> it = Arrays.asList(ants).iterator();
+		doNTimes(ants.length, (x, y) -> field[y][x].isOccupied() || field[y][x]
+				.getType() == Type.FOOD || (x == width / 2 && y == height / 2), (x,
+						y) -> {
 					Individual ant = it.next();
-					field[x][y].setIndividual(ant);
+					field[y][x].setIndividual(ant);
 					ant.setPosition(x, y, Util.nextInt(4));
 				});
 	}
 
 	private void placeAntEater() {
+		final int height = field.length;
+		final int width = field[0].length;
 		field[width / 2][height / 2].setIndividual(antEater);
 		antEater.setPosition(width / 2, height / 2, Util.nextInt(4));
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public int getHeight() {
-		return height;
 	}
 
 	public Cell[][] getField() {

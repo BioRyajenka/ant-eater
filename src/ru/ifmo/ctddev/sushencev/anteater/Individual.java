@@ -8,14 +8,16 @@ import ru.ifmo.ctddev.sushencev.anteater.Util.Pair;
 public class Individual implements Serializable {
 	private static final long serialVersionUID = -87288283039935538L;
 
-	private Position position = null;
+	private transient Position position;
 	private World habitat;
-	private transient Sight sight;
-	private transient Automata chromosome;
+	private Sight sight;
+	private Automata chromosome;
 	
 	private int ate = 0;
 	
 	private boolean dead = false;
+	
+	private String tag;
 
 	public void refresh() {
 		ate = 0;
@@ -26,7 +28,9 @@ public class Individual implements Serializable {
 		chromosome.refresh();
 	}
 	
-	private String tag;
+	public void setHabitat(World habitat) {
+		this.habitat = habitat;
+	}
 	
 	public Individual(World habitat, Sight sight, int maxStates, String tag) {
 		this(habitat, sight, new Automata(maxStates));
@@ -90,8 +94,7 @@ public class Individual implements Serializable {
 		return new Pair<Individual, Individual>(first, second);
 	}
 	
-	public static class Position implements Serializable {
-		private static final long serialVersionUID = 2386106987285149034L;
+	public static class Position {
 		public int x, y;
 		/**
 		 * 0 up

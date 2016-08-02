@@ -3,13 +3,9 @@ package ru.ifmo.ctddev.sushencev.anteater;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
 import java.util.Map;
 
 public class Logger implements AutoCloseable {
-	private Map<String, Integer> presets = new HashMap<>();
-	private Map<String, Integer> description = new HashMap<>();
-	
 	private FileOutputStream fos;
 	private ObjectOutputStream oos;
 
@@ -17,25 +13,42 @@ public class Logger implements AutoCloseable {
 		fos = new FileOutputStream(logFileName);
 		oos = new ObjectOutputStream(fos);
 	}
-	
-	public void updatePresets(String key, Integer value) {
-		presets.put(key, value);
-	}
 
-	public void updateDescription(String key, Integer value) {
-		description.put(key, value);
-	}
-
-	private boolean presetsWritten = false;
-	
-	public void saveWorldSnapshot(World world) throws IOException {
-		if (!presetsWritten) {
-			oos.writeObject(presets);
-			presetsWritten = true;
+	public void putNextGeneration(Map<String, Integer> description, Individual[] ants,
+			Individual[] antEaters) {
+		try {
+			oos.reset();
+			oos.writeObject(description);
+			oos.writeObject(ants);
+			oos.writeObject(antEaters);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
-		oos.writeObject(description);
-		oos.writeObject(world);
-		oos.reset();
+	}
+
+	public void putField(Cell[][] field, Individual[] ants,
+			Individual antEater) {
+		try {
+			// gen, ae, try
+			//oos.writeObject(description);
+
+			oos.writeObject(antEater);
+			oos.writeInt(field.length);
+			oos.writeInt(field[0].length);
+			for (int i = 0; i < field.length; i++) {
+				for (int j = 0; j < field[i].length; j++) {
+					oos.writeUnshared(field[i][j]);
+				}
+			}
+
+			oos.writeInt(ants.length);
+			for (Individual a : ants) {
+				oos.writeInt(a.getPosition().rot);
+			}
+			oos.writeInt(antEater.getPosition().rot);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
