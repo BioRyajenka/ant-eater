@@ -31,7 +31,7 @@ public class Main {
 				maxStatesInMachine, antSight, antEaterSight, logFileName,
 				selectionStrategy, false);
 
-		final int generations = 10000;
+		final int generations = 100;
 		for (int gen = 0; gen < generations; gen++) {
 			Util.log("age " + gen);
 

@@ -21,6 +21,7 @@ public class Individual implements Serializable {
 
 	public void refresh() {
 		ate = 0;
+		dead = false;
 		refreshAutomata();
 	}
 	
