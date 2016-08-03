@@ -14,7 +14,6 @@ import ru.ifmo.ctddev.sushencev.anteater.Automata;
 import ru.ifmo.ctddev.sushencev.anteater.Cell;
 import ru.ifmo.ctddev.sushencev.anteater.Cell.Type;
 import ru.ifmo.ctddev.sushencev.anteater.Individual;
-import ru.ifmo.ctddev.sushencev.anteater.Util;
 import ru.ifmo.ctddev.sushencev.anteater.World;
 
 public class FieldCanvas extends Canvas {
@@ -208,6 +207,11 @@ public class FieldCanvas extends Canvas {
 							sb.append("<br>");
 							sb.append("states: ");
 							sb.append(chr.getStatesNumber());
+							sb.append("<br>");
+						}
+						if (ind.isDead()) {
+							sb.append("<font color=\"red\">dead</font>");
+							sb.append("<br>");
 						}
 						sb.append("</html>");
 						descriptionLabel.setText(sb.toString());

@@ -29,9 +29,9 @@ public class Main {
 		WorldLogger w = new WorldLogger(width, height, foodAmount, antPopulationSize,
 				antEaterPopulationSize, crossingoverProbability, mutationProbability,
 				maxStatesInMachine, antSight, antEaterSight, logFileName,
-				selectionStrategy);
+				selectionStrategy, false);
 
-		final int generations = 1000;
+		final int generations = 10000;
 		for (int gen = 0; gen < generations; gen++) {
 			Util.log("age " + gen);
 
@@ -49,7 +49,7 @@ public class Main {
 					w.nextAntEater();
 				}
 			}
-			if (gen == generations - 10) {
+			if (gen == generations - 2) {
 				w.startLogging();
 			}
 			

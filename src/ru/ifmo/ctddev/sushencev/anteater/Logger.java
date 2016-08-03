@@ -8,6 +8,10 @@ import java.util.Map;
 public class Logger implements AutoCloseable {
 	private FileOutputStream fos;
 	private ObjectOutputStream oos;
+	
+	public final static byte GENERATION_BYTE = 0;
+	public final static byte FIELD_BYTE = 1;
+	public final static byte STATISTICS_BYTE = 2;
 
 	public Logger(String logFileName) throws IOException {
 		fos = new FileOutputStream(logFileName);
@@ -18,6 +22,9 @@ public class Logger implements AutoCloseable {
 			Individual[] antEaters) {
 		try {
 			oos.reset();
+			
+			oos.writeByte(GENERATION_BYTE);
+			
 			oos.writeObject(description);
 			oos.writeObject(ants);
 			oos.writeObject(antEaters);
@@ -31,6 +38,8 @@ public class Logger implements AutoCloseable {
 		try {
 			// gen, ae, try
 			//oos.writeObject(description);
+			
+			oos.writeByte(FIELD_BYTE);
 
 			oos.writeObject(antEater);
 			oos.writeInt(field.length);
@@ -46,6 +55,16 @@ public class Logger implements AutoCloseable {
 				oos.writeInt(a.getPosition().rot);
 			}
 			oos.writeInt(antEater.getPosition().rot);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public void putStatistics(Statistics antsStatistics) {
+		try {
+			oos.writeByte(STATISTICS_BYTE);
+			
+			oos.writeObject(antsStatistics);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

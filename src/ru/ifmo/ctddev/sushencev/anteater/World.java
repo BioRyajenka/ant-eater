@@ -68,13 +68,15 @@ public class World implements Serializable {
 	protected void onGenerationCreated() {
 		
 	}
+	
+	int gen = 0;
 
 	public void nextAge() {
-		createNextGeneration(ants);
-		createNextGeneration(antEaters);
-
-		onGenerationCreated();
+		ants = createNextGeneration(ants);
+		antEaters = createNextGeneration(antEaters);
 		
+		onGenerationCreated();
+
 		antEater = antEaters[currentAntEater = 0];
 
 		refreshWorld();
@@ -173,21 +175,23 @@ public class World implements Serializable {
 		return new Position(x, y, rot);
 	}
 
-	private void createNextGeneration(Individual[] indivs) {
+	private Individual[] createNextGeneration(Individual[] indivs) {
 		// see WorldRepeater's constructor 
 		if (selectionStrategy == null) {
-			return;
+			return indivs;
 		}
-		indivs = selectionStrategy.doSelection(indivs, crossingoverProbability);
+		Individual[] res = selectionStrategy.doSelection(indivs, crossingoverProbability);
 
 		// mutation
-		Arrays.stream(indivs).forEach(a -> {
+		Arrays.stream(res).forEach(a -> {
 			if (Util.dice(mutationProbability)) {
 				a.mutate();
 			}
 		});
 		// refresh
-		Arrays.stream(indivs).forEach(a -> a.refresh());
+		Arrays.stream(res).forEach(a -> a.refresh());
+		
+		return res;
 	}
 
 	private void clearWorld() {

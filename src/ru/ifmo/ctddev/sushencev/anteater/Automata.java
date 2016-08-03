@@ -85,7 +85,6 @@ public class Automata implements Serializable {
 
 		// number of nodes on left and on right from cp
 		int l1, r1, l2, r2;
-
 		do {
 			cp1 = Util.nextInt(this.data.length);
 			cp2 = Util.nextInt(rhs.data.length);
@@ -137,7 +136,7 @@ public class Automata implements Serializable {
 		State s = data[Util.nextInt(data.length)];
 		int gen = Util.nextInt(InputSignal.SIGNALS_NUMBER);
 		if (Util.dice(.5f)) {
-			s.nextState[gen] = Util.nextInt(InputSignal.SIGNALS_NUMBER);
+			s.nextState[gen] = Util.nextInt(data.length);
 		} else {
 			s.output[gen] = Util.nextInt(OutputSignal.values().length);
 		}

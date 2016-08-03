@@ -8,6 +8,12 @@ public class Util {
 	
 	public static Random rand = new Random();
 	
+	static {
+		long seed = rand.nextLong();
+		rand.setSeed(seed);
+		log("seed is " + seed);
+	}
+	
 	public static int nextInt(int modulo) {
 		return rand.nextInt(modulo);
 	}
