@@ -34,8 +34,7 @@ public class Individual implements Serializable {
 	}
 	
 	public Individual(World habitat, Sight sight, int maxStates, String tag) {
-		this(habitat, sight, new Automata(maxStates));
-		this.tag = tag;
+		this(habitat, sight, new Automata(maxStates), tag);
 	}
 	
 	@Override
@@ -43,10 +42,11 @@ public class Individual implements Serializable {
 		return tag;
 	}
 	
-	public Individual(World habitat, Sight sight, Automata chromosome) {
+	public Individual(World habitat, Sight sight, Automata chromosome, String tag) {
 		this.habitat = habitat;
 		this.sight = sight;
 		this.chromosome = chromosome;
+		this.tag = tag;
 	}
 	
 	public OutputSignal doStep() {
@@ -90,8 +90,8 @@ public class Individual implements Serializable {
 	
 	public Pair<Individual, Individual> cross(Individual match) {
 		Pair<Automata, Automata> res = chromosome.cross(match.chromosome);
-		Individual first = new Individual(habitat, sight, res.first);
-		Individual second = new Individual(habitat, sight, res.second);
+		Individual first = new Individual(habitat, sight, res.first, "!nuas");
+		Individual second = new Individual(habitat, sight, res.second, "!nuas");
 		return new Pair<Individual, Individual>(first, second);
 	}
 	
@@ -114,5 +114,14 @@ public class Individual implements Serializable {
 
 	public void mutate() {
 		chromosome.mutate();
+	}
+	
+	public Individual copy() {
+		Individual res = new Individual(habitat, sight, chromosome, tag);
+		return res;
+	}
+	
+	public void setTag(String tag) {
+		this.tag = tag;
 	}
 }

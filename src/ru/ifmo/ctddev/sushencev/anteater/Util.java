@@ -6,12 +6,15 @@ import java.util.Random;
 public class Util {
 	private Util() {}
 	
-	public static Random rand = new Random();
+	public static final Random rand = new Random();
+	
+	public static final long randomSeed;
 	
 	static {
-		long seed = rand.nextLong();
-		rand.setSeed(seed);
-		log("seed is " + seed);
+		randomSeed = rand.nextLong();
+		//randomSeed = -8904520990100767751l;
+		rand.setSeed(randomSeed);
+		log("seed is " + randomSeed);
 	}
 	
 	public static int nextInt(int modulo) {

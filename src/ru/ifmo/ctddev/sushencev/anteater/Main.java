@@ -11,7 +11,7 @@ public class Main {
 		float foodPercentage = .4f;
 		int antPopulationSize = 30;
 		int antEaterPopulationSize = 30;
-		float crossingoverProbability = .5f;
+		float crossingoverProbability = .3f;
 		float mutationProbability = .05f;
 		int maxStatesInMachine = 30;
 
@@ -24,14 +24,16 @@ public class Main {
 		Sight antEaterSight = new EightCellsSight(c -> c.hasIndividual());
 
 		SelectionStrategy selectionStrategy = new TwoRandomSelectionStrategy();
+		//SelectionStrategy selectionStrategy = new ProportionalSelectionStrategy();
+		selectionStrategy = new ElitisticSelectionStrategy(selectionStrategy, 5);
 
-		String logFileName = "log" + Util.nextInt(1000_000_000);
+		String logFileName = "log_" + Util.randomSeed;//nextInt(1000_000_000);
 		WorldLogger w = new WorldLogger(width, height, foodAmount, antPopulationSize,
 				antEaterPopulationSize, crossingoverProbability, mutationProbability,
 				maxStatesInMachine, antSight, antEaterSight, logFileName,
 				selectionStrategy, false);
 
-		final int generations = 100;
+		final int generations = 10000;
 		for (int gen = 0; gen < generations; gen++) {
 			Util.log("age " + gen);
 

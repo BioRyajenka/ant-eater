@@ -24,10 +24,11 @@ public class WorldRepeater extends World {
 	public void setField(EncodedField eField) {
 		EncodedField copy = (initialField = eField).clone();
 		field = copy.getField();
-		copy.updateAntsAndAntEaterPosition(ants);
+		copy.updateAntsAndAntEaterPositions(ants);
 		antEater = copy.getAntEater();
 		Arrays.stream(ants).forEach(a -> a.refresh());
 		antEater.refresh();
+		steps = 0;
 	}
 	
 	private int steps = 0;

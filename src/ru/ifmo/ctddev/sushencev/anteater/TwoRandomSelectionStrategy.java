@@ -26,9 +26,14 @@ public class TwoRandomSelectionStrategy implements SelectionStrategy {
 			if (d.getEatenFoodAmount() > c.getEatenFoodAmount()) {
 				c = d;
 			}
-			Pair<Individual, Individual> p = a.cross(c);
-			res[i] = p.first;
-			res[i + 1] = p.second;
+			if (Util.dice(crossingoverProbability)) {
+				Pair<Individual, Individual> p = a.cross(c);
+				res[i] = p.first;
+				res[i + 1] = p.second;
+			} else {
+				res[i] = a.copy();
+				res[i + 1] = b.copy();
+			}
 		}
 		return res;
 	}

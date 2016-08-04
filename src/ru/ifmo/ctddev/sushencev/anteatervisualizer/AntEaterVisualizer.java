@@ -91,7 +91,7 @@ public class AntEaterVisualizer {
 		JPanel worldTab = new JPanel();
 		tabbedPane.addTab("World", null, worldTab, null);
 
-		JLabel descriptionLabel = new JLabel("Individual description");
+		JLabel descriptionLabel = new JLabel("Description");
 
 		fieldCanvas = new FieldCanvas(descriptionLabel);
 
@@ -348,19 +348,33 @@ public class AntEaterVisualizer {
 		tabbedPane.addTab("Statistics", null, statisticsTab, null);
 		
 		statisticsCanvas = new StatisticsCanvas();
+		
+		JButton recolorStatisticsButton = new JButton("Recolor");
+		recolorStatisticsButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				statisticsCanvas.recolorStatistics();
+			}
+		});
 		GroupLayout gl_panel = new GroupLayout(statisticsTab);
 		gl_panel.setHorizontalGroup(
 			gl_panel.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_panel.createSequentialGroup()
-					.addGap(10)
-					.addComponent(statisticsCanvas, GroupLayout.PREFERRED_SIZE, 756, GroupLayout.PREFERRED_SIZE)
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(recolorStatisticsButton))
+						.addGroup(gl_panel.createSequentialGroup()
+							.addGap(10)
+							.addComponent(statisticsCanvas, GroupLayout.PREFERRED_SIZE, 756, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap(14, Short.MAX_VALUE))
 		);
 		gl_panel.setVerticalGroup(
-			gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup()
+			gl_panel.createParallelGroup(Alignment.TRAILING)
+				.addGroup(Alignment.LEADING, gl_panel.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(statisticsCanvas, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addComponent(recolorStatisticsButton)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(statisticsCanvas, GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)
 					.addContainerGap())
 		);
 		statisticsTab.setLayout(gl_panel);
@@ -454,8 +468,6 @@ public class AntEaterVisualizer {
 					Statistics antsStatistics = (Statistics) o;
 					Statistics antEatersStatistics = (Statistics) logLoader.getSmth();
 					
-					antsStatistics.getAbscisses().stream().forEach(x -> Util.log(x + " " + antsStatistics.get(x)));
-
 					statisticsCanvas.addStatistics(antsStatistics);
 					statisticsCanvas.addStatistics(antEatersStatistics);
 					

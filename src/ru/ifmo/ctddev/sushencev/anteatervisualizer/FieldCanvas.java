@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Arrays;
 
 import javax.swing.JLabel;
 
@@ -14,12 +15,12 @@ import ru.ifmo.ctddev.sushencev.anteater.Automata;
 import ru.ifmo.ctddev.sushencev.anteater.Cell;
 import ru.ifmo.ctddev.sushencev.anteater.Cell.Type;
 import ru.ifmo.ctddev.sushencev.anteater.Individual;
+import ru.ifmo.ctddev.sushencev.anteater.Util;
 import ru.ifmo.ctddev.sushencev.anteater.World;
 
 public class FieldCanvas extends Canvas {
 	private static final long serialVersionUID = 8109184974840919569L;
 
-	private Cell[][] field;
 	private JLabel descriptionLabel;
 
 	public FieldCanvas(JLabel descriptionLabel) {
@@ -28,16 +29,15 @@ public class FieldCanvas extends Canvas {
 		addMouseListener(new MouseListener() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (field == null) {
+				if (world == null) {
 					return;
 				}
-				//Util.log("click (" + e.getX() + ":" + e.getY() + ")");
 				int i = e.getY() / sizeY;
 				int j = e.getX() / sizeX;
-				selectedIndividual = field[i][j].getIndividual();
-
-				if (selectedIndividual == null) {
-					descriptionLabel.setText("Individual description");
+				if (i < world.getField().length && j < world.getField()[0].length) {
+					selectedIndividual = world.getField()[i][j].getIndividual();
+				} else {
+					selectedIndividual = null;
 				}
 
 				repaint();
@@ -66,14 +66,14 @@ public class FieldCanvas extends Canvas {
 	private int n, m;
 	private int sizeX, sizeY;
 
-	private Individual antEater;
+	private World world;
 
 	public void setWorld(World world) {
-		field = world.getField();
-		antEater = world.getCurrentAntEater();
+		Util.log("setting world " + world.hashCode());
+		this.world = world;
 
-		n = field.length;
-		m = field[0].length;
+		n = world.getField().length;
+		m = world.getField()[0].length;
 
 		sizeX = getWidth() / m;
 		sizeY = getHeight() / n;
@@ -98,15 +98,8 @@ public class FieldCanvas extends Canvas {
 		g.fillRect(j * sizeX + 1, i * sizeY + 1, sizeX - 1, sizeY - 1);
 	}
 
-	private void drawIndividual(Color color, int i, int j, int orientation, Graphics g,
-			boolean mark) {
+	private void drawIndividual(Color color, int i, int j, int orientation, Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
-
-		if (mark) {
-			g2.setStroke(new BasicStroke(2));
-			g.setColor(Color.RED);
-			g.drawRect(j * sizeX + 2, i * sizeY + 2, sizeX - 3, sizeY - 3);
-		}
 
 		g2.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 		g.setColor(color);
@@ -167,36 +160,92 @@ public class FieldCanvas extends Canvas {
 		g.drawLine(x3, y3, x2, y2);
 	}
 
-	private void drawAnt(int i, int j, int orientation, Graphics g, boolean mark) {
-		drawIndividual(Color.BLACK, i, j, orientation, g, mark);
+	private void drawDead(int i, int j, Graphics g) {
+		Graphics2D g2 = (Graphics2D) g;
+		g.setColor(Color.BLUE);
+		g2.setStroke(new BasicStroke(2));
+		
+		int x1 = sizeX / 6;
+		int y1 = sizeY / 6;
+		int x2 = sizeX - sizeX / 6;
+		int y2 = sizeY - sizeY / 6;
+		x1 += j * sizeX;
+		y1 += i * sizeY;
+		x2 += j * sizeX;
+		y2 += i * sizeY;
+		g.drawLine(x1, y1, x2, y2);
+		g.drawLine(x1, y2, x2, y1);
 	}
 
-	private void drawAntEater(int i, int j, int orientation, Graphics g, boolean mark) {
-		drawIndividual(Color.RED, i, j, orientation, g, mark);
+	private void drawAnt(int i, int j, int orientation, Graphics g) {
+		drawIndividual(Color.BLACK, i, j, orientation, g);
+	}
+
+	private void drawAntEater(int i, int j, int orientation, Graphics g) {
+		drawIndividual(Color.RED, i, j, orientation, g);
+	}
+
+	private void drawBorder(int i, int j, Graphics g, Color borderColor) {
+		((Graphics2D) g).setStroke(new BasicStroke(2));
+		g.setColor(borderColor);
+		g.drawRect(j * sizeX + 2, i * sizeY + 2, sizeX - 3, sizeY - 3);
 	}
 
 	@Override
 	public void paint(Graphics g) {
-		if (field == null) {
+		if (world == null) {
 			return;
 		}
 
 		drawGrid(g);
 
+		int maxEatenFoodAmount = Arrays.stream(world.getAnts()).max((a, b) -> Integer.compare(a
+				.getEatenFoodAmount(), b.getEatenFoodAmount())).get().getEatenFoodAmount();
+
+		int foodLeft = 0;
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < m; j++) {
-				Cell c = field[i][j];
+				Cell c = world.getField()[i][j];
+				foodLeft += c.getType() == Type.FOOD ? 1 : 0;
+			}
+		}
+
+		// description
+		StringBuilder sb = new StringBuilder("<html>");
+		sb.append("left food on field ");
+		sb.append(foodLeft);
+		sb.append("<br>");
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < m; j++) {
+				Cell c = world.getField()[i][j];
 				if (c.hasIndividual()) {
 					Individual ind = c.getIndividual();
-					if (ind == antEater) {
-						drawAntEater(i, j, ind.getPosition().rot, g,
-								ind == selectedIndividual);
-					} else {
-						drawAnt(i, j, ind.getPosition().rot, g,
-								ind == selectedIndividual);
+
+					Color borderColor = Color.WHITE;
+					if (ind != world.getCurrentAntEater() && ind
+							.getEatenFoodAmount() == maxEatenFoodAmount) {
+						borderColor = Color.YELLOW;
 					}
 					if (ind == selectedIndividual) {
-						StringBuilder sb = new StringBuilder("<html>");
+						borderColor = Color.RED;
+					}
+
+					if (borderColor != Color.WHITE) {
+						drawBorder(i, j, g, borderColor);
+					}
+
+					if (ind == world.getCurrentAntEater()) {
+						drawAntEater(i, j, ind.getPosition().rot, g);
+					} else {
+						if (ind.isDead()) {
+							drawDead(i, j, g);
+						} else {
+							drawAnt(i, j, ind.getPosition().rot, g);
+						}
+					}
+
+					if (ind == selectedIndividual) {
 						sb.append("ate: ");
 						sb.append(ind.getEatenFoodAmount());
 						sb.append("<br>");
@@ -213,13 +262,13 @@ public class FieldCanvas extends Canvas {
 							sb.append("<font color=\"red\">dead</font>");
 							sb.append("<br>");
 						}
-						sb.append("</html>");
-						descriptionLabel.setText(sb.toString());
 					}
 				} else if (c.getType() == Type.FOOD) {
 					drawFood(i, j, g);
 				}
 			}
 		}
+		sb.append("</html>");
+		descriptionLabel.setText(sb.toString());
 	}
 }

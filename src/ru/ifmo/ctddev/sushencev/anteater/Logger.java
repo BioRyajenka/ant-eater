@@ -23,6 +23,8 @@ public class Logger implements AutoCloseable {
 		try {
 			oos.reset();
 			
+			renameAnts(ants);
+			
 			oos.writeByte(GENERATION_BYTE);
 			
 			oos.writeObject(description);
@@ -38,6 +40,8 @@ public class Logger implements AutoCloseable {
 		try {
 			// gen, ae, try
 			//oos.writeObject(description);
+			
+			renameAnts(ants);
 			
 			oos.writeByte(FIELD_BYTE);
 
@@ -60,6 +64,12 @@ public class Logger implements AutoCloseable {
 		}
 	}
 	
+	private void renameAnts(Individual[] ants) {
+		for (int i = 0; i < ants.length; i++) {
+			ants[i].setTag("ant " + i);
+		}
+	}
+
 	public void putStatistics(Statistics antsStatistics) {
 		try {
 			oos.writeByte(STATISTICS_BYTE);

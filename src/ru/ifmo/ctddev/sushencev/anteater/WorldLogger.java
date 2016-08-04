@@ -73,7 +73,7 @@ public class WorldLogger extends World {
 		int antEatersRes = Arrays.stream(antEaters).collect(Collectors.summingInt(a -> a
 				.getEatenFoodAmount()));
 		
-		Util.log("age: " + (gen - 1) + ", res: " + antsRes);
+		//Util.log("age: " + (gen - 1) + ", res: " + antsRes);
 
 		antsStatistics.setPlot(gen - 1, antsRes);
 		antEatersStatistics.setPlot(gen - 1, antEatersRes);
@@ -98,7 +98,7 @@ public class WorldLogger extends World {
 		}
 
 	}
-
+	
 	@Override
 	protected void onWorldRefreshed() {
 		if (logger == null)
