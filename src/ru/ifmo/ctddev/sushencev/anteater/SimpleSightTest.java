@@ -8,7 +8,7 @@ import ru.ifmo.ctddev.sushencev.anteater.Individual.Position;
 
 import static org.junit.Assert.*;
 
-public class EightCellsSightTest {
+public class SimpleSightTest {
 	private static Cell[][] buildField(String[] s) {
 		Cell[][] res = new Cell[5][];
 		for (int i = 0; i < 5; i++) {
@@ -20,11 +20,11 @@ public class EightCellsSightTest {
 		return res;
 	}
 
-	private EightCellsSight sight;
+	private SimpleSight sight;
 
 	@Before
 	public void setUp() {
-		sight = new EightCellsSight(c -> c.getType() == Type.FOOD);
+		sight = new SimpleSight(c -> c.getType() == Type.FOOD, 2);
 	}
 
 	public void test(String[] test, int rot, int expected) {

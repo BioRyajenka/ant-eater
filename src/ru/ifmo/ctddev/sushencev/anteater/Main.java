@@ -10,24 +10,24 @@ public class Main {
 		int height = 25;
 		float foodPercentage = .2f;
 		int antPopulationSize = 12;
-		int antEaterPopulationSize = 10;
-		float crossingoverProbability = 0f;
-		float mutationProbability = .15f;
+		int antEaterPopulationSize = 40;
+		float crossingoverProbability = .5f;
+		float mutationProbability = .2f;
 		int maxStatesInMachine = 5;
 
 		int steps = 100;
 		int tries = 10;
 
-		Sight antSight = new EightCellsSight(c -> c.getType() == Type.FOOD);
-		Sight antEaterSight = new EightCellsSight(c -> c.hasIndividual());
+		Sight antSight = new SimpleSight(c -> c.getType() == Type.FOOD, 1);
+		Sight antEaterSight = new SimpleSight(c -> c.hasIndividual(), 1);
 
-		// SelectionStrategy selectionStrategy = new TwoRandomSelectionStrategy(
-		// crossingoverProbability, mutationProbability);
-		SelectionStrategy selectionStrategy = new ProportionalSelectionStrategy(
-				crossingoverProbability, mutationProbability);
+		SelectionStrategy selectionStrategy = new TwoRandomSelectionStrategy(
+		 crossingoverProbability, mutationProbability);
+		//SelectionStrategy selectionStrategy = new ProportionalSelectionStrategy(
+		//		crossingoverProbability, mutationProbability);
 		selectionStrategy = new ElitisticSelectionStrategy(selectionStrategy, 3);
 
-		WorldGenerator worldGenerator = new ArenaWorldGenerator(width, height, foodPercentage);
+		WorldGenerator worldGenerator = new RandomWorldGenerator(width, height, foodPercentage);
 
 		String logFileName = "log_" + Util.randomSeed;// nextInt(1000_000_000);
 		WorldLogger w = new WorldLogger(antPopulationSize, antEaterPopulationSize,

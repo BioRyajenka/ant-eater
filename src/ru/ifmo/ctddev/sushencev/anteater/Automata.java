@@ -11,7 +11,7 @@ public class Automata implements Serializable {
 	private static final long serialVersionUID = -9202081597965540637L;
 
 	public static class InputSignal {
-		private static final int SIGNALS_NUMBER = 256;
+		private static final int SIGNALS_NUMBER = 8;
 
 		private int mask;
 
@@ -25,7 +25,7 @@ public class Automata implements Serializable {
 	}
 
 	public enum OutputSignal {
-		LEFT, RIGHT, FORWARD;
+		LEFT, RIGHT, FORWARD, NOTHING;
 	}
 
 	private transient int maxStates;

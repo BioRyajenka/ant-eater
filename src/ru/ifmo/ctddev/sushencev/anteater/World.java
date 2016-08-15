@@ -93,11 +93,13 @@ public class World implements Serializable {
 			}
 		}
 
-		// processOutputSignal(antEater, antEater.doStep());
+		//processOutputSignal(antEater, antEater.doStep());
 	}
 
 	private void processOutputSignal(Individual i, OutputSignal out) {
 		switch (out) {
+		case NOTHING:
+			break;
 		case LEFT:
 			i.getPosition().rot = (i.getPosition().rot + 3) % 4;
 			break;
@@ -137,38 +139,16 @@ public class World implements Serializable {
 		int y = pos.y;
 		int rot = pos.rot;
 
-		if (rot == 0)
-			y--;
-		if (rot == 1)
-			x++;
-		if (rot == 2)
-			y++;
-		if (rot == 3)
-			x--;
+		if (rot == 0) y--;
+		if (rot == 1) x++;
+		if (rot == 2) y++;
+		if (rot == 3) x--;
 
 		// torus
-		if (y >= height)
-			y -= height;
-		if (y < 0)
-			y += height;
-		if (x >= width)
-			x -= width;
-		if (x < 0)
-			x += width;
-
-		// consider world special properties
-		if ((x == 4 || x == 20) && y != 4 && y != 20) {
-			x += x == 4 ? 15 : -15;
-		}
-		if ((y == 4 || y == 20) && x != 4 && x != 20) {
-			y += y == 4 ? 15 : -15;
-		}
-		if ((x == 4 || x == 20) && (y == 4 || y == 20) && pos.x == x) {
-			x += (x == 4 ? 15 : -15);
-		}
-		if ((x == 4 || x == 20) && (y == 4 || y == 20) && pos.y == y) {
-			y += (y == 4 ? 15 : -15);
-		}
+		if (y >= height) y -= height;
+		if (y < 0) y += height;
+		if (x >= width) x -= width;
+		if (x < 0) x += width;
 
 		return new Position(x, y, rot);
 	}

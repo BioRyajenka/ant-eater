@@ -18,13 +18,7 @@ public class ArenaWorldGenerator implements WorldGenerator {
 	
 	@Override
 	public Cell[][] generateWorld(Individual[] ants, Individual antEater) {
-		Cell[][] field = new Cell[height][];
-		for (int i = 0; i < height; i++) {
-			field[i] = new Cell[width];
-			for (int j = 0; j < width; j++) {
-				field[i][j] = new Cell(Type.NOTHING);
-			}
-		}
+		Cell[][] field = createEmptyField(width, height);
 		
 		int rank = field.length / 5;
 		if (field.length != 5 * rank) {
