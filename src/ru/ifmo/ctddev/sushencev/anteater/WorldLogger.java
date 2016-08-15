@@ -11,15 +11,14 @@ public class WorldLogger extends World {
 
 	private transient Logger logger;
 
-	public WorldLogger(int width, int height, int foodAmount, int antsNumber,
-			int antEatersNumber, float crossingoverProbability, float mutationProbability,
-			int maxStatesInMachine, Sight antSight, Sight antEaterSight, String logFileName,
-			SelectionStrategy selectionStrategy, boolean logging) throws IOException {
-		super(width, height, foodAmount, antsNumber, antEatersNumber, crossingoverProbability,
-				mutationProbability, maxStatesInMachine, antSight, antEaterSight,
-				selectionStrategy);
+	public WorldLogger(int antsNumber, int antEatersNumber, int maxStatesInMachine,
+			Sight antSight, Sight antEaterSight, SelectionStrategy selectionStrategy,
+			WorldGenerator worldGenerator, String logFileName, boolean logging)
+			throws IOException {
+		super(antsNumber, antEatersNumber, maxStatesInMachine, antSight, antEaterSight,
+				selectionStrategy, worldGenerator);
 		logger = new Logger(logFileName);
-		
+
 		this.logging = logging;
 
 		onGenerationCreated();
@@ -62,6 +61,10 @@ public class WorldLogger extends World {
 		logging = true;
 	}
 
+	public boolean isLogging() {
+		return logging;
+	}
+
 	private boolean logging = false;
 
 	private Statistics antsStatistics = new Statistics("ants");
@@ -72,17 +75,17 @@ public class WorldLogger extends World {
 				.getEatenFoodAmount()));
 		int antEatersRes = Arrays.stream(antEaters).collect(Collectors.summingInt(a -> a
 				.getEatenFoodAmount()));
-		
-		//Util.log("age: " + (gen - 1) + ", res: " + antsRes);
+
+		// Util.log("age: " + (gen - 1) + ", res: " + antsRes);
 
 		antsStatistics.setPlot(gen - 1, antsRes);
 		antEatersStatistics.setPlot(gen - 1, antEatersRes);
 	}
-	
+
 	@Override
 	public void nextAge() {
 		collectStatistics();
-		
+
 		super.nextAge();
 	}
 
@@ -98,7 +101,7 @@ public class WorldLogger extends World {
 		}
 
 	}
-	
+
 	@Override
 	protected void onWorldRefreshed() {
 		if (logger == null)

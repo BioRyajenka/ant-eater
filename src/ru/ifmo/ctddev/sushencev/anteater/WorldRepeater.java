@@ -7,7 +7,7 @@ public class WorldRepeater extends World {
 	private static final long serialVersionUID = 2111390727759634411L;
 	
 	public WorldRepeater(Individual[] ants, Individual[] antEaters) throws IOException {
-		super(0, 0, 0, 0, 0, 0, 0, 0, null, null, null);
+		super(0, 0, 0, null, null, null, null);
 		this.ants = ants;
 		this.antEaters = antEaters;
 		

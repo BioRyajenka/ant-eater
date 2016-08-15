@@ -53,7 +53,7 @@ public class Individual implements Serializable {
 		if (dead) {
 			throw new RuntimeException("dead stay dumb");
 		}
-		return chromosome.doStep(sight.check(habitat, position));
+		return chromosome.doStep(sight.check(habitat.field, position));
 	}
 	
 	public void incEatenFoodAmount() {

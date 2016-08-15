@@ -1,7 +1,6 @@
 package ru.ifmo.ctddev.sushencev.anteater;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,11 +20,6 @@ public class Automata implements Serializable {
 		}
 
 		public int getMask() {
-			return mask;
-		}
-
-		@Override
-		public int hashCode() {
 			return mask;
 		}
 	}
@@ -102,11 +96,11 @@ public class Automata implements Serializable {
 
 		redirectLinks(p1s1, 0, 0, l1, l1 + r2);
 		redirectLinks(p2s2, l1, l2, l2 + r2, l1 + r2);
-		p1s1.addAll(new ArrayList<>(p2s2));
+		p1s1.addAll(p2s2);
 
 		redirectLinks(p2s1, 0, 0, l2, l2 + r1);
 		redirectLinks(p1s2, l2, l1, l1 + r1, l2 + r1);
-		p2s1.addAll(new ArrayList<>(p1s2));
+		p2s1.addAll(p1s2);
 
 		return new Pair<>(new Automata(maxStates, p1s1.toArray(new State[p1s1.size()])), 
 						new Automata(maxStates, p2s1.toArray(new State[p2s1.size()])));

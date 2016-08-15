@@ -458,7 +458,7 @@ public class AntEaterVisualizer {
 							p.second.second)));
 
 					Map<Integer, AntEater> aes = data.get(gen).antEaters;
-					for (int aei = 0; aei < 30; aei++) {
+					for (int aei = 0; aei < 10; aei++) {
 						aes.putIfAbsent(aei, new AntEater());
 						for (int tri = 0; tri < 10; tri++) {
 							aes.get(aei).tries.put(tri, (EncodedField) logLoader.getSmth());

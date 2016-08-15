@@ -14,7 +14,7 @@ public class EightCellsSight implements Sight {
 	}
 
 	@Override
-	public InputSignal check(World world, Position position) {
+	public InputSignal check(Cell[][] field, Position position) {
 		int rot = position.rot;
 		int x = position.x;
 		int y = position.y;
@@ -35,7 +35,7 @@ public class EightCellsSight implements Sight {
 				for (int dx = rot == 0 ? -2 : 2; rot == 0 ? dx <= 2
 						: dx >= -2; dx += rot == 0 ? 1 : -1) {
 					if (Util.mdist(0, 0, dx, dy) <= 2 && (dx != 0 || dy != 0)) {
-						mask = processCell(x, y, dx, dy, world, i++, mask);
+						mask = processCell(x, y, dx, dy, field, i++, mask);
 					}
 				}
 			}
@@ -46,7 +46,7 @@ public class EightCellsSight implements Sight {
 				for (int dy = rot == 1 ? -2 : 2; rot == 1 ? dy <= 2
 						: dy >= -2; dy += rot == 1 ? 1 : -1) {
 					if (Util.mdist(0, 0, dx, dy) <= 2 && (dx != 0 || dy != 0)) {
-						mask = processCell(x, y, dx, dy, world, i++, mask);
+						mask = processCell(x, y, dx, dy, field, i++, mask);
 					}
 				}
 			}
@@ -55,12 +55,12 @@ public class EightCellsSight implements Sight {
 		return new InputSignal(mask);
 	}
 
-	int processCell(int x, int y, int dx, int dy, World world, int i, int mask) {
+	int processCell(int x, int y, int dx, int dy, Cell[][] field, int i, int mask) {
 		int nx = x + dx;
 		int ny = y + dy;
 
-		int height = world.field.length;
-		int width = world.field[0].length;
+		int height = field.length;
+		int width = field[0].length;
 
 		// torus
 		if (nx >= width) nx -= width;
@@ -68,6 +68,6 @@ public class EightCellsSight implements Sight {
 		if (ny >= height) ny -= height;
 		if (ny < 0) ny += height;
 
-		return isFoodFunction.test(world.getField()[ny][nx]) ? (mask | (1 << i)) : mask;
+		return isFoodFunction.test(field[ny][nx]) ? (mask | (1 << i)) : mask;
 	}
 }

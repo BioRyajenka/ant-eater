@@ -2,14 +2,15 @@ package ru.ifmo.ctddev.sushencev.anteater;
 
 import ru.ifmo.ctddev.sushencev.anteater.Util.Pair;
 
-public class TwoRandomSelectionStrategy implements SelectionStrategy {
+public class TwoRandomSelectionStrategy extends SelectionStrategy {
 	private static final long serialVersionUID = -8925764351760559352L;
 
-	public TwoRandomSelectionStrategy() {
+	public TwoRandomSelectionStrategy(float crossingoverProbability, float mutationProbability) {
+		super(crossingoverProbability, mutationProbability);
 	}
 	
 	@Override
-	public Individual[] doSelection(Individual[] indivs, float crossingoverProbability) {
+	public Individual[] doSelection(Individual[] indivs) {
 		Individual[] res = new Individual[indivs.length];
 		for (int i = 0; i < indivs.length; i += 2) {
 			Individual a = indivs[Util.nextInt(indivs.length)];
