@@ -7,15 +7,15 @@ import ru.ifmo.ctddev.sushencev.anteater.Util.Pair;
 
 public class ProportionalSelectionStrategy extends SelectionStrategy {
 	private static final long serialVersionUID = -3961266162926994876L;
-	
-	public ProportionalSelectionStrategy(float crossingoverProbability, float mutationProbability) {
+
+	public ProportionalSelectionStrategy(float crossingoverProbability,
+			float mutationProbability) {
 		super(crossingoverProbability, mutationProbability);
 	}
 
 	@Override
 	public Individual[] doSelection(Individual[] indivs) {
-		Arrays.sort(indivs, (a, b) -> Integer.compare(b.getEatenFoodAmount(), a
-				.getEatenFoodAmount()));
+		Arrays.sort(indivs, (a, b) -> Float.compare(b.getFitness(), a.getFitness()));
 		Individual[] res = new Individual[indivs.length];
 		for (int i = 0; i < indivs.length; i += 2) {
 			Individual a = getRandom(indivs);
@@ -37,10 +37,11 @@ public class ProportionalSelectionStrategy extends SelectionStrategy {
 	}
 
 	private Individual getRandom(Individual[] indivs) {
-		int sum = Arrays.stream(indivs).collect(Collectors.summingInt(i -> i.getEatenFoodAmount()));
+		float sum = (float) Arrays.stream(indivs).collect(Collectors.summingDouble(i -> i
+				.getFitness())).doubleValue();
 		int k = (int) (sum * Util.dice());
 		for (Individual i : indivs) {
-			k -= i.getEatenFoodAmount();
+			k -= i.getFitness();
 			if (k <= 0) {
 				return i;
 			}

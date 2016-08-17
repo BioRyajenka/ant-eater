@@ -18,9 +18,9 @@ public abstract class SelectionStrategy implements Serializable {
 
 	public void doMutation(Individual[] indivs) {
 		Arrays.stream(indivs).forEach(a -> {
-			if (Util.dice(mutationProbability)) {
-				a.mutate();
-			}
+			//if (Util.dice(mutationProbability)) {
+				a.mutate(mutationProbability);
+			//}
 		});
 	}
 

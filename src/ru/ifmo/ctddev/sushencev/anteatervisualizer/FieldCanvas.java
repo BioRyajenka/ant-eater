@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Arrays;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 
 import ru.ifmo.ctddev.sushencev.anteater.Automata;
@@ -22,9 +23,11 @@ public class FieldCanvas extends Canvas {
 	private static final long serialVersionUID = 8109184974840919569L;
 
 	private JLabel descriptionLabel;
+	private JButton viewAutomataButton;
 
-	public FieldCanvas(JLabel descriptionLabel) {
+	public FieldCanvas(JLabel descriptionLabel, JButton viewAutomataButton) {
 		this.descriptionLabel = descriptionLabel;
+		this.viewAutomataButton = viewAutomataButton;
 
 		addMouseListener(new MouseListener() {
 			@Override
@@ -199,8 +202,8 @@ public class FieldCanvas extends Canvas {
 
 		drawGrid(g);
 
-		int maxEatenFoodAmount = Arrays.stream(world.getAnts()).max((a, b) -> Integer.compare(a
-				.getEatenFoodAmount(), b.getEatenFoodAmount())).get().getEatenFoodAmount();
+		float maxFitness = Arrays.stream(world.getAnts()).max((a, b) -> Float.compare(a
+				.getFitness(), b.getFitness())).get().getFitness();
 
 		int foodLeft = 0;
 		for (int i = 0; i < n; i++) {
@@ -223,8 +226,7 @@ public class FieldCanvas extends Canvas {
 					Individual ind = c.getIndividual();
 
 					Color borderColor = Color.WHITE;
-					if (ind != world.getCurrentAntEater() && ind
-							.getEatenFoodAmount() == maxEatenFoodAmount) {
+					if (ind != world.getCurrentAntEater() && ind.getFitness() == maxFitness) {
 						borderColor = Color.YELLOW;
 					}
 					if (ind == selectedIndividual) {
@@ -247,7 +249,7 @@ public class FieldCanvas extends Canvas {
 
 					if (ind == selectedIndividual) {
 						sb.append("ate: ");
-						sb.append(ind.getEatenFoodAmount());
+						sb.append(ind.getFitness());
 						sb.append("<br>");
 						Automata chr = ind.getChromosome();
 						if (chr != null) {
@@ -270,5 +272,10 @@ public class FieldCanvas extends Canvas {
 		}
 		sb.append("</html>");
 		descriptionLabel.setText(sb.toString());
+		viewAutomataButton.setEnabled(selectedIndividual != null);
+	}
+
+	public Automata getSelectedAutomata() {
+		return selectedIndividual.getChromosome();
 	}
 }

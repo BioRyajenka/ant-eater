@@ -9,10 +9,10 @@ public class Main {
 		int width = 25;
 		int height = 25;
 		float foodPercentage = .2f;
-		int antPopulationSize = 12;
-		int antEaterPopulationSize = 40;
-		float crossingoverProbability = .5f;
-		float mutationProbability = .2f;
+		int antPopulationSize = 30;
+		int antEaterPopulationSize = 10;
+		float crossingoverProbability = .3f;
+		float mutationProbability = .3f;
 		int maxStatesInMachine = 5;
 
 		int steps = 100;
@@ -22,7 +22,7 @@ public class Main {
 		Sight antEaterSight = new SimpleSight(c -> c.hasIndividual(), 1);
 
 		SelectionStrategy selectionStrategy = new TwoRandomSelectionStrategy(
-		 crossingoverProbability, mutationProbability);
+				crossingoverProbability, mutationProbability);
 		//SelectionStrategy selectionStrategy = new ProportionalSelectionStrategy(
 		//		crossingoverProbability, mutationProbability);
 		selectionStrategy = new ElitisticSelectionStrategy(selectionStrategy, 3);

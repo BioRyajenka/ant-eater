@@ -29,7 +29,7 @@ public class Automata implements Serializable {
 	}
 
 	private transient int maxStates;
-	private State[] data;
+	public State[] data;
 	private State curState;
 
 	public Automata(int maxStates) {
@@ -69,8 +69,8 @@ public class Automata implements Serializable {
 	}
 
 	private List<State> copySubArrayToList(State[] data, int from, int to) {
-		return Arrays.stream(Arrays.copyOfRange(data, from, to)).map(s -> s.copy())
-				.collect(Collectors.toList());
+		return Arrays.stream(Arrays.copyOfRange(data, from, to)).map(s -> s.copy()).collect(
+				Collectors.toList());
 	}
 
 	public Pair<Automata, Automata> cross(Automata rhs) {
@@ -102,8 +102,8 @@ public class Automata implements Serializable {
 		redirectLinks(p1s2, l2, l1, l1 + r1, l2 + r1);
 		p2s1.addAll(p1s2);
 
-		return new Pair<>(new Automata(maxStates, p1s1.toArray(new State[p1s1.size()])), 
-						new Automata(maxStates, p2s1.toArray(new State[p2s1.size()])));
+		return new Pair<>(new Automata(maxStates, p1s1.toArray(new State[p1s1.size()])),
+				new Automata(maxStates, p2s1.toArray(new State[p2s1.size()])));
 	}
 
 	/**
@@ -126,20 +126,23 @@ public class Automata implements Serializable {
 		}
 	}
 
-	public void mutate() {
+	public void mutate(float probability) {
 		State s = data[Util.nextInt(data.length)];
-		int gen = Util.nextInt(InputSignal.SIGNALS_NUMBER);
-		if (Util.dice(.5f)) {
-			s.nextState[gen] = Util.nextInt(data.length);
-		} else {
-			s.output[gen] = Util.nextInt(OutputSignal.values().length);
+		// int gen = Util.nextInt(InputSignal.SIGNALS_NUMBER);
+		for (int gen = 0; gen < s.nextState.length; gen++) {
+			if (!Util.dice(probability)) continue;
+			if (Util.dice(.5f)) {
+				s.nextState[gen] = Util.nextInt(data.length);
+			} else {
+				s.output[gen] = Util.nextInt(OutputSignal.values().length);
+			}
 		}
 	}
 
-	private static class State implements Serializable {
+	public static class State implements Serializable {
 		private static final long serialVersionUID = -8396697025935926778L;
-		int[] nextState = new int[InputSignal.SIGNALS_NUMBER];
-		int[] output = new int[InputSignal.SIGNALS_NUMBER];
+		public int[] nextState = new int[InputSignal.SIGNALS_NUMBER];
+		public int[] output = new int[InputSignal.SIGNALS_NUMBER];
 
 		public State copy() {
 			State res = new State();
@@ -147,15 +150,48 @@ public class Automata implements Serializable {
 			res.output = Arrays.copyOf(output, output.length);
 			return res;
 		}
-	}
 
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + Arrays.hashCode(nextState);
+			result = prime * result + Arrays.hashCode(output);
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			State other = (State) obj;
+			if (!Arrays.equals(nextState, other.nextState))
+				return false;
+			if (!Arrays.equals(output, other.output))
+				return false;
+			return true;
+		}
+	}
+	
 	public int getCurStateNumber() {
+		return getStateNumber(curState);
+	}
+	
+	public int getStateNumber(State s) {
 		for (int i = 0; i < data.length; i++) {
-			if (data[i] == curState) {
+			if (data[i] == s) {
 				return i;
 			}
 		}
 		return -1;
+	}
+
+	public State[] getData() {
+		return data;
 	}
 
 	public int getStatesNumber() {

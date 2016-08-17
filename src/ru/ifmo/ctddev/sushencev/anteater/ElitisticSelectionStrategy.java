@@ -16,8 +16,7 @@ public class ElitisticSelectionStrategy extends SelectionStrategy {
 
 	@Override
 	public Individual[] doSelection(Individual[] indivs) {
-		Arrays.sort(indivs, (a, b) -> Integer.compare(b.getEatenFoodAmount(), a
-				.getEatenFoodAmount()));
+		Arrays.sort(indivs, (a, b) -> Float.compare(b.getFitness(), a.getFitness()));
 		Individual[] elite = Arrays.copyOf(indivs, eliteSize);
 		Individual[] res = secondary.doSelection(indivs);
 		for (int i = 0; i < eliteSize; i++) {
@@ -29,9 +28,9 @@ public class ElitisticSelectionStrategy extends SelectionStrategy {
 	@Override
 	public void doMutation(Individual[] indivs) {
 		for (int i = eliteSize; i < indivs.length; i++) {
-			if (Util.dice(secondary.mutationProbability)) {
-				indivs[i].mutate();
-			}
+			//if (Util.dice(secondary.mutationProbability)) {
+				indivs[i].mutate(secondary.mutationProbability);
+			//}
 		}
 	}
 }

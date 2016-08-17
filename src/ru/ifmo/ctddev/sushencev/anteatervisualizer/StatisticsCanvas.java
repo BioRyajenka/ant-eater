@@ -63,6 +63,7 @@ public class StatisticsCanvas extends Canvas {
 				.get());
 		maxY = Math.max(maxY, statistics.getAbscisses().stream().map(x -> statistics.get(x))
 				.max(Integer::compareTo).get());
+		Util.log("maxY: " + maxY);
 	}
 
 	public void clear() {
@@ -149,7 +150,7 @@ public class StatisticsCanvas extends Canvas {
 
 		for (int y = delta; y < maxY; y += delta) {
 			String str = y + "";
-			Util.log("drawing string " + str);
+			//Util.log("drawing string " + str);
 			g.drawString(str, x, scaleY(y));
 		}
 
@@ -164,6 +165,7 @@ public class StatisticsCanvas extends Canvas {
 
 	@Override
 	public void paint(Graphics g) {
+		Util.log("paint method. data: " + data.size());
 		drawGrid(g);
 		drawLegend(g);
 		drawCoordinateNames(g);

@@ -71,10 +71,10 @@ public class WorldLogger extends World {
 	private Statistics antEatersStatistics = new Statistics("ant-eaters");
 
 	private void collectStatistics() {
-		int antsRes = Arrays.stream(ants).collect(Collectors.summingInt(a -> a
-				.getEatenFoodAmount()));
-		int antEatersRes = Arrays.stream(antEaters).collect(Collectors.summingInt(a -> a
-				.getEatenFoodAmount()));
+		int antsRes = Arrays.stream(ants).collect(Collectors.summingDouble(a -> a
+				.getFitness())).intValue();
+		int antEatersRes = Arrays.stream(antEaters).collect(Collectors.summingDouble(a -> a
+				.getFitness())).intValue();
 
 		// Util.log("age: " + (gen - 1) + ", res: " + antsRes);
 
@@ -84,7 +84,9 @@ public class WorldLogger extends World {
 
 	@Override
 	public void nextAge() {
-		collectStatistics();
+		//if (gen % 10 == 0) {
+			collectStatistics();			
+		//}
 
 		super.nextAge();
 	}

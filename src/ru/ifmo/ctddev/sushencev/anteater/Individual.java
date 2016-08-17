@@ -14,13 +14,14 @@ public class Individual implements Serializable {
 	private Automata chromosome;
 	
 	private int ate = 0;
+	private int distanceCovered = 0;
 	
 	private boolean dead = false;
 	
 	private String tag;
 
 	public void refresh() {
-		ate = 0;
+		ate = distanceCovered = 0;
 		dead = false;
 		refreshAutomata();
 	}
@@ -53,15 +54,19 @@ public class Individual implements Serializable {
 		if (dead) {
 			throw new RuntimeException("dead stay dumb");
 		}
-		return chromosome.doStep(sight.check(habitat.field, position));
+		OutputSignal res = chromosome.doStep(sight.check(habitat.field, position));
+		if (res == OutputSignal.FORWARD) {
+			distanceCovered++;
+		}
+		return res;
 	}
 	
 	public void incEatenFoodAmount() {
 		ate++;
 	}
 	
-	public int getEatenFoodAmount() {
-		return ate;
+	public float getFitness() {
+		return 2 * ate + distanceCovered;
 	}
 	
 	public void setPosition(int x, int y, int rot) {
@@ -112,8 +117,8 @@ public class Individual implements Serializable {
 		}
 	}
 
-	public void mutate() {
-		chromosome.mutate();
+	public void mutate(float probability) {
+		chromosome.mutate(probability);
 	}
 	
 	public Individual copy() {
