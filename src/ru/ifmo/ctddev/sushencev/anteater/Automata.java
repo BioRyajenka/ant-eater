@@ -11,7 +11,7 @@ public class Automata implements Serializable {
 	private static final long serialVersionUID = -9202081597965540637L;
 
 	public static class InputSignal {
-		private static final int SIGNALS_NUMBER = 8;
+		public static final int SIGNALS_NUMBER = 8;
 
 		private int mask;
 
@@ -127,14 +127,11 @@ public class Automata implements Serializable {
 	}
 
 	public void mutate(float probability) {
-		State s = data[Util.nextInt(data.length)];
-		// int gen = Util.nextInt(InputSignal.SIGNALS_NUMBER);
-		for (int gen = 0; gen < s.nextState.length; gen++) {
+		for (State s : data) {
 			if (!Util.dice(probability)) continue;
-			if (Util.dice(.5f)) {
-				s.nextState[gen] = Util.nextInt(data.length);
-			} else {
-				s.output[gen] = Util.nextInt(OutputSignal.values().length);
+			for (int i = 0; i < s.nextState.length; i++) {
+				s.nextState[i] = Util.nextInt(data.length);
+				s.output[i] = Util.nextInt(OutputSignal.values().length);
 			}
 		}
 	}
@@ -176,11 +173,11 @@ public class Automata implements Serializable {
 			return true;
 		}
 	}
-	
+
 	public int getCurStateNumber() {
 		return getStateNumber(curState);
 	}
-	
+
 	public int getStateNumber(State s) {
 		for (int i = 0; i < data.length; i++) {
 			if (data[i] == s) {

@@ -44,9 +44,11 @@ import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.GraphMouseListener;
+import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 import ru.ifmo.ctddev.sushencev.anteater.Automata;
+import ru.ifmo.ctddev.sushencev.anteater.Automata.InputSignal;
 import ru.ifmo.ctddev.sushencev.anteater.Automata.OutputSignal;
 import ru.ifmo.ctddev.sushencev.anteater.Automata.State;
 import ru.ifmo.ctddev.sushencev.anteater.EncodedField;
@@ -505,7 +507,6 @@ public class AntEaterVisualizer {
 		return res;
 	}
 
-	@SuppressWarnings("unchecked")
 	private void showAutomataFrame(Automata automata) {
 		Graph<State, MyEdge> g = automataToGraph(automata, 0);
 		final State currentState = automata.getData()[automata.getCurStateNumber()];
@@ -523,43 +524,46 @@ public class AntEaterVisualizer {
 
 		final DefaultModalGraphMouse<Integer, Number> graphMouse = new DefaultModalGraphMouse<Integer, Number>();
 		vv.setGraphMouse(graphMouse);
-		//reset();
+		graphMouse.setMode(ModalGraphMouse.Mode.PICKING);
+		//relax();
 
 		vv.addGraphMouseListener(new GraphMouseListener<State>() {
 			@Override
 			public void graphClicked(State v, MouseEvent me) {
-				Util.log("clicked " + v);
 			}
 
 			@Override
 			public void graphPressed(State v, MouseEvent me) {
-				Util.log("pressed " + v);
 			}
 
 			@Override
 			public void graphReleased(State v, MouseEvent me) {
-				Util.log("released " + v);
 			}
 		});
 
-		JComboBox<?> modeBox = graphMouse.getModeComboBox();
-		modeBox.addItemListener(((DefaultModalGraphMouse<State, String>) vv.getGraphMouse())
-				.getModeListener());
-		modeBox.setSelectedIndex(1);
+		JComboBox<Integer> inputSignalComboBox = new JComboBox<>();
+		for (int i = 0; i < InputSignal.SIGNALS_NUMBER; i++) {
+			inputSignalComboBox.addItem(i);
+		}
+		inputSignalComboBox.addActionListener(e -> {
+			int input = (int) inputSignalComboBox.getSelectedItem();
+			vv.setGraphLayout(new KKLayout<>(automataToGraph(automata, input)));
+			//relax();
+		});
 
-		JButton reset = new JButton("reset");
-		reset.addActionListener(new ActionListener() {
+		JButton relaxButton = new JButton("relax");
+		relaxButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//reset();
+				//relax();
 			}
 		});
 
-		JPanel bottomControls = new JPanel();
-		JPanel control_panel = new JPanel(new GridLayout(2, 1));
-		control_panel.add(bottomControls);
-		jf.add(control_panel, BorderLayout.NORTH);
-		bottomControls.add(modeBox);
-		bottomControls.add(reset);
+		JPanel controls = new JPanel();
+		JPanel controlPanel = new JPanel(new GridLayout(2, 1));
+		controlPanel.add(controls);
+		jf.add(controlPanel, BorderLayout.NORTH);
+		controls.add(inputSignalComboBox);
+		controls.add(relaxButton);
 
 		jf.getContentPane().add(vv);
 		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
