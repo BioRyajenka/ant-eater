@@ -20,21 +20,20 @@ public class World implements Serializable {
 	private transient SelectionStrategy selectionStrategy;
 	private transient WorldGenerator worldGenerator;
 
-	public World(int antsNumber, int antEatersNumber, int maxStatesInMachine,
-			Sight antSight, Sight antEaterSight, SelectionStrategy selectionStrategy,
+	public World(int antsNumber, int antEatersNumber, int maxStatesInMachine, Sight antSight,
+			Sight antEaterSight, SelectionStrategy selectionStrategy,
 			WorldGenerator worldGenerator) {
 		this.selectionStrategy = selectionStrategy;
 		this.worldGenerator = worldGenerator;
 
 		antEaters = new Individual[antEatersNumber];
 		for (int i = 0; i < antEatersNumber; i++) {
-			antEaters[i] = new Individual(this, antEaterSight, maxStatesInMachine, "ant-eater "
-					+ i);
+			antEaters[i] = new Individual(this, antEaterSight, maxStatesInMachine, i);
 		}
 
 		ants = new Individual[antsNumber];
 		for (int i = 0; i < antsNumber; i++) {
-			ants[i] = new Individual(this, antSight, maxStatesInMachine, "ant " + i);
+			ants[i] = new Individual(this, antSight, maxStatesInMachine, i);
 		}
 
 		onGenerationCreated();
@@ -72,11 +71,12 @@ public class World implements Serializable {
 	}
 
 	private void refreshWorld() {
-		if (worldGenerator == null) return;
+		if (worldGenerator == null)
+			return;
 
 		Arrays.stream(ants).forEach(a -> a.refreshAutomata());
 		antEater.refreshAutomata();
-		
+
 		field = worldGenerator.generateWorld(ants, antEater);
 
 		onWorldRefreshed();
@@ -92,8 +92,16 @@ public class World implements Serializable {
 				processOutputSignal(i, i.doStep());
 			}
 		}
-
-		//processOutputSignal(antEater, antEater.doStep());
+		// processOutputSignal(antEater, antEater.doStep());
+	}
+	
+	public Individual findAnt(int i) {
+		for (Individual ind : ants) {
+			if (ind.toString().equals("ant " + i)) {
+				return ind;
+			}
+		}
+		return null;
 	}
 
 	private void processOutputSignal(Individual i, OutputSignal out) {
@@ -139,16 +147,24 @@ public class World implements Serializable {
 		int y = pos.y;
 		int rot = pos.rot;
 
-		if (rot == 0) y--;
-		if (rot == 1) x++;
-		if (rot == 2) y++;
-		if (rot == 3) x--;
+		if (rot == 0)
+			y--;
+		if (rot == 1)
+			x++;
+		if (rot == 2)
+			y++;
+		if (rot == 3)
+			x--;
 
 		// torus
-		if (y >= height) y -= height;
-		if (y < 0) y += height;
-		if (x >= width) x -= width;
-		if (x < 0) x += width;
+		if (y >= height)
+			y -= height;
+		if (y < 0)
+			y += height;
+		if (x >= width)
+			x -= width;
+		if (x < 0)
+			x += width;
 
 		return new Position(x, y, rot);
 	}

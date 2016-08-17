@@ -15,7 +15,8 @@ public class ElitisticSelectionStrategy extends SelectionStrategy {
 	}
 
 	@Override
-	public Individual[] doSelection(Individual[] indivs) {
+	protected Individual[] doSelection(Individual[] indivs) {
+		// TODO: logging
 		Arrays.sort(indivs, (a, b) -> Float.compare(b.getFitness(), a.getFitness()));
 		Individual[] elite = Arrays.copyOf(indivs, eliteSize);
 		Individual[] res = secondary.doSelection(indivs);
@@ -26,11 +27,9 @@ public class ElitisticSelectionStrategy extends SelectionStrategy {
 	}
 
 	@Override
-	public void doMutation(Individual[] indivs) {
+	protected void doMutation(Individual[] indivs) {
 		for (int i = eliteSize; i < indivs.length; i++) {
-			//if (Util.dice(secondary.mutationProbability)) {
-				indivs[i].mutate(secondary.mutationProbability);
-			//}
+			indivs[i].mutate(secondary.mutationProbability);
 		}
 	}
 }

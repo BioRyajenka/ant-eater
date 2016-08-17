@@ -55,6 +55,10 @@ public class StatisticsCanvas extends Canvas {
 			}
 		});
 	}
+	
+	public List<Statistics> getData() {
+		return data;
+	}
 
 	public void addStatistics(Statistics statistics) {
 		data.add(statistics);

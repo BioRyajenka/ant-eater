@@ -32,30 +32,6 @@ public class WorldLogger extends World {
 	}
 
 	private transient int gen = 0;
-	// private transient int age = 0;
-	// private transient int ae = 0;
-	// private transient int tri = 0;
-
-	/*@Override
-	public void nextAge() {
-		age++;
-		ae = tri = 0;
-		super.nextAge();
-	}
-	
-	@Override
-	public void nextAntEater() {
-		ae++;
-		tri = 0;
-		super.nextAntEater();
-	}
-	
-	@Override
-	public void nextTry() {
-		tri++;
-		super.nextTry();
-	}
-	*/
 
 	public void startLogging() {
 		logging = true;
@@ -76,17 +52,13 @@ public class WorldLogger extends World {
 		int antEatersRes = Arrays.stream(antEaters).collect(Collectors.summingDouble(a -> a
 				.getFitness())).intValue();
 
-		// Util.log("age: " + (gen - 1) + ", res: " + antsRes);
-
 		antsStatistics.setPlot(gen - 1, antsRes);
 		antEatersStatistics.setPlot(gen - 1, antEatersRes);
 	}
 
 	@Override
 	public void nextAge() {
-		//if (gen % 10 == 0) {
-			collectStatistics();			
-		//}
+		collectStatistics();			
 
 		super.nextAge();
 	}
@@ -108,10 +80,6 @@ public class WorldLogger extends World {
 	protected void onWorldRefreshed() {
 		if (logger == null)
 			return;
-		// Map<String, Integer> description = new HashMap<>();
-		// description.put("age", age);
-		// description.put("ae", ae);
-		// description.put("tri", tri);
 		if (logging) {
 			logger.putField(field, ants, antEater);
 		}
@@ -119,6 +87,7 @@ public class WorldLogger extends World {
 
 	public void closeLogger() throws IOException {
 		collectStatistics();
+		Util.log("saving statistics");
 		logger.putStatistics(antsStatistics);
 		logger.putStatistics(antEatersStatistics);
 		logger.close();

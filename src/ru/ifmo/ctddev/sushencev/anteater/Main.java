@@ -9,7 +9,7 @@ public class Main {
 		int width = 25;
 		int height = 25;
 		float foodPercentage = .2f;
-		int antPopulationSize = 30;
+		int antPopulationSize = 20;
 		int antEaterPopulationSize = 10;
 		float crossingoverProbability = .3f;
 		float mutationProbability = .3f;
@@ -21,10 +21,10 @@ public class Main {
 		Sight antSight = new SimpleSight(c -> c.getType() == Type.FOOD, 1);
 		Sight antEaterSight = new SimpleSight(c -> c.hasIndividual(), 1);
 
-		SelectionStrategy selectionStrategy = new TwoRandomSelectionStrategy(
-				crossingoverProbability, mutationProbability);
-		//SelectionStrategy selectionStrategy = new ProportionalSelectionStrategy(
+		//SelectionStrategy selectionStrategy = new TwoRandomSelectionStrategy(
 		//		crossingoverProbability, mutationProbability);
+		SelectionStrategy selectionStrategy = new ProportionalSelectionStrategy(
+				crossingoverProbability, mutationProbability);
 		selectionStrategy = new ElitisticSelectionStrategy(selectionStrategy, 3);
 
 		WorldGenerator worldGenerator = new RandomWorldGenerator(width, height, foodPercentage);

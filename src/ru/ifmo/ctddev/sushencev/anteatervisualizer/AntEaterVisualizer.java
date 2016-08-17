@@ -3,6 +3,7 @@ package ru.ifmo.ctddev.sushencev.anteatervisualizer;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.Paint;
@@ -51,9 +52,13 @@ import ru.ifmo.ctddev.sushencev.anteater.Automata;
 import ru.ifmo.ctddev.sushencev.anteater.Automata.InputSignal;
 import ru.ifmo.ctddev.sushencev.anteater.Automata.OutputSignal;
 import ru.ifmo.ctddev.sushencev.anteater.Automata.State;
+import ru.ifmo.ctddev.sushencev.anteater.ElitisticSelectionStrategy;
 import ru.ifmo.ctddev.sushencev.anteater.EncodedField;
 import ru.ifmo.ctddev.sushencev.anteater.EncodedGeneration;
+import ru.ifmo.ctddev.sushencev.anteater.Individual;
 import ru.ifmo.ctddev.sushencev.anteater.LogLoader;
+import ru.ifmo.ctddev.sushencev.anteater.ProportionalSelectionStrategy;
+import ru.ifmo.ctddev.sushencev.anteater.SelectionStrategy;
 import ru.ifmo.ctddev.sushencev.anteater.Statistics;
 import ru.ifmo.ctddev.sushencev.anteater.Util;
 import ru.ifmo.ctddev.sushencev.anteater.WorldRepeater;
@@ -100,7 +105,7 @@ public class AntEaterVisualizer {
 
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 803, 499);
+		frame.setBounds(180, 140, 803, 499);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new GridLayout(0, 1, 0, 0));
 
@@ -111,7 +116,7 @@ public class AntEaterVisualizer {
 		tabbedPane.addTab("World", null, worldTab, null);
 
 		JLabel descriptionLabel = new JLabel("Description");
-		
+
 		JButton viewAutomataButton = new JButton("View automata");
 		viewAutomataButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -240,9 +245,34 @@ public class AntEaterVisualizer {
 			}
 		});
 
+		JButton predictSelectionButton = new JButton("Predict selection");
+		predictSelectionButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFrame newFrame = new JFrame();
+				JLabel label = new JLabel();
+				newFrame.add(label);
+				newFrame.setBounds(frame.getX() + frame.getWidth(), frame.getY(), 418, frame
+						.getHeight());
+				newFrame.setVisible(true);
+				
+				float crossingoverProbability = .3f;
+				float mutationProbability = .3f;
+
+				// SelectionStrategy selectionStrategy = new TwoRandomSelectionStrategy(
+				// 		crossingoverProbability, mutationProbability);
+				SelectionStrategy selectionStrategy = new ProportionalSelectionStrategy(
+						crossingoverProbability, mutationProbability);
+				selectionStrategy = new ElitisticSelectionStrategy(selectionStrategy, 3);
+
+				int gen = (int) generationComboBox.getSelectedItem();
+				Individual[] ants = data.get(gen).world.getAnts();
+				selectionStrategy.doSelectionAndMutation(ants);
+			}
+		});
+
 		GroupLayout gl_worldTab = new GroupLayout(worldTab);
 		gl_worldTab.setHorizontalGroup(gl_worldTab.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_worldTab.createSequentialGroup().addGap(10).addComponent(
+				.addGroup(gl_worldTab.createSequentialGroup().addContainerGap().addComponent(
 						fieldCanvas, GroupLayout.PREFERRED_SIZE, 541,
 						GroupLayout.PREFERRED_SIZE).addGroup(gl_worldTab.createParallelGroup(
 								Alignment.TRAILING).addGroup(gl_worldTab.createParallelGroup(
@@ -252,17 +282,17 @@ public class AntEaterVisualizer {
 																Alignment.LEADING)
 																.addComponent(antEaterLabel,
 																		GroupLayout.DEFAULT_SIZE,
-																		142, Short.MAX_VALUE)
+																		146, Short.MAX_VALUE)
 																.addComponent(generationLabel,
 																		Alignment.TRAILING,
 																		GroupLayout.DEFAULT_SIZE,
-																		142, Short.MAX_VALUE)
+																		146, Short.MAX_VALUE)
 																.addComponent(tryLabel,
 																		GroupLayout.DEFAULT_SIZE,
-																		142, Short.MAX_VALUE)
+																		146, Short.MAX_VALUE)
 																.addComponent(frameLabel,
 																		GroupLayout.DEFAULT_SIZE,
-																		142, Short.MAX_VALUE))
+																		146, Short.MAX_VALUE))
 												.addPreferredGap(ComponentPlacement.RELATED)
 												.addGroup(gl_worldTab.createParallelGroup(
 														Alignment.LEADING).addComponent(
@@ -281,7 +311,7 @@ public class AntEaterVisualizer {
 										.addGroup(gl_worldTab.createSequentialGroup()
 												.addPreferredGap(ComponentPlacement.RELATED)
 												.addComponent(playSpeedLabel).addPreferredGap(
-														ComponentPlacement.RELATED, 78,
+														ComponentPlacement.RELATED, 82,
 														Short.MAX_VALUE).addComponent(
 																frameSpinner,
 																GroupLayout.PREFERRED_SIZE,
@@ -297,27 +327,35 @@ public class AntEaterVisualizer {
 														GroupLayout.PREFERRED_SIZE)
 												.addPreferredGap(ComponentPlacement.RELATED)
 												.addComponent(stopButton,
-														GroupLayout.DEFAULT_SIZE,
-														GroupLayout.DEFAULT_SIZE,
+														GroupLayout.DEFAULT_SIZE, 63,
 														Short.MAX_VALUE)).addGroup(gl_worldTab
 																.createSequentialGroup()
 																.addPreferredGap(
 																		ComponentPlacement.RELATED)
 																.addComponent(prevFrameButton,
 																		GroupLayout.DEFAULT_SIZE,
-																		100, Short.MAX_VALUE)
+																		102, Short.MAX_VALUE)
 																.addGap(9).addComponent(
 																		nextFrameButton,
 																		GroupLayout.DEFAULT_SIZE,
-																		100, Short.MAX_VALUE))
+																		102, Short.MAX_VALUE))
 										.addGroup(gl_worldTab.createSequentialGroup()
 												.addPreferredGap(ComponentPlacement.RELATED)
 												.addComponent(descriptionLabel))).addGroup(
-														gl_worldTab.createSequentialGroup()
-																.addPreferredGap(
-																		ComponentPlacement.RELATED)
+														gl_worldTab.createParallelGroup(
+																Alignment.LEADING, false)
 																.addComponent(
-																		viewAutomataButton)))
+																		predictSelectionButton,
+																		Alignment.TRAILING,
+																		GroupLayout.DEFAULT_SIZE,
+																		GroupLayout.DEFAULT_SIZE,
+																		Short.MAX_VALUE)
+																.addComponent(
+																		viewAutomataButton,
+																		Alignment.TRAILING,
+																		GroupLayout.DEFAULT_SIZE,
+																		GroupLayout.DEFAULT_SIZE,
+																		Short.MAX_VALUE)))
 						.addContainerGap()));
 		gl_worldTab.setVerticalGroup(gl_worldTab.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_worldTab.createSequentialGroup().addContainerGap().addGroup(
@@ -376,9 +414,11 @@ public class AntEaterVisualizer {
 																		prevFrameButton))
 										.addPreferredGap(ComponentPlacement.RELATED)
 										.addComponent(descriptionLabel).addPreferredGap(
-												ComponentPlacement.RELATED, 123,
+												ComponentPlacement.RELATED, 88,
 												Short.MAX_VALUE).addComponent(
-														viewAutomataButton)))
+														predictSelectionButton)
+										.addPreferredGap(ComponentPlacement.RELATED)
+										.addComponent(viewAutomataButton)))
 						.addContainerGap()));
 		worldTab.setLayout(gl_worldTab);
 
@@ -455,16 +495,16 @@ public class AntEaterVisualizer {
 		});
 		menu.add(exitMenuItem);
 	}
-	
+
 	static class MyEdge {
-		private static int freeid = 0; 
+		private static int freeid = 0;
 		private int id = freeid++;
 		private String data;
-		
+
 		public MyEdge(String data) {
 			this.data = data;
 		}
-		
+
 		@Override
 		public int hashCode() {
 			final int prime = 31;
@@ -512,12 +552,14 @@ public class AntEaterVisualizer {
 		final State currentState = automata.getData()[automata.getCurStateNumber()];
 
 		JFrame jf = new JFrame();
-		VisualizationViewer<State, MyEdge> vv = new VisualizationViewer<>(new KKLayout<>(g));
+		jf.setLocation(frame.getX() + frame.getWidth(), frame.getY());
+		VisualizationViewer<State, MyEdge> vv = new VisualizationViewer<>(new KKLayout<>(g),
+				new Dimension(400, frame.getHeight()));
 
 		Transformer<State, Paint> vertexPaint = s -> s == currentState ? Color.RED
 				: Color.GREEN;
 		vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
-		
+
 		vv.getRenderContext().setVertexLabelTransformer(s -> "" + automata.getStateNumber(s));
 		vv.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller<MyEdge>());
 		vv.getRenderer().getVertexLabelRenderer().setPosition(Position.CNTR);
@@ -525,7 +567,7 @@ public class AntEaterVisualizer {
 		final DefaultModalGraphMouse<Integer, Number> graphMouse = new DefaultModalGraphMouse<Integer, Number>();
 		vv.setGraphMouse(graphMouse);
 		graphMouse.setMode(ModalGraphMouse.Mode.PICKING);
-		//relax();
+		// relax();
 
 		vv.addGraphMouseListener(new GraphMouseListener<State>() {
 			@Override
@@ -548,27 +590,29 @@ public class AntEaterVisualizer {
 		inputSignalComboBox.addActionListener(e -> {
 			int input = (int) inputSignalComboBox.getSelectedItem();
 			vv.setGraphLayout(new KKLayout<>(automataToGraph(automata, input)));
-			//relax();
+			// relax();
 		});
 
 		JButton relaxButton = new JButton("relax");
 		relaxButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//relax();
+				// relax();
 			}
 		});
 
 		JPanel controls = new JPanel();
 		JPanel controlPanel = new JPanel(new GridLayout(2, 1));
 		controlPanel.add(controls);
-		jf.add(controlPanel, BorderLayout.NORTH);
+		jf.getContentPane().add(controlPanel, BorderLayout.NORTH);
 		controls.add(inputSignalComboBox);
 		controls.add(relaxButton);
 
 		jf.getContentPane().add(vv);
-		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		jf.pack();
 		jf.setVisible(true);
+
+		// jf.setSize(418, frame.getHeight());
 	}
 
 	private Map<Integer, Generation> data;
@@ -611,11 +655,17 @@ public class AntEaterVisualizer {
 						}
 					}
 				} else {
+					Util.log("loading statistics");
+
 					Statistics antsStatistics = (Statistics) o;
+					Util.log("here1");
 					Statistics antEatersStatistics = (Statistics) logLoader.getSmth();
+					Util.log("here2");
 
 					statisticsCanvas.addStatistics(antsStatistics);
 					statisticsCanvas.addStatistics(antEatersStatistics);
+					
+					Util.log("dobavil?? " + statisticsCanvas.getData().size());
 
 					statisticsCanvas.repaint();
 				}
@@ -648,6 +698,8 @@ public class AntEaterVisualizer {
 		int gen = (int) generationComboBox.getSelectedItem();
 		data.get(gen).antEaters.forEach((i, ae) -> antEaterComboBox.addItem(i));
 		antEaterComboBox.setSelectedIndex(0);
+		// not yet implemented
+		antEaterComboBox.setEnabled(false);
 
 		WorldRepeater world = data.get(gen).world;
 		fieldCanvas.setWorld(world);

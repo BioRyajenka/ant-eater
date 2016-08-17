@@ -22,14 +22,10 @@ public class EncodedField implements Cloneable {
 			for (int j = 0; j < field[i].length; j++) {
 				Cell c = field[i][j];
 				if (c.getIndividual() != null) {
-					if (c.getIndividual().toString().equals("ant 0")) {
-						Util.log("1ant 0 hashcode " + c.getIndividual().hashCode());
-					}
 					c.getIndividual().setPosition(j, i, 0);
 				}
 			}
 		}
-		Util.log("2ant 0 hashcode " + ants[0].hashCode());
 		for (int i = 0; i < antsRots.length; i++) {
 			ants[i].getPosition().rot = antsRots[i];
 		}

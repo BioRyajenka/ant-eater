@@ -2,6 +2,7 @@ package ru.ifmo.ctddev.sushencev.anteater;
 
 import java.io.Serializable;
 
+import ru.ifmo.ctddev.sushencev.anteater.Automata.InputSignal;
 import ru.ifmo.ctddev.sushencev.anteater.Automata.OutputSignal;
 import ru.ifmo.ctddev.sushencev.anteater.Util.Pair;
 
@@ -18,7 +19,7 @@ public class Individual implements Serializable {
 	
 	private boolean dead = false;
 	
-	private String tag;
+	private int id;
 
 	public void refresh() {
 		ate = distanceCovered = 0;
@@ -34,27 +35,35 @@ public class Individual implements Serializable {
 		this.habitat = habitat;
 	}
 	
-	public Individual(World habitat, Sight sight, int maxStates, String tag) {
-		this(habitat, sight, new Automata(maxStates), tag);
+	public Individual(World habitat, Sight sight, int maxStates, int id) {
+		this(habitat, sight, new Automata(maxStates), id);
+	}
+	
+	public int getId() {
+		return id;
 	}
 	
 	@Override
 	public String toString() {
-		return tag;
+		return "ant " + id;
 	}
 	
-	public Individual(World habitat, Sight sight, Automata chromosome, String tag) {
+	public Individual(World habitat, Sight sight, Automata chromosome, int id) {
 		this.habitat = habitat;
 		this.sight = sight;
 		this.chromosome = chromosome;
-		this.tag = tag;
+		this.id = id;
+	}
+	
+	public InputSignal checkSight() {
+		return sight.check(habitat.field, position);
 	}
 	
 	public OutputSignal doStep() {
 		if (dead) {
 			throw new RuntimeException("dead stay dumb");
 		}
-		OutputSignal res = chromosome.doStep(sight.check(habitat.field, position));
+		OutputSignal res = chromosome.doStep(checkSight());
 		if (res == OutputSignal.FORWARD) {
 			distanceCovered++;
 		}
@@ -95,8 +104,8 @@ public class Individual implements Serializable {
 	
 	public Pair<Individual, Individual> cross(Individual match) {
 		Pair<Automata, Automata> res = chromosome.cross(match.chromosome);
-		Individual first = new Individual(habitat, sight, res.first, "!nuas");
-		Individual second = new Individual(habitat, sight, res.second, "!nuas");
+		Individual first = new Individual(habitat, sight, res.first, -1);
+		Individual second = new Individual(habitat, sight, res.second, -1);
 		return new Pair<Individual, Individual>(first, second);
 	}
 	
@@ -122,11 +131,11 @@ public class Individual implements Serializable {
 	}
 	
 	public Individual copy() {
-		Individual res = new Individual(habitat, sight, chromosome, tag);
+		Individual res = new Individual(habitat, sight, chromosome.copy(), -1);
 		return res;
 	}
 	
-	public void setTag(String tag) {
-		this.tag = tag;
+	public void setId(int id) {
+		this.id = id;
 	}
 }

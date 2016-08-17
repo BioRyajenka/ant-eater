@@ -50,7 +50,7 @@ public class Automata implements Serializable {
 		refresh();
 	}
 
-	public Automata(int maxStates, State[] data) {
+	private Automata(int maxStates, State[] data) {
 		this.maxStates = maxStates;
 		this.data = data;
 
@@ -193,5 +193,13 @@ public class Automata implements Serializable {
 
 	public int getStatesNumber() {
 		return data.length;
+	}
+
+	public Automata copy() {
+		State[] newData = new State[data.length];
+		for (int i = 0; i < data.length; i++) {
+			newData[i] = data[i].copy();
+		}
+		return new Automata(maxStates, newData);
 	}
 }

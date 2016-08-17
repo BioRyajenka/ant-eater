@@ -248,21 +248,22 @@ public class FieldCanvas extends Canvas {
 					}
 
 					if (ind == selectedIndividual) {
-						sb.append("ate: ");
+						sb.append(ind.toString());
+						sb.append("<br>ate: ");
 						sb.append(ind.getFitness());
 						sb.append("<br>");
 						Automata chr = ind.getChromosome();
 						if (chr != null) {
-							sb.append("currect state number: ");
+							sb.append("sight: ");
+							sb.append(ind.checkSight().getMask());
+							sb.append("<br>currect state number: ");
 							sb.append(chr.getCurStateNumber());
-							sb.append("<br>");
-							sb.append("states: ");
+							sb.append("<br>states: ");
 							sb.append(chr.getStatesNumber());
 							sb.append("<br>");
 						}
 						if (ind.isDead()) {
-							sb.append("<font color=\"red\">dead</font>");
-							sb.append("<br>");
+							sb.append("<font color=\"red\">dead</font><br>");
 						}
 					}
 				} else if (c.getType() == Type.FOOD) {

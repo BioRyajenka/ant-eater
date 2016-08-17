@@ -66,7 +66,7 @@ public class Logger implements AutoCloseable {
 	
 	private void renameAnts(Individual[] ants) {
 		for (int i = 0; i < ants.length; i++) {
-			ants[i].setTag("ant " + i);
+			ants[i].setId(i);
 		}
 	}
 

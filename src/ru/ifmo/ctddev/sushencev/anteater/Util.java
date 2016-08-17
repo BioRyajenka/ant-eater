@@ -83,9 +83,36 @@ public class Util {
 			this.second = second;
 		}
 	}
+	
+	private static String getCallerClassName() {
+		StackTraceElement[] stElements = Thread.currentThread().getStackTrace();
+		for (StackTraceElement ste : stElements) {
+			if (!ste.getClassName().equals(Util.class.getName()) && ste.getClassName()
+					.indexOf("java.lang.Thread") != 0) {
+				return ste.getFileName();
+			}
+		}
+		return null;
+	}
+
+	private static int getCallerLineNumber() {
+		StackTraceElement[] stElements = Thread.currentThread().getStackTrace();
+		for (StackTraceElement ste : stElements) {
+			if (!ste.getClassName().equals(Util.class.getName()) && ste.getClassName().indexOf(
+					"java.lang.Thread") != 0) {
+				return ste.getLineNumber();
+			}
+		}
+		return 0;
+	}
+
+	private static String getCallerInfo() {
+		return String.format("(%s:%s)", getCallerClassName(), getCallerLineNumber())
+				.toString();
+	}
 
 	public static void log(String msg) {
-		System.out.println(msg);
+		System.out.printf("%s: %s\n", getCallerInfo(), msg);
 	}
 
 	public interface SerializablePredicate<T> extends Serializable {
