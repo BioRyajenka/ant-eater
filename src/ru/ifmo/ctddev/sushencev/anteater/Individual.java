@@ -15,14 +15,13 @@ public class Individual implements Serializable {
 	private Automata chromosome;
 	
 	private int ate = 0;
-	private int distanceCovered = 0;
 	
 	private boolean dead = false;
 	
 	private int id;
 
 	public void refresh() {
-		ate = distanceCovered = 0;
+		ate = 0;
 		dead = false;
 		refreshAutomata();
 	}
@@ -64,9 +63,6 @@ public class Individual implements Serializable {
 			throw new RuntimeException("dead stay dumb");
 		}
 		OutputSignal res = chromosome.doStep(checkSight());
-		if (res == OutputSignal.FORWARD) {
-			distanceCovered++;
-		}
 		return res;
 	}
 	

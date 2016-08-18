@@ -11,7 +11,7 @@ public class Automata implements Serializable {
 	private static final long serialVersionUID = -9202081597965540637L;
 
 	public static class InputSignal {
-		public static final int SIGNALS_NUMBER = 8;
+		public static final int SIGNALS_NUMBER = 16;
 
 		private int mask;
 

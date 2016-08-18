@@ -24,6 +24,7 @@ public class Logger implements AutoCloseable {
 			oos.reset();
 			
 			renameAnts(ants);
+			renameAnts(antEaters);
 			
 			oos.writeByte(GENERATION_BYTE);
 			

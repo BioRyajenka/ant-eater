@@ -53,6 +53,11 @@ public class SimpleSight implements Sight {
 				}
 			}
 		}
+		
+		Position fp = World.getForwardPosition(position, field[0].length, field.length);
+		if (field[fp.y][fp.x].hasIndividual()) {
+			mask += 8;
+		}
 
 		return new InputSignal(mask);
 	}

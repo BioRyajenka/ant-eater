@@ -92,7 +92,7 @@ public class World implements Serializable {
 				processOutputSignal(i, i.doStep());
 			}
 		}
-		// processOutputSignal(antEater, antEater.doStep());
+		processOutputSignal(antEater, antEater.doStep());
 	}
 	
 	public Individual findAnt(int i) {
@@ -115,7 +115,7 @@ public class World implements Serializable {
 			i.getPosition().rot = (i.getPosition().rot + 1) % 4;
 			break;
 		case FORWARD:
-			Position pos = getForwardPosition(i.getPosition());
+			Position pos = getForwardPosition(i.getPosition(), field[0].length, field.length);
 			Cell nc = field[pos.y][pos.x];
 			if (i == antEater) {
 				if (nc.isOccupied()) {
@@ -139,10 +139,7 @@ public class World implements Serializable {
 		}
 	}
 
-	private Position getForwardPosition(Position pos) {
-		final int height = field.length;
-		final int width = field[0].length;
-
+	protected static Position getForwardPosition(Position pos, int width, int height) {
 		int x = pos.x;
 		int y = pos.y;
 		int rot = pos.rot;
