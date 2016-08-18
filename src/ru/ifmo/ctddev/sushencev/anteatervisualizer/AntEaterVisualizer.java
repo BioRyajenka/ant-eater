@@ -631,6 +631,7 @@ public class AntEaterVisualizer {
 	}
 
 	private void loadFile(File file) throws IOException, ClassNotFoundException {
+		frame.setTitle(file.getName());
 		LogLoader logLoader = new LogLoader(file);
 
 		// reading all of the frames
@@ -655,22 +656,16 @@ public class AntEaterVisualizer {
 						}
 					}
 				} else {
-					Util.log("loading statistics");
-
 					Statistics antsStatistics = (Statistics) o;
-					Util.log("here1");
 					Statistics antEatersStatistics = (Statistics) logLoader.getSmth();
-					Util.log("here2");
 
 					statisticsCanvas.addStatistics(antsStatistics);
 					statisticsCanvas.addStatistics(antEatersStatistics);
 					
-					Util.log("dobavil?? " + statisticsCanvas.getData().size());
-
 					statisticsCanvas.repaint();
 				}
 			} catch (EOFException | RuntimeException e) {
-				if (!(e.getCause() instanceof EOFException) && e.getCause() != null) {
+				if (e instanceof RuntimeException && !(e.getCause() instanceof EOFException)) {
 					e.getCause().printStackTrace();
 					System.exit(0);
 				}

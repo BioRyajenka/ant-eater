@@ -1,0 +1,7 @@
+visualizer
+	save world settings
+	predict selection
+	ant eater (ant try?) selection
+	hall of fame
+project
+	alter mutation such that it will be able to add new or remove existing vertices

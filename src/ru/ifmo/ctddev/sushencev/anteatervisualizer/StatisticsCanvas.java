@@ -169,7 +169,6 @@ public class StatisticsCanvas extends Canvas {
 
 	@Override
 	public void paint(Graphics g) {
-		Util.log("paint method. data: " + data.size());
 		drawGrid(g);
 		drawLegend(g);
 		drawCoordinateNames(g);

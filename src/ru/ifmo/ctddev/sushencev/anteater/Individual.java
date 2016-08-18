@@ -75,7 +75,7 @@ public class Individual implements Serializable {
 	}
 	
 	public float getFitness() {
-		return 2 * ate + distanceCovered;
+		return ate;//2 * ate + distanceCovered;
 	}
 	
 	public void setPosition(int x, int y, int rot) {
