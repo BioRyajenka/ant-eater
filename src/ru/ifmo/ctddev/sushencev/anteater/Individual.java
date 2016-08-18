@@ -35,7 +35,7 @@ public class Individual implements Serializable {
 	}
 	
 	public Individual(World habitat, Sight sight, int maxStates, int id) {
-		this(habitat, sight, new Automata(maxStates), id);
+		this(habitat, sight, new Automata(maxStates, sight.getInputSignalsNumber()), id);
 	}
 	
 	public int getId() {

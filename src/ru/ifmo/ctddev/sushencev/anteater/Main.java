@@ -18,7 +18,7 @@ public class Main {
 		int steps = 100;
 		int tries = 10;
 
-		Sight antSight = new SimpleSight(c -> c.getType() == Type.FOOD, 1);
+		Sight antSight = new SimpleSightWithObstacles(c -> c.getType() == Type.FOOD, 1);
 		Sight antEaterSight = new SimpleSight(c -> c.hasIndividual(), 1);
 
 		SelectionStrategy selectionStrategy = new TwoRandomSelectionStrategy(

@@ -8,4 +8,6 @@ import ru.ifmo.ctddev.sushencev.anteater.Automata.InputSignal;
 
 public interface Sight extends Serializable {
 	public InputSignal check(Cell[][] field, Position position);
+	
+	public int getInputSignalsNumber();
 }

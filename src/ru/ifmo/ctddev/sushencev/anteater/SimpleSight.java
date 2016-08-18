@@ -53,16 +53,16 @@ public class SimpleSight implements Sight {
 				}
 			}
 		}
-		
-		Position fp = World.getForwardPosition(position, field[0].length, field.length);
-		if (field[fp.y][fp.x].hasIndividual()) {
-			mask += 8;
-		}
 
 		return new InputSignal(mask);
 	}
 
-	int processCell(int x, int y, int dx, int dy, Cell[][] field, int i, int mask) {
+	@Override
+	public int getInputSignalsNumber() {
+		return 1 << (r * (r + 2));
+	}
+
+	private int processCell(int x, int y, int dx, int dy, Cell[][] field, int i, int mask) {
 		int nx = x + dx;
 		int ny = y + dy;
 
@@ -70,10 +70,14 @@ public class SimpleSight implements Sight {
 		int width = field[0].length;
 
 		// torus
-		if (nx >= width) nx -= width;
-		if (nx < 0) nx += width;
-		if (ny >= height) ny -= height;
-		if (ny < 0) ny += height;
+		if (nx >= width)
+			nx -= width;
+		if (nx < 0)
+			nx += width;
+		if (ny >= height)
+			ny -= height;
+		if (ny < 0)
+			ny += height;
 
 		return isFoodFunction.test(field[ny][nx]) ? (mask | (1 << i)) : mask;
 	}

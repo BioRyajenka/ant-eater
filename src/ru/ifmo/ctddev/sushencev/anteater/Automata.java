@@ -11,8 +11,6 @@ public class Automata implements Serializable {
 	private static final long serialVersionUID = -9202081597965540637L;
 
 	public static class InputSignal {
-		public static final int SIGNALS_NUMBER = 16;
-
 		private int mask;
 
 		public InputSignal(int mask) {
@@ -32,15 +30,15 @@ public class Automata implements Serializable {
 	public State[] data;
 	private State curState;
 
-	public Automata(int maxStates) {
+	public Automata(int maxStates, int inputSignalsNumber) {
 		this.maxStates = maxStates;
 		final int states = Util.nextInt(maxStates) + 1;
 		data = new State[states];
 		for (int i = 0; i < states; i++) {
-			data[i] = new State();
+			data[i] = new State(inputSignalsNumber);
 		}
 		for (State s : data) {
-			for (int i = 0; i < InputSignal.SIGNALS_NUMBER; i++) {
+			for (int i = 0; i < inputSignalsNumber; i++) {
 				int next = Util.nextInt(states);
 				s.nextState[i] = next;
 				s.output[i] = Util.nextInt(OutputSignal.values().length);
@@ -112,7 +110,7 @@ public class Automata implements Serializable {
 	private void redirectLinks(List<State> list, int newFrom, int prevFrom, int prevTo,
 			int newSize) {
 		for (State s : list) {
-			for (int i = 0; i < InputSignal.SIGNALS_NUMBER; i++) {
+			for (int i = 0; i < s.nextState.length; i++) {
 				int nextState = s.nextState[i];
 				if (nextState >= prevFrom && nextState < prevTo) {
 					// internal link
@@ -138,11 +136,16 @@ public class Automata implements Serializable {
 
 	public static class State implements Serializable {
 		private static final long serialVersionUID = -8396697025935926778L;
-		public int[] nextState = new int[InputSignal.SIGNALS_NUMBER];
-		public int[] output = new int[InputSignal.SIGNALS_NUMBER];
+		public int[] nextState;
+		public int[] output;
+		
+		public State(int inputSignalsNumber) {
+			nextState = new int[inputSignalsNumber];
+			output = new int[inputSignalsNumber];
+		}
 
 		public State copy() {
-			State res = new State();
+			State res = new State(1);
 			res.nextState = Arrays.copyOf(nextState, nextState.length);
 			res.output = Arrays.copyOf(output, output.length);
 			return res;

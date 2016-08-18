@@ -49,7 +49,6 @@ import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 import ru.ifmo.ctddev.sushencev.anteater.Automata;
-import ru.ifmo.ctddev.sushencev.anteater.Automata.InputSignal;
 import ru.ifmo.ctddev.sushencev.anteater.Automata.OutputSignal;
 import ru.ifmo.ctddev.sushencev.anteater.Automata.State;
 import ru.ifmo.ctddev.sushencev.anteater.ElitisticSelectionStrategy;
@@ -246,6 +245,7 @@ public class AntEaterVisualizer {
 		});
 
 		JButton predictSelectionButton = new JButton("Predict selection");
+		predictSelectionButton.setEnabled(false);
 		predictSelectionButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFrame newFrame = new JFrame();
@@ -584,7 +584,8 @@ public class AntEaterVisualizer {
 		});
 
 		JComboBox<Integer> inputSignalComboBox = new JComboBox<>();
-		for (int i = 0; i < InputSignal.SIGNALS_NUMBER; i++) {
+		int inputSignalsNumber = automata.data[0].nextState.length;
+		for (int i = 0; i < inputSignalsNumber; i++) {
 			inputSignalComboBox.addItem(i);
 		}
 		inputSignalComboBox.addActionListener(e -> {

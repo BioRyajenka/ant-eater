@@ -42,7 +42,7 @@ public class Logger implements AutoCloseable {
 			// gen, ae, try
 			//oos.writeObject(description);
 			
-			renameAnts(ants);
+			//renameAnts(ants);
 			
 			oos.writeByte(FIELD_BYTE);
 
