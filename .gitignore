@@ -1,7 +1,8 @@
 jung sources/
 jung samples/
 
-log*
+log_*
+
 *.class
 
 .idea/
