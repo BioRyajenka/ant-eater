@@ -3,10 +3,14 @@ jung samples/
 
 log_*
 
+lib/
+
 *.class
 
 .idea/
 *.ipr
+*.iml
+*.eml
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

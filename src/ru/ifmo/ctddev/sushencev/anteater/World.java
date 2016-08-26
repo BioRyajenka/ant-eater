@@ -54,6 +54,8 @@ public class World implements Serializable {
 		ants = createNextGeneration(ants);
 		antEaters = createNextGeneration(antEaters);
 
+		worldGenerator.advanceFoodPercentage();
+
 		onGenerationCreated();
 
 		antEater = antEaters[currentAntEater = 0];
@@ -74,7 +76,7 @@ public class World implements Serializable {
 		if (worldGenerator == null)
 			return;
 
-		Arrays.stream(ants).forEach(a -> a.refreshAutomata());
+		Arrays.stream(ants).forEach(Individual::refreshAutomata);
 		antEater.refreshAutomata();
 
 		field = worldGenerator.generateWorld(ants, antEater);
@@ -174,7 +176,7 @@ public class World implements Serializable {
 		Individual[] res = selectionStrategy.doSelectionAndMutation(indivs);
 
 		// refresh
-		Arrays.stream(res).forEach(a -> a.refresh());
+		Arrays.stream(res).forEach(Individual::refresh);
 
 		return res;
 	}

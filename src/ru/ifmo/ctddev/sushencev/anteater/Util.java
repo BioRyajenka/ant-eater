@@ -29,14 +29,20 @@ public class Util {
 		}
 		return false;
 	}
-	
+
+	private static void startDaemonThread(Runnable runnable) {
+		Thread th = new Thread(runnable);
+		th.setDaemon(true);
+		th.start();
+	}
+
 	static {
 		randomSeed = rand.nextLong();
 		// randomSeed = -8904520990100767751l;
 		rand.setSeed(randomSeed);
 		log("seed is " + randomSeed);
 
-		(new Thread(() -> {
+		startDaemonThread(() -> {
 			while (true) {
 				try {
 					int byt = System.in.read();
@@ -49,7 +55,7 @@ public class Util {
 					e.printStackTrace();
 				}
 			}
-		})).start();
+		});
 	}
 
 	public static int nextInt(int modulo) {
@@ -107,8 +113,7 @@ public class Util {
 	}
 
 	private static String getCallerInfo() {
-		return String.format("(%s:%s)", getCallerClassName(), getCallerLineNumber())
-				.toString();
+		return String.format("(%s:%s)", getCallerClassName(), getCallerLineNumber());
 	}
 
 	public static void log(String msg) {
