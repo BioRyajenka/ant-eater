@@ -18,14 +18,18 @@ public class RandomWorldGenerator implements WorldGenerator {
 		this.height = height;
 	}
 	
-	public Cell[][] generateWorld(Individual[] ants, Individual antEater) {
+	public Cell[][] generateWorld(Individual[] ants, Individual ... antEaters) {
 		Cell[][] field = createEmptyField(width, height);
 		int foodAmount = (int) (width * height * foodPercentage);
 		
 		generateFood(field, foodAmount);
 
 		placeAnts(field, ants);
-		placeAntEater(field, antEater);
+		if (antEaters.length == 1) {
+			placeOneAntEater(field, antEaters[0]);			
+		} else {
+			placeAnts(field, antEaters);
+		}
 		
 		return field;
 	}
@@ -51,7 +55,7 @@ public class RandomWorldGenerator implements WorldGenerator {
 				});
 	}
 
-	private void placeAntEater(Cell[][] field, Individual antEater) {
+	private void placeOneAntEater(Cell[][] field, Individual antEater) {
 		final int height = field.length;
 		final int width = field[0].length;
 		field[width / 2][height / 2].setIndividual(antEater);

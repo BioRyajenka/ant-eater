@@ -23,16 +23,18 @@ public class Main {
 
 		SelectionStrategy selectionStrategy = new TwoRandomSelectionStrategy(
 				crossingoverProbability, mutationProbability);
-		//SelectionStrategy selectionStrategy = new ProportionalSelectionStrategy(
-		//		crossingoverProbability, mutationProbability);
+		// SelectionStrategy selectionStrategy = new
+		// ProportionalSelectionStrategy(
+		// crossingoverProbability, mutationProbability);
 		selectionStrategy = new ElitisticSelectionStrategy(selectionStrategy, 3);
 
-		WorldGenerator worldGenerator = new RandomWorldGenerator(width, height, foodPercentage);
+		WorldGenerator worldGenerator = new RandomWorldGenerator(width, height,
+				foodPercentage);
 
 		String logFileName = "log_" + Util.randomSeed;// nextInt(1000_000_000);
 		WorldLogger w = new WorldLogger(antPopulationSize, antEaterPopulationSize,
 				maxStatesInMachine, antSight, antEaterSight, selectionStrategy, worldGenerator,
-				logFileName, false);
+				logFileName, false, antEaterPopulationSize, tries);
 
 		final int generations = 1000000;
 		for (int gen = 0; gen < generations; gen++) {
@@ -44,6 +46,7 @@ public class Main {
 				for (int tri = 0; tri < tries; tri++) {
 					// Util.log("try " + tri);
 					for (int step = 0; step < steps; step++) {
+						// Util.log("step " + step);
 						w.doStep();
 					}
 					if (tri != tries - 1) {

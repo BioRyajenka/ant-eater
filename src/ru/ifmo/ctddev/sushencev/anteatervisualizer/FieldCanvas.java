@@ -167,7 +167,7 @@ public class FieldCanvas extends Canvas {
 		Graphics2D g2 = (Graphics2D) g;
 		g.setColor(Color.BLUE);
 		g2.setStroke(new BasicStroke(2));
-		
+
 		int x1 = sizeX / 6;
 		int y1 = sizeY / 6;
 		int x2 = sizeX - sizeX / 6;
@@ -226,7 +226,7 @@ public class FieldCanvas extends Canvas {
 					Individual ind = c.getIndividual();
 
 					Color borderColor = Color.WHITE;
-					if (ind != world.getCurrentAntEater() && ind.getFitness() == maxFitness) {
+					if (!ind.isAntEater() && ind.getFitness() == maxFitness) {
 						borderColor = Color.YELLOW;
 					}
 					if (ind == selectedIndividual) {
@@ -237,11 +237,11 @@ public class FieldCanvas extends Canvas {
 						drawBorder(i, j, g, borderColor);
 					}
 
-					if (ind == world.getCurrentAntEater()) {
-						drawAntEater(i, j, ind.getPosition().rot, g);
+					if (ind.isDead()) {
+						drawDead(i, j, g);
 					} else {
-						if (ind.isDead()) {
-							drawDead(i, j, g);
+						if (ind.isAntEater()) {
+							drawAntEater(i, j, ind.getPosition().rot, g);
 						} else {
 							drawAnt(i, j, ind.getPosition().rot, g);
 						}

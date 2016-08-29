@@ -12,10 +12,22 @@ public class Logger implements AutoCloseable {
 	public final static byte GENERATION_BYTE = 0;
 	public final static byte FIELD_BYTE = 1;
 	public final static byte STATISTICS_BYTE = 2;
+	public final static byte SETTINGS_BYTE = 3;
 
 	public Logger(String logFileName) throws IOException {
 		fos = new FileOutputStream(logFileName);
 		oos = new ObjectOutputStream(fos);
+	}
+	
+	public void putWorldSettings(int aeps, int tries) {
+		try {
+			oos.writeByte(SETTINGS_BYTE);
+			
+			oos.writeInt(aeps);
+			oos.writeInt(tries);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public void putNextGeneration(Map<String, Integer> description, Individual[] ants,
@@ -23,8 +35,8 @@ public class Logger implements AutoCloseable {
 		try {
 			oos.reset();
 			
-			renameAnts(ants);
-			renameAnts(antEaters);
+			renameAnts(ants, "ant");
+			renameAnts(antEaters, "antEater");
 			
 			oos.writeByte(GENERATION_BYTE);
 			
@@ -65,9 +77,9 @@ public class Logger implements AutoCloseable {
 		}
 	}
 	
-	private void renameAnts(Individual[] ants) {
+	private void renameAnts(Individual[] ants, String prefix) {
 		for (int i = 0; i < ants.length; i++) {
-			ants[i].setId(i);
+			ants[i].setName(prefix + " " + i);
 		}
 	}
 

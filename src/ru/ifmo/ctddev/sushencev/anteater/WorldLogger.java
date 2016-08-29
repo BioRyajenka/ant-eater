@@ -13,13 +13,16 @@ public class WorldLogger extends World {
 
 	public WorldLogger(int antsNumber, int antEatersNumber, int maxStatesInMachine,
 			Sight antSight, Sight antEaterSight, SelectionStrategy selectionStrategy,
-			WorldGenerator worldGenerator, String logFileName, boolean logging)
+			WorldGenerator worldGenerator, String logFileName, boolean logging,
+			int antEaterPopulationSize, int tries)
 			throws IOException {
 		super(antsNumber, antEatersNumber, maxStatesInMachine, antSight, antEaterSight,
 				selectionStrategy, worldGenerator);
 		logger = new Logger(logFileName);
 
 		this.logging = logging;
+		
+		logger.putWorldSettings(antEaterPopulationSize, tries);
 
 		onGenerationCreated();
 
