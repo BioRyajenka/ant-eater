@@ -35,19 +35,13 @@ public class ParadiseTest {
 	private JComboBox<Integer> frameComboBox;
 
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ParadiseTest window = new ParadiseTest();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		EventQueue.invokeLater(() -> {
+			ParadiseTest window = new ParadiseTest();
+			window.frame.setVisible(true);
+        });
 	}
 
-	public ParadiseTest() {
+	private ParadiseTest() {
 		initialize();
 	}
 
@@ -121,11 +115,7 @@ public class ParadiseTest {
 		StatisticsCanvas statisticsCanvas = new StatisticsCanvas();
 
 		JButton recolorStatisticsButton = new JButton("Recolor");
-		recolorStatisticsButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				statisticsCanvas.recolorStatistics();
-			}
-		});
+		recolorStatisticsButton.addActionListener(e -> statisticsCanvas.recolorStatistics());
 		GroupLayout gl_panel = new GroupLayout(statisticsTab);
 		gl_panel.setHorizontalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(
 				gl_panel.createSequentialGroup().addGroup(gl_panel.createParallelGroup(

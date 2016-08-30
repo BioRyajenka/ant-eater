@@ -2,7 +2,7 @@ package ru.ifmo.ctddev.sushencev.anteater;
 
 import java.io.Serializable;
 
-public class Cell implements Serializable {
+public class Cell implements Serializable, Cloneable {
 	private static final long serialVersionUID = -5883510131012824967L;
 
 	public enum Type {
@@ -43,11 +43,9 @@ public class Cell implements Serializable {
 	@Override
 	public Cell clone() {
 		try {
-			Cell res = new Cell(type);
-			res.individual = individual;
-			return res;
+			return (Cell) super.clone();
 		} catch (Exception e) {
+			return null;
 		}
-		return null;
 	}
 }

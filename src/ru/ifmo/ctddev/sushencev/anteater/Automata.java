@@ -67,8 +67,7 @@ public class Automata implements Serializable {
 	}
 
 	private List<State> copySubArrayToList(State[] data, int from, int to) {
-		return Arrays.stream(Arrays.copyOfRange(data, from, to)).map(s -> s.copy()).collect(
-				Collectors.toList());
+		return Arrays.stream(Arrays.copyOfRange(data, from, to)).map(State::copy).collect(Collectors.toList());
 	}
 
 	public Pair<Automata, Automata> cross(Automata rhs) {
@@ -169,11 +168,7 @@ public class Automata implements Serializable {
 			if (getClass() != obj.getClass())
 				return false;
 			State other = (State) obj;
-			if (!Arrays.equals(nextState, other.nextState))
-				return false;
-			if (!Arrays.equals(output, other.output))
-				return false;
-			return true;
+			return Arrays.equals(nextState, other.nextState) && Arrays.equals(output, other.output);
 		}
 	}
 

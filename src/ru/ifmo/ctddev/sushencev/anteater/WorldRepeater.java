@@ -30,7 +30,7 @@ public class WorldRepeater extends World {
 		EncodedField copy = (initialField = eField).clone();
 		field = copy.getField();
 		copy.updateAntsAndAntEaterPositions(ants);
-		Arrays.stream(ants).forEach(a -> a.refresh());
+		Arrays.stream(ants).forEach(Individual::refresh);
 
 		antEater = copy.getAntEater();
 		if (antEater != null) {

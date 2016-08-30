@@ -35,16 +35,10 @@ public class AntEaterVisualizer {
 	private JFrame frame;
 
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					AntEaterVisualizer window = new AntEaterVisualizer();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		EventQueue.invokeLater(() -> {
+			AntEaterVisualizer window = new AntEaterVisualizer();
+			window.frame.setVisible(true);
+        });
 	}
 
 	public AntEaterVisualizer() {

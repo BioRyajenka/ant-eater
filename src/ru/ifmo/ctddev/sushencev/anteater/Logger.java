@@ -61,9 +61,9 @@ public class Logger implements AutoCloseable {
 			oos.writeObject(antEater);
 			oos.writeInt(field.length);
 			oos.writeInt(field[0].length);
-			for (int i = 0; i < field.length; i++) {
-				for (int j = 0; j < field[i].length; j++) {
-					oos.writeUnshared(field[i][j]);
+			for (Cell[] row : field) {
+				for (Cell cell : row) {
+					oos.writeUnshared(cell);
 				}
 			}
 

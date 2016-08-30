@@ -46,26 +46,23 @@ public final class PlayerPanel extends JPanel {
 		PlayerPanel panel = new PlayerPanel();
 		panel.setBounds(100, 100, 422, 239);
 
-		panel.frameComboBox = new JComboBox<Integer>();
+		panel.frameComboBox = new JComboBox<>();
 
 		JLabel frameLabel = new JLabel("Frame");
 
 		panel.frameComboBox = new JComboBox<>();
 
-		Timer timer = new Timer(1000, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (panel.playState == PlayState.PAUSE) {
-					return;
-				}
-				int i = panel.frameComboBox.getSelectedIndex();
-				if (i + 1 < panel.frameComboBox.getItemCount()) {
-					panel.frameComboBox.setSelectedIndex(i + 1);
-				} else {
-					panel.pause();
-				}
-			}
-		});
+		Timer timer = new Timer(1000, e -> {
+            if (panel.playState == PlayState.PAUSE) {
+                return;
+            }
+            int i = panel.frameComboBox.getSelectedIndex();
+            if (i + 1 < panel.frameComboBox.getItemCount()) {
+                panel.frameComboBox.setSelectedIndex(i + 1);
+            } else {
+                panel.pause();
+            }
+        });
 		timer.start();
 
 		JSpinner frameSpinner = new JSpinner();
@@ -76,60 +73,39 @@ public final class PlayerPanel extends JPanel {
 		// from 0 to 9, in 1.0 steps start value 5
 		SpinnerNumberModel model = new SpinnerNumberModel(10.0, 1.0, 50.0, 1.0);
 		frameSpinner.setModel(model);
-		frameSpinner.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				timer.setDelay((int) (1000 / (double) frameSpinner.getValue()));
-			}
-		});
+		frameSpinner.addChangeListener(e -> timer.setDelay((int) (1000 / (double) frameSpinner.getValue())));
 
 		timer.setDelay(1000 / (int) model.getNumber().doubleValue());
 
 		JLabel playSpeedLabel = new JLabel("Play speed, fps");
 
 		panel.prevFrameButton = new JButton("Prev frame");
-		panel.prevFrameButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int i = panel.frameComboBox.getSelectedIndex();
-				if (i > 0) {
-					panel.frameComboBox.setSelectedIndex(i - 1);
-				}
-			}
-		});
+		panel.prevFrameButton.addActionListener(e -> {
+            int i = panel.frameComboBox.getSelectedIndex();
+            if (i > 0) {
+                panel.frameComboBox.setSelectedIndex(i - 1);
+            }
+        });
 
 		panel.nextFrameButton = new JButton("Next frame");
-		panel.nextFrameButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int i = panel.frameComboBox.getSelectedIndex();
-				if (i + 1 < panel.frameComboBox.getItemCount()) {
-					panel.frameComboBox.setSelectedIndex(i + 1);
-				}
-			}
-		});
+		panel.nextFrameButton.addActionListener(e -> {
+            int i = panel.frameComboBox.getSelectedIndex();
+            if (i + 1 < panel.frameComboBox.getItemCount()) {
+                panel.frameComboBox.setSelectedIndex(i + 1);
+            }
+        });
 
 		panel.playButton = new JButton("Play");
-		panel.playButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				panel.play();
-			}
-		});
+		panel.playButton.addActionListener(e -> panel.play());
 
 		panel.pauseButton = new JButton("Pause");
-		panel.pauseButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				panel.pause();
-			}
-		});
+		panel.pauseButton.addActionListener(e -> panel.pause());
 
 		JButton stopButton = new JButton("Stop");
-		stopButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				panel.pause();
-				panel.frameComboBox.setSelectedIndex(0);
-			}
-		});
+		stopButton.addActionListener(e -> {
+            panel.pause();
+            panel.frameComboBox.setSelectedIndex(0);
+        });
 
 		GroupLayout gl_panel = new GroupLayout(panel);
 		gl_panel.setHorizontalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(
@@ -227,7 +203,7 @@ public final class PlayerPanel extends JPanel {
 			frameComboBox.removeActionListener(prevOnFrameSelected);
 		}
 		prevOnFrameSelected = onFrameSelected;
-		frameComboBox.addActionListener(e -> onFrameSelected.actionPerformed(e));
+		frameComboBox.addActionListener(onFrameSelected);
 	}
 	
 	public JComboBox<Integer> getFrameComboBox() {
