@@ -1,11 +1,14 @@
 package ru.ifmo.ctddev.sushencev.anteater;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.HashMap;
 import java.util.Map;
 
+import ru.ifmo.ctddev.sushencev.anteater.Util.IntPair;
 import ru.ifmo.ctddev.sushencev.anteater.Util.Pair;
 
 public class LogLoader implements AutoCloseable {
@@ -17,26 +20,26 @@ public class LogLoader implements AutoCloseable {
 		ois = new ObjectInputStream(fis);
 	}
 
-	public Object getSmth() {
+	public int getNextTokenType() {
 		try {
-			int byt = ois.readByte();
-			switch (byt) {
-			case Logger.GENERATION_BYTE:
-				return getNextGeneration();
-			case Logger.FIELD_BYTE:
-				return getField();
-			case Logger.STATISTICS_BYTE:
-				return getStatistics();
-			default:
-				return null;
-			}
+			return ois.readByte();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public IntPair getSettings() {
+		try {
+			int aeis = ois.readInt();
+			int tries = ois.readInt();
+			return new IntPair(aeis, tries);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private EncodedGeneration getNextGeneration() {
+	public EncodedGeneration getNextGeneration() {
 		try {
 			Map<String, Integer> description = (Map<String, Integer>) ois.readObject();
 
@@ -48,7 +51,7 @@ public class LogLoader implements AutoCloseable {
 		}
 	}
 
-	private EncodedField getField() {
+	public EncodedField getField() {
 		try {
 			// Map<String, Integer> description = (Map<String, Integer>)
 			// ois.readObject();
@@ -73,8 +76,8 @@ public class LogLoader implements AutoCloseable {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	private Statistics getStatistics() {
+
+	public Statistics getStatistics() {
 		try {
 			return (Statistics) ois.readObject();
 		} catch (ClassNotFoundException | IOException e) {
@@ -86,5 +89,87 @@ public class LogLoader implements AutoCloseable {
 	public void close() throws IOException {
 		ois.close();
 		fis.close();
+	}
+
+	public static class LGeneration {
+		public WorldRepeater world;
+		public Map<Integer, LAntEater> antEaters = new HashMap<>();
+
+		public LGeneration(WorldRepeater world) {
+			this.world = world;
+		}
+	}
+
+	public static class LAntEater {
+		public Map<Integer, EncodedField> tries = new HashMap<>();
+	}
+
+	@SuppressWarnings("resource")
+	public static Pair<Map<Integer, LGeneration>, Pair<Statistics, Statistics>> loadFile(
+			File file) {
+		LogLoader logLoader;
+		try {
+			logLoader = new LogLoader(file);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
+		Map<Integer, LGeneration> data = new HashMap<>();
+
+		Pair<Statistics, Statistics> stRes = null;
+
+		int tries = 0;
+		int aeis = 0;
+		while (true) {
+			try {
+				int type = logLoader.getNextTokenType();
+
+				switch (type) {
+				case Logger.SETTINGS_BYTE:
+					Util.IntPair settings = logLoader.getSettings();
+					aeis = settings.first;
+					tries = settings.second;
+					break;
+				case Logger.GENERATION_BYTE:
+					EncodedGeneration p = logLoader.getNextGeneration();
+					int gen = p.first.get("gen");
+					Util.log("loading gen: " + gen);
+					data.put(gen, new LGeneration(new WorldRepeater(p.second.first,
+							p.second.second)));
+
+					Map<Integer, LAntEater> aes = data.get(gen).antEaters;
+					for (int aei = 0; aei < aeis; aei++) {
+						aes.putIfAbsent(aei, new LAntEater());
+						for (int tri = 0; tri < tries; tri++) {
+							logLoader.getNextTokenType();
+							//assert logLoader.getNextTokenType() == Logger.FIELD_BYTE;
+							
+							aes.get(aei).tries.put(tri, logLoader.getField());
+						}
+					}
+					break;
+				case Logger.STATISTICS_BYTE:
+					Statistics antsStatistics = logLoader.getStatistics();
+					logLoader.getNextTokenType();
+					//assert logLoader.getNextTokenType() == Logger.STATISTICS_BYTE;
+					Statistics antEatersStatistics = logLoader.getStatistics();
+					stRes = new Pair<Statistics, Statistics>(antsStatistics,
+							antEatersStatistics);
+					break;
+				}
+			} catch (RuntimeException e) {
+				if (!(e.getCause() instanceof EOFException)) {
+					throw e;
+				}
+				break;
+			}
+		}
+		try {
+			logLoader.close();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
+		return new Pair<>(data, stRes);
 	}
 }

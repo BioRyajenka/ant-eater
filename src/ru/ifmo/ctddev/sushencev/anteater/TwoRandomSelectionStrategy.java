@@ -27,13 +27,9 @@ public class TwoRandomSelectionStrategy extends SelectionStrategy {
 				Pair<Individual, Individual> p = a.cross(c);
 				res[i] = p.first;
 				res[i + 1] = p.second;
-				appendLog(a, b, i);
-				appendLog(a, b, i + 1);
 			} else {
 				res[i] = a.copy();
 				res[i + 1] = b.copy();
-				appendLog(a, i);
-				appendLog(b, i + 1);
 			}
 		}
 		return res;

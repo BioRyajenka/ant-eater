@@ -13,13 +13,16 @@ public class WorldLogger extends World {
 
 	public WorldLogger(int antsNumber, int antEatersNumber, int maxStatesInMachine,
 			Sight antSight, Sight antEaterSight, SelectionStrategy selectionStrategy,
-			WorldGenerator worldGenerator, String logFileName, boolean logging)
+			WorldGenerator worldGenerator, String logFileName, boolean logging,
+			int antEaterPopulationSize, int tries)
 			throws IOException {
 		super(antsNumber, antEatersNumber, maxStatesInMachine, antSight, antEaterSight,
 				selectionStrategy, worldGenerator);
 		logger = new Logger(logFileName);
 
 		this.logging = logging;
+		
+		logger.putWorldSettings(antEaterPopulationSize, tries);
 
 		onGenerationCreated();
 
@@ -47,10 +50,8 @@ public class WorldLogger extends World {
 	private Statistics antEatersStatistics = new Statistics("ant-eaters");
 
 	private void collectStatistics() {
-		int antsRes = Arrays.stream(ants).collect(Collectors.summingDouble(a -> a
-				.getFitness())).intValue();
-		int antEatersRes = Arrays.stream(antEaters).collect(Collectors.summingDouble(a -> a
-				.getFitness())).intValue();
+		int antsRes = Arrays.stream(ants).collect(Collectors.summingDouble(Individual::getFitness)).intValue();
+		int antEatersRes = Arrays.stream(antEaters).collect(Collectors.summingDouble(Individual::getFitness)).intValue();
 
 		antsStatistics.setPlot(gen - 1, antsRes);
 		antEatersStatistics.setPlot(gen - 1, antEatersRes);

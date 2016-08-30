@@ -1,22 +1,27 @@
 package ru.ifmo.ctddev.sushencev.anteater;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 public class WorldRepeater extends World {
 	private static final long serialVersionUID = 2111390727759634411L;
 
-	public WorldRepeater(Individual[] ants, Individual[] antEaters) throws IOException {
+	public WorldRepeater(Individual[] ants, Individual[] antEaters) {
 		super(0, 0, 0, null, null, null, null);
 		this.ants = ants;
 		this.antEaters = antEaters;
 
 		Arrays.stream(ants).forEach(a -> a.setHabitat(this));
-		Arrays.stream(antEaters).forEach(a -> a.setHabitat(this));
+		if (antEaters != null) {
+			Arrays.stream(antEaters).forEach(a -> a.setHabitat(this));
+		}
 	}
 
 	public Individual[] getAnts() {
 		return ants;
+	}
+
+	public Individual[] getAntEaters() {
+		return antEaters;
 	}
 
 	private EncodedField initialField;
@@ -25,9 +30,12 @@ public class WorldRepeater extends World {
 		EncodedField copy = (initialField = eField).clone();
 		field = copy.getField();
 		copy.updateAntsAndAntEaterPositions(ants);
-		antEater = copy.getAntEater();
 		Arrays.stream(ants).forEach(a -> a.refresh());
-		antEater.refresh();
+
+		antEater = copy.getAntEater();
+		if (antEater != null) {
+			antEater.refresh();
+		}
 		steps = 0;
 	}
 

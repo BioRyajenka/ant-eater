@@ -9,8 +9,8 @@ public class EncodedField implements Cloneable {
 	public EncodedField(Cell[][] field, int[] antsRots, int antEaterRot, Individual antEater) {
 		this.field = field;
 		this.antsRots = antsRots;
-		this.antEater = antEater;
 		this.antEaterRot = antEaterRot;
+		this.antEater = antEater;
 	}
 	
 	public Cell[][] getField() {
@@ -29,7 +29,9 @@ public class EncodedField implements Cloneable {
 		for (int i = 0; i < antsRots.length; i++) {
 			ants[i].getPosition().rot = antsRots[i];
 		}
-		antEater.getPosition().rot = antEaterRot;
+		if (antEater != null) {
+			antEater.getPosition().rot = antEaterRot;
+		}
 	}
 	
 	public Individual getAntEater() {

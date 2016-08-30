@@ -12,28 +12,31 @@ public class RandomWorldGenerator implements WorldGenerator {
 	private int height;
 	private double foodPercentage;
 	private double foodDecreaseRate;
-	
+
 	public RandomWorldGenerator(int width, int height, double foodPercentage, double foodDecreaseRate) {
 		this.foodPercentage = foodPercentage;
 		this.foodDecreaseRate = foodDecreaseRate;
 		this.width = width;
 		this.height = height;
-		System.out.println("FDR = " + foodDecreaseRate);
 	}
 
 	public RandomWorldGenerator(int width, int height, double foodPercentage) {
 		this(width, height, foodPercentage, 1.0);
 	}
 
-	public Cell[][] generateWorld(Individual[] ants, Individual antEater) {
+	public Cell[][] generateWorld(Individual[] ants, Individual ... antEaters) {
 		Cell[][] field = createEmptyField(width, height);
 		int foodAmount = (int) (width * height * foodPercentage);
-		
+
 		generateFood(field, foodAmount);
 
 		placeAnts(field, ants);
-		placeAntEater(field, antEater);
-		
+		if (antEaters.length == 1) {
+			placeOneAntEater(field, antEaters[0]);
+		} else {
+			placeAnts(field, antEaters);
+		}
+
 		return field;
 	}
 
@@ -62,13 +65,13 @@ public class RandomWorldGenerator implements WorldGenerator {
 				});
 	}
 
-	private void placeAntEater(Cell[][] field, Individual antEater) {
+	private void placeOneAntEater(Cell[][] field, Individual antEater) {
 		final int height = field.length;
 		final int width = field[0].length;
 		field[width / 2][height / 2].setIndividual(antEater);
 		antEater.setPosition(width / 2, height / 2, Util.nextInt(4));
 	}
-	
+
 	private void doNTimes(int n, BiFunction<Integer, Integer, Boolean> failFunction,
 			BiConsumer<Integer, Integer> action) {
 		for (int i = 0; i < n; i++) {
