@@ -10,18 +10,24 @@ import ru.ifmo.ctddev.sushencev.anteater.Cell.Type;
 public class RandomWorldGenerator implements WorldGenerator {
 	private int width;
 	private int height;
+	private double maxFood;
+	private double minFood;
+	private int foodPeriod;
+	private int currentIteration;
 	private double foodPercentage;
-	private double foodDecreaseRate;
 
-	public RandomWorldGenerator(int width, int height, double foodPercentage, double foodDecreaseRate) {
-		this.foodPercentage = foodPercentage;
-		this.foodDecreaseRate = foodDecreaseRate;
+	public RandomWorldGenerator(int width, int height, double minFood, double maxFood, int foodPeriod) {
+		this.minFood = minFood;
+		this.maxFood = maxFood;
+		this.foodPeriod = foodPeriod;
 		this.width = width;
 		this.height = height;
+		this.currentIteration = 0;
+		this.foodPercentage = maxFood;
 	}
 
 	public RandomWorldGenerator(int width, int height, double foodPercentage) {
-		this(width, height, foodPercentage, 1.0);
+		this(width, height, foodPercentage, foodPercentage, 1);
 	}
 
 	public Cell[][] generateWorld(Individual[] ants, Individual ... antEaters) {
@@ -41,7 +47,8 @@ public class RandomWorldGenerator implements WorldGenerator {
 	}
 
 	public void advanceFoodPercentage() {
-		foodPercentage *= foodDecreaseRate;
+		currentIteration = (currentIteration + 1) % foodPeriod;
+		foodPercentage = minFood + (maxFood - minFood) * Math.cos((double) (currentIteration) / foodPeriod * Math.PI * 2);
 	}
 
 	private void generateFood(Cell[][] field, int foodAmount) {

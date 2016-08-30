@@ -8,7 +8,6 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		int width = 25;
 		int height = 25;
-		float foodPercentage = .5f;
 		int antPopulationSize = 20;
 		int antEaterPopulationSize = 10;
 		float crossingoverProbability = .3f;
@@ -29,8 +28,7 @@ public class Main {
 		selectionStrategy = new ElitisticSelectionStrategy(selectionStrategy, 3);
 
 		final int generations = 1000000;
-		WorldGenerator worldGenerator = new RandomWorldGenerator(width, height,
-				foodPercentage, Math.exp(Math.log(0.1) / generations));
+		WorldGenerator worldGenerator = new RandomWorldGenerator(width, height,	0.5, 0.05, 100);
 
 		String logFileName = "log_" + Util.randomSeed;// nextInt(1000_000_000);
 		WorldLogger w = new WorldLogger(antPopulationSize, antEaterPopulationSize,

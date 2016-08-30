@@ -45,11 +45,14 @@ public class CreateParadiseTestFrame {
 	private JComboBox<WorldType> worldTypeComboBox;
 
 	private enum WorldType {
-		RANDOM(new RandomWorldGenerator(25, 25, .5f));
+		RANDOM_50(new RandomWorldGenerator(25, 25, 0.50)),
+		RANDOM_25(new RandomWorldGenerator(25, 25, 0.25)),
+		RANDOM_10(new RandomWorldGenerator(25, 25, 0.10)),
+		RANDOM_05(new RandomWorldGenerator(25, 25, 0.05));
 
 		private WorldGenerator worldGenerator;
 
-		private WorldType(WorldGenerator worldGenerator) {
+		WorldType(WorldGenerator worldGenerator) {
 			this.worldGenerator = worldGenerator;
 		}
 
