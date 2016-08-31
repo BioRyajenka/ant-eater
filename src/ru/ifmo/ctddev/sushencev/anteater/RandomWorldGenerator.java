@@ -10,30 +10,47 @@ import ru.ifmo.ctddev.sushencev.anteater.Cell.Type;
 public class RandomWorldGenerator implements WorldGenerator {
 	private int width;
 	private int height;
-	private float foodPercentage;
-	
-	public RandomWorldGenerator(int width, int height, float foodPercentage) {
-		this.foodPercentage = foodPercentage;
+	private double maxFood;
+	private double minFood;
+	private int foodPeriod;
+	private int currentIteration;
+	private double foodPercentage;
+
+	public RandomWorldGenerator(int width, int height, double minFood, double maxFood, int foodPeriod) {
+		this.minFood = minFood;
+		this.maxFood = maxFood;
+		this.foodPeriod = foodPeriod;
 		this.width = width;
 		this.height = height;
+		this.currentIteration = 0;
+		this.foodPercentage = maxFood;
 	}
-	
+
+	public RandomWorldGenerator(int width, int height, double foodPercentage) {
+		this(width, height, foodPercentage, foodPercentage, 1);
+	}
+
 	public Cell[][] generateWorld(Individual[] ants, Individual ... antEaters) {
 		Cell[][] field = createEmptyField(width, height);
 		int foodAmount = (int) (width * height * foodPercentage);
-		
+
 		generateFood(field, foodAmount);
 
 		placeAnts(field, ants);
 		if (antEaters.length == 1) {
-			placeOneAntEater(field, antEaters[0]);			
+			placeOneAntEater(field, antEaters[0]);
 		} else {
 			placeAnts(field, antEaters);
 		}
-		
+
 		return field;
 	}
-	
+
+	public void advanceFoodPercentage() {
+		currentIteration = (currentIteration + 1) % foodPeriod;
+		foodPercentage = minFood + (maxFood - minFood) * Math.cos((double) (currentIteration) / foodPeriod * Math.PI * 2);
+	}
+
 	private void generateFood(Cell[][] field, int foodAmount) {
 		doNTimes(foodAmount, (x, y) -> field[y][x].getType() == Type.FOOD, (x,
 				y) -> field[y][x].setType(Type.FOOD));
@@ -61,7 +78,7 @@ public class RandomWorldGenerator implements WorldGenerator {
 		field[width / 2][height / 2].setIndividual(antEater);
 		antEater.setPosition(width / 2, height / 2, Util.nextInt(4));
 	}
-	
+
 	private void doNTimes(int n, BiFunction<Integer, Integer, Boolean> failFunction,
 			BiConsumer<Integer, Integer> action) {
 		for (int i = 0; i < n; i++) {

@@ -27,7 +27,7 @@ public class SimpleSightTest {
 		sight = new SimpleSight(c -> c.getType() == Type.FOOD, 2);
 	}
 
-	public void test(String[] test, int rot, int expected) {
+	private void test(String[] test, int rot, int expected) {
 		assertEquals(sight.check(buildField(test), new Position(2, 2, rot)).getMask(),
 				expected);
 	}

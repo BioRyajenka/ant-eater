@@ -8,7 +8,6 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		int width = 25;
 		int height = 25;
-		float foodPercentage = .5f;
 		int antPopulationSize = 20;
 		int antEaterPopulationSize = 10;
 		float crossingoverProbability = .3f;
@@ -19,7 +18,7 @@ public class Main {
 		int tries = 10;
 
 		Sight antSight = new SimpleSightWithObstacles(c -> c.getType() == Type.FOOD, 1);
-		Sight antEaterSight = new SimpleSight(c -> c.hasIndividual(), 1);
+		Sight antEaterSight = new SimpleSight(Cell::hasIndividual, 1);
 
 		SelectionStrategy selectionStrategy = new TwoRandomSelectionStrategy(
 				crossingoverProbability, mutationProbability);
@@ -28,15 +27,14 @@ public class Main {
 		// crossingoverProbability, mutationProbability);
 		selectionStrategy = new ElitisticSelectionStrategy(selectionStrategy, 3);
 
-		WorldGenerator worldGenerator = new RandomWorldGenerator(width, height,
-				foodPercentage);
+		final int generations = 1000000;
+		WorldGenerator worldGenerator = new RandomWorldGenerator(width, height,	0.5, 0.05, 100);
 
 		String logFileName = "log_" + Util.randomSeed;// nextInt(1000_000_000);
 		WorldLogger w = new WorldLogger(antPopulationSize, antEaterPopulationSize,
 				maxStatesInMachine, antSight, antEaterSight, selectionStrategy, worldGenerator,
 				logFileName, false, antEaterPopulationSize, tries);
 
-		final int generations = 1000000;
 		for (int gen = 0; gen < generations; gen++) {
 			if (gen % 100 == 0) {
 				Util.log("age " + gen);

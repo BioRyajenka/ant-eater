@@ -21,13 +21,15 @@ public class EncodedField implements Cloneable {
 		for (int i = 0; i < field.length; i++) {
 			for (int j = 0; j < field[i].length; j++) {
 				Cell c = field[i][j];
-				if (c.getIndividual() != null) {
+				if (c != null && c.getIndividual() != null) {
 					c.getIndividual().setPosition(j, i, 0);
 				}
 			}
 		}
 		for (int i = 0; i < antsRots.length; i++) {
-			ants[i].getPosition().rot = antsRots[i];
+			if (ants[i] != null) {
+				ants[i].getPosition().rot = antsRots[i];
+			}
 		}
 		if (antEater != null) {
 			antEater.getPosition().rot = antEaterRot;
@@ -50,7 +52,7 @@ public class EncodedField implements Cloneable {
 			}
 			return res;
 		} catch (CloneNotSupportedException e) {
+			return null;
 		}
-		return null;
 	}
 }

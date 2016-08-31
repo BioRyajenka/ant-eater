@@ -37,8 +37,7 @@ public class ProportionalSelectionStrategy extends SelectionStrategy {
 	}
 
 	private Individual getRandom(Individual[] indivs) {
-		float sum = (float) Arrays.stream(indivs).collect(Collectors.summingDouble(i -> i
-				.getFitness())).doubleValue();
+		double sum = Arrays.stream(indivs).collect(Collectors.summingDouble(Individual::getFitness));
 		int k = (int) (sum * Util.dice());
 		for (Individual i : indivs) {
 			k -= i.getFitness();

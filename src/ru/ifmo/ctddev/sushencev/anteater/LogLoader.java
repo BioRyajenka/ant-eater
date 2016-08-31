@@ -153,12 +153,11 @@ public class LogLoader implements AutoCloseable {
 					logLoader.getNextTokenType();
 					//assert logLoader.getNextTokenType() == Logger.STATISTICS_BYTE;
 					Statistics antEatersStatistics = logLoader.getStatistics();
-					stRes = new Pair<Statistics, Statistics>(antsStatistics,
-							antEatersStatistics);
+					stRes = new Pair<>(antsStatistics, antEatersStatistics);
 					break;
 				}
 			} catch (RuntimeException e) {
-				if (e instanceof RuntimeException && !(e.getCause() instanceof EOFException)) {
+				if (!(e.getCause() instanceof EOFException)) {
 					throw e;
 				}
 				break;

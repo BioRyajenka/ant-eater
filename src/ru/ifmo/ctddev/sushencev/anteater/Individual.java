@@ -53,8 +53,7 @@ public class Individual implements Serializable {
 		if (dead) {
 			throw new RuntimeException("dead stay dumb");
 		}
-		OutputSignal res = chromosome.doStep(checkSight());
-		return res;
+		return chromosome.doStep(checkSight());
 	}
 
 	public void incEatenFoodAmount() {
@@ -118,8 +117,7 @@ public class Individual implements Serializable {
 	}
 	
 	public Individual copy() {
-		Individual res = new Individual(habitat, sight, chromosome.copy(), "noname", antEater);
-		return res;
+		return new Individual(habitat, sight, chromosome.copy(), "noname", antEater);
 	}
 	
 	public void setName(String name) {
