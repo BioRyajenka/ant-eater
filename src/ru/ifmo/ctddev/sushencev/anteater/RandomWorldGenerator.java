@@ -47,8 +47,8 @@ public class RandomWorldGenerator implements WorldGenerator {
 	}
 
 	public void advanceFoodPercentage() {
-		currentIteration = (currentIteration + 1) % foodPeriod;
-		foodPercentage = minFood + (maxFood - minFood) * Math.cos((double) (currentIteration) / foodPeriod * Math.PI * 2);
+		//currentIteration = (currentIteration + 1) % foodPeriod;
+		//foodPercentage = minFood + (maxFood - minFood) * Math.cos((double) (currentIteration) / foodPeriod * Math.PI * 2);
 	}
 
 	private void generateFood(Cell[][] field, int foodAmount) {

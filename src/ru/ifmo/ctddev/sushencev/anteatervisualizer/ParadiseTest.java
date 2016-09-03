@@ -2,8 +2,6 @@ package ru.ifmo.ctddev.sushencev.anteatervisualizer;
 
 import java.awt.EventQueue;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,18 +31,24 @@ public class ParadiseTest {
 	protected JFrame frame;
 	private FieldCanvas fieldCanvas;
 	private JComboBox<Integer> frameComboBox;
+	private PlayerPanel playerPanel;
+	
+	private CreateParadiseTestFrame createParadiseTestFrame = null;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(() -> {
 			ParadiseTest window = new ParadiseTest();
 			window.frame.setVisible(true);
-        });
+		});
 	}
 
 	private ParadiseTest() {
 		initialize();
 	}
 
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(400, 200, 803, 499);
@@ -63,10 +67,11 @@ public class ParadiseTest {
 
 		fieldCanvas = new FieldCanvas(descriptionLabel, viewAutomataButton);
 
-		PlayerPanel playerPanel = PlayerPanel.createInstance();
+		playerPanel = PlayerPanel.createInstance();
 		frameComboBox = playerPanel.getFrameComboBox();
 		playerPanel.setOnFrameSelected(e -> {
-			if (frameComboBox.getSelectedIndex() == -1) return;
+			if (frameComboBox.getSelectedIndex() == -1)
+				return;
 			int frame = (int) frameComboBox.getSelectedItem();
 			world.goToStep(frame);
 			fieldCanvas.repaint();
@@ -75,38 +80,61 @@ public class ParadiseTest {
 			viewAutomataButton.setEnabled(!play);
 		});
 
+		JButton restartButton = new JButton("Restart");
+		restartButton.addActionListener(e -> {
+			if (frameComboBox.getItemCount() == 0) {
+				return;
+			}
+			publishTest(lastAnts, lastAntEaters, lastWorldGenerator);
+		});
+		
+		JButton changeTestButton = new JButton("Change test");
+		changeTestButton.addActionListener(e -> {
+			if (createParadiseTestFrame == null) {
+				createParadiseTestFrame = new CreateParadiseTestFrame(this);
+			}
+			createParadiseTestFrame.show();
+		});
+
 		GroupLayout gl_worldTab = new GroupLayout(worldTab);
-		gl_worldTab.setHorizontalGroup(gl_worldTab.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_worldTab.createSequentialGroup().addGap(10).addComponent(
-						fieldCanvas, GroupLayout.PREFERRED_SIZE, 541,
-						GroupLayout.PREFERRED_SIZE).addPreferredGap(
-								ComponentPlacement.UNRELATED).addGroup(gl_worldTab
-										.createParallelGroup(Alignment.TRAILING).addGroup(
-												gl_worldTab.createParallelGroup(
-														Alignment.LEADING).addComponent(
-																descriptionLabel).addComponent(
-																		playerPanel,
-																		GroupLayout.PREFERRED_SIZE,
-																		209,
-																		GroupLayout.PREFERRED_SIZE))
-										.addComponent(viewAutomataButton)).addContainerGap()));
-		gl_worldTab.setVerticalGroup(gl_worldTab.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_worldTab.createSequentialGroup().addGroup(gl_worldTab
-						.createParallelGroup(Alignment.LEADING).addGroup(gl_worldTab
-								.createSequentialGroup().addGap(35).addGroup(gl_worldTab
-										.createParallelGroup(Alignment.LEADING).addGroup(
-												gl_worldTab.createSequentialGroup().addGap(128)
-														.addComponent(descriptionLabel))
-										.addComponent(fieldCanvas, Alignment.TRAILING,
-												GroupLayout.DEFAULT_SIZE,
-												GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-						.addGroup(gl_worldTab.createSequentialGroup().addContainerGap()
-								.addComponent(playerPanel, GroupLayout.PREFERRED_SIZE, 120,
-										GroupLayout.PREFERRED_SIZE).addPreferredGap(
-												ComponentPlacement.RELATED, 229,
-												Short.MAX_VALUE).addComponent(
-														viewAutomataButton)))
-						.addContainerGap()));
+		gl_worldTab.setHorizontalGroup(
+			gl_worldTab.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_worldTab.createSequentialGroup()
+					.addGap(10)
+					.addComponent(fieldCanvas, GroupLayout.PREFERRED_SIZE, 541, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addGroup(gl_worldTab.createParallelGroup(Alignment.TRAILING)
+						.addGroup(gl_worldTab.createParallelGroup(Alignment.LEADING)
+							.addComponent(descriptionLabel)
+							.addComponent(playerPanel, GroupLayout.PREFERRED_SIZE, 209, GroupLayout.PREFERRED_SIZE))
+						.addGroup(gl_worldTab.createParallelGroup(Alignment.LEADING, false)
+							.addComponent(restartButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(viewAutomataButton, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+						.addComponent(changeTestButton, GroupLayout.PREFERRED_SIZE, 119, GroupLayout.PREFERRED_SIZE))
+					.addContainerGap())
+		);
+		gl_worldTab.setVerticalGroup(
+			gl_worldTab.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_worldTab.createSequentialGroup()
+					.addGroup(gl_worldTab.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_worldTab.createSequentialGroup()
+							.addGap(35)
+							.addGroup(gl_worldTab.createParallelGroup(Alignment.LEADING)
+								.addGroup(gl_worldTab.createSequentialGroup()
+									.addGap(128)
+									.addComponent(descriptionLabel))
+								.addComponent(fieldCanvas, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+						.addGroup(gl_worldTab.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(playerPanel, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, 161, Short.MAX_VALUE)
+							.addComponent(changeTestButton)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(restartButton)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(viewAutomataButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap())
+		);
 		worldTab.setLayout(gl_worldTab);
 
 		JPanel statisticsTab = new JPanel();
@@ -141,7 +169,8 @@ public class ParadiseTest {
 
 		JMenuItem newTestMenuItem = new JMenuItem("New test");
 		newTestMenuItem.addActionListener((e) -> {
-			new CreateParadiseTestFrame(ParadiseTest.this);
+			createParadiseTestFrame = new CreateParadiseTestFrame(ParadiseTest.this);
+			createParadiseTestFrame.show();
 		});
 		menu.add(newTestMenuItem);
 
@@ -158,14 +187,22 @@ public class ParadiseTest {
 		});
 		menu.add(exitMenuItem);
 	}
-	
+
 	private WorldRepeater world;
+
+	private WorldGenerator lastWorldGenerator;
+	private Individual[] lastAnts;
+	private Individual[] lastAntEaters;
 
 	protected void publishTest(Individual[] ants, Individual[] antEaters,
 			WorldGenerator worldGenerator) {
+		this.lastWorldGenerator = worldGenerator;
+		this.lastAnts = ants;
+		this.lastAntEaters = antEaters;
+
 		List<Individual> antsList = new ArrayList<>(Arrays.asList(ants));
 		antsList.addAll(Arrays.asList(antEaters));
-		
+
 		Cell[][] field = worldGenerator.generateWorld(ants, antEaters);
 		int[] antsRots = new int[antsList.size()];
 		for (int i = 0; i < antsList.size(); i++) {
@@ -179,6 +216,7 @@ public class ParadiseTest {
 		for (int i = 0; i < 1000; i++) {
 			frameComboBox.addItem(i);
 		}
-		frameComboBox.setSelectedIndex(0);
+		// frameComboBox.setSelectedIndex(0);
+		playerPanel.stop();
 	}
 }

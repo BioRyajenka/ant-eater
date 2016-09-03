@@ -27,8 +27,8 @@ public class Main {
 		// crossingoverProbability, mutationProbability);
 		selectionStrategy = new ElitisticSelectionStrategy(selectionStrategy, 3);
 
-		final int generations = 1000000;
-		WorldGenerator worldGenerator = new RandomWorldGenerator(width, height,	0.5, 0.05, 100);
+		final int generations = 1000;
+		WorldGenerator worldGenerator = new RandomWorldGenerator(width, height,	0.5);
 
 		String logFileName = "log_" + Util.randomSeed;// nextInt(1000_000_000);
 		WorldLogger w = new WorldLogger(antPopulationSize, antEaterPopulationSize,

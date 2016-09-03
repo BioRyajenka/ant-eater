@@ -1,7 +1,6 @@
 package ru.ifmo.ctddev.sushencev.anteatervisualizer;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.function.Consumer;
 
@@ -15,8 +14,6 @@ import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.Timer;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 public final class PlayerPanel extends JPanel {
 	private static final long serialVersionUID = 6560885420628863775L;
@@ -103,8 +100,7 @@ public final class PlayerPanel extends JPanel {
 
 		JButton stopButton = new JButton("Stop");
 		stopButton.addActionListener(e -> {
-            panel.pause();
-            panel.frameComboBox.setSelectedIndex(0);
+            panel.stop();
         });
 
 		GroupLayout gl_panel = new GroupLayout(panel);
@@ -194,6 +190,11 @@ public final class PlayerPanel extends JPanel {
 	protected void play() {
 		playState = PlayState.PLAY;
 		enableComponents(true);
+	}
+
+	protected void stop() {
+		pause();
+        frameComboBox.setSelectedIndex(0);
 	}
 
 	private ActionListener prevOnFrameSelected = null;

@@ -66,13 +66,14 @@ public class CreateParadiseTestFrame {
 		}
 	}
 
-	/**
-	 * Create the application.
-	 */
 	public CreateParadiseTestFrame(ParadiseTest parent) {
 		this.parent = parent;
-		parent.frame.setEnabled(false);
 		initialize();
+	}
+	
+	public void show() {
+		jf.setVisible(true);
+		parent.frame.setEnabled(false);
 	}
 
 	/**
@@ -89,7 +90,7 @@ public class CreateParadiseTestFrame {
 		jf.setBounds(100, 100, 452, 448);
 		jf.setLocation(parent.frame.getX() + parent.frame.getWidth() / 2 - jf.getWidth() / 2,
 				parent.frame.getY() + parent.frame.getHeight() / 2 - jf.getHeight() / 2);
-		jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		jf.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		// jf.setAlwaysOnTop(true);
 
 		JLabel worldTypeLabel = new JLabel("World type");
@@ -286,7 +287,6 @@ public class CreateParadiseTestFrame {
 						.addGap(32)));
 
 		jf.getContentPane().setLayout(groupLayout);
-		jf.setVisible(true);
 	}
 
 	private class MyListRenderer extends DefaultListCellRenderer {
