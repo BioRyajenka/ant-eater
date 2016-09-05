@@ -28,12 +28,18 @@ public class Main {
 		selectionStrategy = new ElitisticSelectionStrategy(selectionStrategy, 3);
 
 		final int generations = 1000;
-		WorldGenerator worldGenerator = new RandomWorldGenerator(width, height,	0.5);
+		WorldGenerator worldGenerator = new RandomWorldGenerator(width, height, 0.5);
 
-		String logFileName = "log_" + Util.randomSeed;// nextInt(1000_000_000);
-		WorldLogger w = new WorldLogger(antPopulationSize, antEaterPopulationSize,
-				maxStatesInMachine, antSight, antEaterSight, selectionStrategy, worldGenerator,
-				logFileName, false, antEaterPopulationSize, tries);
+		String logFileName = "log_" + Util.randomSeed;
+
+		IndividualsContainer antsContainer = new IndividualsContainer(antPopulationSize,
+				antPopulationSize, antSight, maxStatesInMachine, selectionStrategy, false);
+		IndividualsContainer antEatersContainer = new IndividualsContainer(
+				antEaterPopulationSize, 1, antEaterSight, maxStatesInMachine,
+				selectionStrategy, true);
+
+		WorldLogger w = new WorldLogger(antsContainer, antEatersContainer, worldGenerator,
+				logFileName, false, tries, antEaterPopulationSize);
 
 		for (int gen = 0; gen < generations; gen++) {
 			if (gen % 100 == 0) {
@@ -52,13 +58,14 @@ public class Main {
 					}
 				}
 				if (aei != antEaterPopulationSize - 1) {
-					w.nextAntEater();
+					w.nextAntEatersPack();
 				}
 			}
-			if (Util.isSmthPressed() && w.isLogging()) {
+
+			if (Util.isQuitPressed() && w.isLogging()) {
 				break;
 			}
-			if (Util.isSmthPressed()) {
+			if (Util.isQuitPressed()) {
 				w.startLogging();
 			}
 			if (gen == generations - 2) {

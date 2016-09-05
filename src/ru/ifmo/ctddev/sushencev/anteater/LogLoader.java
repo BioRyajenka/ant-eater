@@ -8,7 +8,6 @@ import java.io.ObjectInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import ru.ifmo.ctddev.sushencev.anteater.Util.IntPair;
 import ru.ifmo.ctddev.sushencev.anteater.Util.Pair;
 
 public class LogLoader implements AutoCloseable {
@@ -28,25 +27,24 @@ public class LogLoader implements AutoCloseable {
 		}
 	}
 
-	public IntPair getSettings() {
+	public WorldSettings getSettings() {
 		try {
-			int aeis = ois.readInt();
 			int tries = ois.readInt();
-			return new IntPair(aeis, tries);
+			int aeps = ois.readInt();
+			return new WorldSettings(tries, aeps);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public EncodedGeneration getNextGeneration() {
 		try {
-			Map<String, Integer> description = (Map<String, Integer>) ois.readObject();
+			int gen = ois.readInt();
 
 			Individual[] ants = (Individual[]) ois.readObject();
 			Individual[] antEaters = (Individual[]) ois.readObject();
-			return new EncodedGeneration(description, new Pair<>(ants, antEaters));
-		} catch (ClassNotFoundException | IOException e) {
+			return new EncodedGeneration(gen, ants, antEaters);
+		} catch (IOException | ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -55,7 +53,7 @@ public class LogLoader implements AutoCloseable {
 		try {
 			// Map<String, Integer> description = (Map<String, Integer>)
 			// ois.readObject();
-			Individual antEater = (Individual) ois.readObject();
+			// Individual antEater = (Individual) ois.readObject();
 			int height = ois.readInt();
 			int width = ois.readInt();
 			Cell[][] field = new Cell[height][width];
@@ -65,16 +63,22 @@ public class LogLoader implements AutoCloseable {
 				}
 			}
 
-			int antsNum = ois.readInt();
-			int[] antsRots = new int[antsNum];
-			for (int i = 0; i < antsNum; i++) {
-				antsRots[i] = ois.readInt();
-			}
-			int antEaterRot = ois.readInt();
-			return new EncodedField(field, antsRots, antEaterRot, antEater);
+			int antsRots[] = readIndividualsRots();
+			int antEatersRots[] = readIndividualsRots();
+
+			return new EncodedField(field, antsRots, antEatersRots);
 		} catch (IOException | ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private int[] readIndividualsRots() throws IOException {
+		int length = ois.readInt();
+		int[] rots = new int[length];
+		for (int i = 0; i < length; i++) {
+			rots[i] = ois.readInt();
+		}
+		return rots;
 	}
 
 	public Statistics getStatistics() {
@@ -113,37 +117,37 @@ public class LogLoader implements AutoCloseable {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		Map<Integer, LGeneration> data = new HashMap<>();
 
 		Pair<Statistics, Statistics> stRes = null;
 
 		int tries = 0;
-		int aeis = 0;
+		int aeps = 0;
 		while (true) {
 			try {
 				int type = logLoader.getNextTokenType();
 
 				switch (type) {
 				case Logger.SETTINGS_BYTE:
-					Util.IntPair settings = logLoader.getSettings();
-					aeis = settings.first;
-					tries = settings.second;
+					WorldSettings settings = logLoader.getSettings();
+					tries = settings.tries;
+					aeps = settings.aeps;
 					break;
 				case Logger.GENERATION_BYTE:
+					Util.log("gen");
 					EncodedGeneration p = logLoader.getNextGeneration();
-					int gen = p.first.get("gen");
+					int gen = p.getGenerationNumber();
 					Util.log("loading gen: " + gen);
-					data.put(gen, new LGeneration(new WorldRepeater(p.second.first,
-							p.second.second)));
+					data.put(gen, new LGeneration(new WorldRepeater(p.getAnts(), p
+							.getAntEaters())));
 
 					Map<Integer, LAntEater> aes = data.get(gen).antEaters;
-					for (int aei = 0; aei < aeis; aei++) {
+					for (int aei = 0; aei < aeps; aei++) {
 						aes.putIfAbsent(aei, new LAntEater());
 						for (int tri = 0; tri < tries; tri++) {
 							logLoader.getNextTokenType();
-							//assert logLoader.getNextTokenType() == Logger.FIELD_BYTE;
-							
+
 							aes.get(aei).tries.put(tri, logLoader.getField());
 						}
 					}
@@ -151,7 +155,6 @@ public class LogLoader implements AutoCloseable {
 				case Logger.STATISTICS_BYTE:
 					Statistics antsStatistics = logLoader.getStatistics();
 					logLoader.getNextTokenType();
-					//assert logLoader.getNextTokenType() == Logger.STATISTICS_BYTE;
 					Statistics antEatersStatistics = logLoader.getStatistics();
 					stRes = new Pair<>(antsStatistics, antEatersStatistics);
 					break;
@@ -168,7 +171,17 @@ public class LogLoader implements AutoCloseable {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-		
+
 		return new Pair<>(data, stRes);
+	}
+
+	private static class WorldSettings {
+		private int tries;
+		private int aeps;
+
+		public WorldSettings(int tries, int aeps) {
+			this.tries = tries;
+			this.aeps = aeps;
+		}
 	}
 }

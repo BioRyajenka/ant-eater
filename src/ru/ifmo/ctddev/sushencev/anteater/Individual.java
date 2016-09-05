@@ -10,7 +10,6 @@ public class Individual implements Serializable {
 	private static final long serialVersionUID = -87288283039935538L;
 
 	private transient Position position;
-	private World habitat;
 	private Sight sight;
 	private Automata chromosome;
 	
@@ -29,31 +28,26 @@ public class Individual implements Serializable {
 		chromosome.refresh();
 	}
 	
-	public void setHabitat(World habitat) {
-		this.habitat = habitat;
+	public Individual(Sight sight, int maxStates, String name, boolean antEater) {
+		this(sight, new Automata(maxStates, sight.getInputSignalsNumber()), name, antEater);
 	}
 	
-	public Individual(World habitat, Sight sight, int maxStates, String name, boolean antEater) {
-		this(habitat, sight, new Automata(maxStates, sight.getInputSignalsNumber()), name, antEater);
-	}
-	
-	public Individual(World habitat, Sight sight, Automata chromosome, String name, boolean antEater) {
-		this.habitat = habitat;
+	public Individual(Sight sight, Automata chromosome, String name, boolean antEater) {
 		this.sight = sight;
 		this.chromosome = chromosome;
 		this.name = name;
 		this.antEater = antEater;
 	}
 
-	public InputSignal checkSight() {
-		return sight.check(habitat.field, position);
+	public InputSignal checkSight(Cell[][] field) {
+		return sight.check(field, position);
 	}
 
-	public OutputSignal doStep() {
+	public OutputSignal doStep(Cell[][] field) {
 		if (dead) {
 			throw new RuntimeException("dead stay dumb");
 		}
-		return chromosome.doStep(checkSight());
+		return chromosome.doStep(checkSight(field));
 	}
 
 	public void incEatenFoodAmount() {
@@ -90,8 +84,8 @@ public class Individual implements Serializable {
 	
 	public Pair<Individual, Individual> cross(Individual match) {
 		Pair<Automata, Automata> res = chromosome.cross(match.chromosome);
-		Individual first = new Individual(habitat, sight, res.first, "noname", antEater);
-		Individual second = new Individual(habitat, sight, res.second, "noname", antEater);
+		Individual first = new Individual(sight, res.first, null, antEater);
+		Individual second = new Individual(sight, res.second, null, antEater);
 		return new Pair<Individual, Individual>(first, second);
 	}
 	
@@ -117,7 +111,7 @@ public class Individual implements Serializable {
 	}
 	
 	public Individual copy() {
-		return new Individual(habitat, sight, chromosome.copy(), "noname", antEater);
+		return new Individual(sight, chromosome.copy(), null, antEater);
 	}
 	
 	public void setName(String name) {

@@ -12,38 +12,19 @@ public class World implements Serializable {
 
 	protected transient Cell[][] field;
 
-	protected Individual antEater;
-	protected int currentAntEater;
-	protected Individual[] antEaters;
-	protected Individual[] ants;
+	protected transient IndividualsContainer antsContainer;
+	protected transient IndividualsContainer antEatersContainer;
 
-	private transient SelectionStrategy selectionStrategy;
 	private transient WorldGenerator worldGenerator;
 
-	public World(int antsNumber, int antEatersNumber, int maxStatesInMachine, Sight antSight,
-			Sight antEaterSight, SelectionStrategy selectionStrategy,
+	public World(IndividualsContainer antsContainer, IndividualsContainer antEatersContainer,
 			WorldGenerator worldGenerator) {
-		this.selectionStrategy = selectionStrategy;
 		this.worldGenerator = worldGenerator;
 
-		antEaters = new Individual[antEatersNumber];
-		for (int i = 0; i < antEatersNumber; i++) {
-			antEaters[i] = new Individual(this, antEaterSight, maxStatesInMachine, "antEater "
-					+ i, true);
-		}
-
-		ants = new Individual[antsNumber];
-		for (int i = 0; i < antsNumber; i++) {
-			ants[i] = new Individual(this, antSight, maxStatesInMachine, "ant " + i, false);
-		}
+		this.antsContainer = antsContainer;
+		this.antEatersContainer = antEatersContainer;
 
 		onGenerationCreated();
-
-		// see WorldRepeater's constructor
-		if (antEaters.length > 0) {
-			antEater = antEaters[currentAntEater = 0];
-		}
-
 		refreshWorld();
 	}
 
@@ -52,20 +33,31 @@ public class World implements Serializable {
 	}
 
 	public void nextAge() {
-		ants = createNextGeneration(ants);
-		antEaters = createNextGeneration(antEaters);
-
-		worldGenerator.advanceFoodPercentage();
+		antsContainer.nextGeneration();
+		antsContainer.reset();
+		antEatersContainer.nextGeneration();
+		antEatersContainer.reset();
 
 		onGenerationCreated();
 
-		antEater = antEaters[currentAntEater = 0];
-
 		refreshWorld();
 	}
+	
+	//public boolean hasNextAntsPack() {
+	//	return antsContainer.hasNextPack();
+	//}
+	
+	public void nextAntsPack() {
+		antsContainer.nextPack();
+		refreshWorld();
+	}
+	
+	//public boolean hasNextAntEatersPack() {
+	//	return antEatersContainer.hasNextPack();
+	//}
 
-	public void nextAntEater() {
-		antEater = antEaters[++currentAntEater];
+	public void nextAntEatersPack() {
+		antEatersContainer.nextPack();
 		refreshWorld();
 	}
 
@@ -77,13 +69,11 @@ public class World implements Serializable {
 		if (worldGenerator == null)
 			return;
 
-		Arrays.stream(ants).forEach(Individual::refreshAutomata);
-		if (antEater != null) {
-			antEater.refreshAutomata();
-			field = worldGenerator.generateWorld(ants, antEater);
-		} else {
-			field = worldGenerator.generateWorld(ants);
-		}
+		antsContainer.refreshPack();
+		antEatersContainer.refreshPack();
+
+		field = worldGenerator.generateWorld(antsContainer.getPack(), antEatersContainer
+				.getPack());
 
 		onWorldRefreshed();
 	}
@@ -91,25 +81,18 @@ public class World implements Serializable {
 	protected void onWorldRefreshed() {
 
 	}
-
-	public void doStep() {
-		for (Individual i : ants) {
+	
+	protected void doStep(Individual[] individuals) {
+		Arrays.stream(individuals).forEach(i -> {
 			if (!i.isDead()) {
-				processOutputSignal(i, i.doStep());
+				processOutputSignal(i, i.doStep(field));
 			}
-		}
-		if (antEater != null) {
-			processOutputSignal(antEater, antEater.doStep());
-		}
+		});
 	}
 
-	public Individual findAnt(int i) {
-		for (Individual ind : ants) {
-			if (ind.toString().equals("ant " + i)) {
-				return ind;
-			}
-		}
-		return null;
+	public void doStep() {
+		doStep(antsContainer.getPack());
+		doStep(antEatersContainer.getPack());
 	}
 
 	private void processOutputSignal(Individual i, OutputSignal out) {
@@ -131,8 +114,8 @@ public class World implements Serializable {
 						i.die();
 						break;
 					} else {
-    					nc.getIndividual().die();
-    					i.incEatenFoodAmount();
+						nc.getIndividual().die();
+						i.incEatenFoodAmount();
 					}
 				}
 			} else {
@@ -179,24 +162,7 @@ public class World implements Serializable {
 		return new Position(x, y, rot);
 	}
 
-	private Individual[] createNextGeneration(Individual[] indivs) {
-		// see WorldRepeater's constructor
-		if (selectionStrategy == null) {
-			return indivs;
-		}
-		Individual[] res = selectionStrategy.doSelectionAndMutation(indivs);
-
-		// refresh
-		Arrays.stream(res).forEach(Individual::refresh);
-
-		return res;
-	}
-
 	public Cell[][] getField() {
 		return field;
-	}
-
-	public Individual[] getAnts() {
-		return ants;
 	}
 }

@@ -3,7 +3,6 @@ package ru.ifmo.ctddev.sushencev.anteater;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.Map;
 
 public class Logger implements AutoCloseable {
 	private FileOutputStream fos;
@@ -19,19 +18,18 @@ public class Logger implements AutoCloseable {
 		oos = new ObjectOutputStream(fos);
 	}
 	
-	public void putWorldSettings(int aeps, int tries) {
+	public void putWorldSettings(int tries, int aeps) {
 		try {
 			oos.writeByte(SETTINGS_BYTE);
 			
-			oos.writeInt(aeps);
 			oos.writeInt(tries);
+			oos.writeInt(aeps);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void putNextGeneration(Map<String, Integer> description, Individual[] ants,
-			Individual[] antEaters) {
+	public void putNextGeneration(int gen, Individual[] ants, Individual[] antEaters) {
 		try {
 			oos.reset();
 			
@@ -40,7 +38,8 @@ public class Logger implements AutoCloseable {
 			
 			oos.writeByte(GENERATION_BYTE);
 			
-			oos.writeObject(description);
+			oos.writeInt(gen);
+			
 			oos.writeObject(ants);
 			oos.writeObject(antEaters);
 		} catch (IOException e) {
@@ -48,17 +47,10 @@ public class Logger implements AutoCloseable {
 		}
 	}
 
-	public void putField(Cell[][] field, Individual[] ants,
-			Individual antEater) {
+	public void putField(Cell[][] field, Individual[] ants, Individual[] antEaters) {
 		try {
-			// gen, ae, try
-			//oos.writeObject(description);
-			
-			//renameAnts(ants);
-			
 			oos.writeByte(FIELD_BYTE);
 
-			oos.writeObject(antEater);
 			oos.writeInt(field.length);
 			oos.writeInt(field[0].length);
 			for (Cell[] row : field) {
@@ -66,17 +58,24 @@ public class Logger implements AutoCloseable {
 					oos.writeUnshared(cell);
 				}
 			}
-
-			oos.writeInt(ants.length);
-			for (Individual a : ants) {
-				oos.writeInt(a.getPosition().rot);
-			}
-			oos.writeInt(antEater.getPosition().rot);
+			
+			writeIndividualsRots(ants);
+			writeIndividualsRots(antEaters);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
+	private void writeIndividualsRots(Individual[] ants) throws IOException {
+		oos.writeInt(ants.length);
+		for (Individual a : ants) {
+			if (a.getName() == null) {
+				Util.log("wtf");
+			}
+			oos.writeInt(a.getPosition().rot);
+		}
+	}
+
 	private void renameAnts(Individual[] ants, String prefix) {
 		for (int i = 0; i < ants.length; i++) {
 			ants[i].setName(prefix + " " + i);

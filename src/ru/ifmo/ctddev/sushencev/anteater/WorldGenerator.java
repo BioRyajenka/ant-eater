@@ -15,6 +15,4 @@ public interface WorldGenerator {
 		}
 		return field;
 	}
-
-	default void advanceFoodPercentage() {}
 }

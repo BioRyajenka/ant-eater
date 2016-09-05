@@ -2,6 +2,10 @@ package ru.ifmo.ctddev.sushencev.anteater;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -13,10 +17,10 @@ public class Util {
 
 	public static final long randomSeed;
 
-	private static boolean smthPressed;
+	private static boolean quitPressed;
 
-	public static boolean isSmthPressed() {
-		return smthPressed;
+	public static boolean isQuitPressed() {
+		return quitPressed;
 	}
 
 	@SuppressWarnings("unused")
@@ -48,7 +52,7 @@ public class Util {
 					int byt = System.in.read();
 					if (byt == 113) {//q
 						log("q pressed. quitting");
-						smthPressed = true;
+						quitPressed = true;
 						break;
 					}
 				} catch (IOException e) {
@@ -61,6 +65,16 @@ public class Util {
 	public static int nextInt(int modulo) {
 		return rand.nextInt(modulo);
 	}
+	
+	public static <T> T randomElement(T[] arr) {
+		return arr[nextInt(arr.length)];
+	}
+	
+	public static <T> T[] randomSubVector(T[] arr, int newSize, T[] res) {
+		List<T> temp = new ArrayList<T>(Arrays.asList(arr));
+		Collections.shuffle(temp);
+		return temp.subList(0, newSize).toArray(res);
+	}
 
 	public static float dice() {
 		return rand.nextFloat();
@@ -68,6 +82,14 @@ public class Util {
 
 	public static boolean dice(float prob) {
 		return dice() < prob;
+	}
+	
+	public static int[] generateRandomVector(int length, int maxValue) {
+		int[] res = new int[length];
+		for (int i = 0; i < res.length; i++) {
+			res[i] = nextInt(maxValue);
+		}
+		return res;
 	}
 
 	public static int mdist(int x1, int y1, int x2, int y2) {
@@ -116,8 +138,8 @@ public class Util {
 		return String.format("(%s:%s)", getCallerClassName(), getCallerLineNumber());
 	}
 
-	public static void log(String msg) {
-		System.out.printf("%s: %s\n", getCallerInfo(), msg);
+	public static void log(Object msg) {
+		System.out.printf("%s: %s\n", getCallerInfo(), msg.toString());
 	}
 
 	public interface SerializablePredicate<T> extends Serializable {

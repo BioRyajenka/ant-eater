@@ -10,24 +10,12 @@ import ru.ifmo.ctddev.sushencev.anteater.Cell.Type;
 public class RandomWorldGenerator implements WorldGenerator {
 	private int width;
 	private int height;
-	private double maxFood;
-	private double minFood;
-	private int foodPeriod;
-	private int currentIteration;
 	private double foodPercentage;
 
-	public RandomWorldGenerator(int width, int height, double minFood, double maxFood, int foodPeriod) {
-		this.minFood = minFood;
-		this.maxFood = maxFood;
-		this.foodPeriod = foodPeriod;
+	public RandomWorldGenerator(int width, int height, double foodPercentage) {
 		this.width = width;
 		this.height = height;
-		this.currentIteration = 0;
-		this.foodPercentage = maxFood;
-	}
-
-	public RandomWorldGenerator(int width, int height, double foodPercentage) {
-		this(width, height, foodPercentage, foodPercentage, 1);
+		this.foodPercentage = foodPercentage;
 	}
 
 	public Cell[][] generateWorld(Individual[] ants, Individual ... antEaters) {

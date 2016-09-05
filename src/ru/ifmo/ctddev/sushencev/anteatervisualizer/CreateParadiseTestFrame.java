@@ -315,8 +315,8 @@ public class CreateParadiseTestFrame {
 
 		Map<Integer, LGeneration> data = res.first;
 		int max = data.keySet().stream().max(Integer::compareTo).get();
-		Individual[] ants = data.get(max).world.getAnts();
-		Individual[] antEaters = data.get(max).world.getAntEaters();
+		Individual[] ants = data.get(max).world.getAllAnts();
+		Individual[] antEaters = data.get(max).world.getAllAntEaters();
 
 		loadedAnts = new ArrayList<>(Arrays.asList(ants));
 		loadedAntEaters = new ArrayList<>(Arrays.asList(antEaters));

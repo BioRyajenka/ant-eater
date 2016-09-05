@@ -1,23 +1,25 @@
 package ru.ifmo.ctddev.sushencev.anteater;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class EncodedField implements Cloneable {
 	private Cell[][] field;
 	private int[] antsRots;
-	private int antEaterRot;
-	private Individual antEater;
-	
-	public EncodedField(Cell[][] field, int[] antsRots, int antEaterRot, Individual antEater) {
+	private int[] antEatersRots;
+
+	public EncodedField(Cell[][] field, int[] antsRots, int[] antEatersRots) {
 		this.field = field;
 		this.antsRots = antsRots;
-		this.antEaterRot = antEaterRot;
-		this.antEater = antEater;
+		this.antEatersRots = antEatersRots;
 	}
-	
+
 	public Cell[][] getField() {
 		return field;
 	}
-	
-	public void updateAntsAndAntEaterPositions(Individual[] ants) {
+
+	public void updateIndividualsPositionsAndRefresh() {
 		for (int i = 0; i < field.length; i++) {
 			for (int j = 0; j < field[i].length; j++) {
 				Cell c = field[i][j];
@@ -26,18 +28,36 @@ public class EncodedField implements Cloneable {
 				}
 			}
 		}
-		for (int i = 0; i < antsRots.length; i++) {
-			ants[i].getPosition().rot = antsRots[i];
-		}
-		if (antEater != null) {
-			antEater.getPosition().rot = antEaterRot;
-		}
+		List<Individual> ants = getAnts();
+		updateRots(ants, antsRots);
+		List<Individual> antEaters = getAntEaters();
+		updateRots(antEaters, antEatersRots);
+		ants.forEach(Individual::refresh);
+		antEaters.forEach(Individual::refresh);
 	}
 	
-	public Individual getAntEater() {
-		return antEater;
+	private void updateRots(List<Individual> individuals, int[] rots) {
+		for (int i = 0; i < rots.length; i++) {
+			individuals.get(i).getPosition().rot = rots[i];
+		}
 	}
-	
+
+	private List<Individual> getIndividuals(boolean antEater) {
+		List<Individual> res = new ArrayList<>();
+		Arrays.stream(field).flatMap(row -> Arrays.stream(row)).filter(c -> c.hasIndividual()
+				&& c.getIndividual().isAntEater() == antEater).map(c -> c.getIndividual())
+				.forEach(i -> res.add(i));
+		return res;
+	}
+
+	protected List<Individual> getAnts() {
+		return getIndividuals(false);
+	}
+
+	protected List<Individual> getAntEaters() {
+		return getIndividuals(true);
+	}
+
 	@Override
 	public EncodedField clone() {
 		try {

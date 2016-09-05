@@ -204,11 +204,9 @@ public class ParadiseTest {
 		antsList.addAll(Arrays.asList(antEaters));
 
 		Cell[][] field = worldGenerator.generateWorld(ants, antEaters);
-		int[] antsRots = new int[antsList.size()];
-		for (int i = 0; i < antsList.size(); i++) {
-			antsRots[i] = Util.nextInt(4);
-		}
-		EncodedField encodedField = new EncodedField(field, antsRots, 0, null);
+		int[] antsRots = Util.generateRandomVector(ants.length, 4);
+		int[] antEatersRots = Util.generateRandomVector(ants.length, 4);
+		EncodedField encodedField = new EncodedField(field, antsRots, antEatersRots);
 		world = new WorldRepeater(antsList.toArray(new Individual[antsList.size()]), null);
 		world.setField(encodedField);
 		fieldCanvas.setWorld(world);

@@ -1,41 +1,44 @@
 package ru.ifmo.ctddev.sushencev.anteater;
 
-import java.util.Arrays;
-
 public class WorldRepeater extends World {
 	private static final long serialVersionUID = 2111390727759634411L;
-
-	public WorldRepeater(Individual[] ants, Individual[] antEaters) {
-		super(0, 0, 0, null, null, null, null);
-		this.ants = ants;
-		this.antEaters = antEaters;
-
-		Arrays.stream(ants).forEach(a -> a.setHabitat(this));
-		if (antEaters != null) {
-			Arrays.stream(antEaters).forEach(a -> a.setHabitat(this));
-		}
+	
+	private Individual[] allAnts;
+	private Individual[] allAntEaters;
+	
+	public WorldRepeater(Individual[] allAnts, Individual[] allAntEaters) {
+		super(null, null, null);
+		this.allAnts = allAnts;
+		this.allAntEaters = allAntEaters;
+	}
+	
+	public Individual[] getAntsPack() {
+		return antsPack;
+	}
+	
+	public Individual[] getAntEatersPack() {
+		return antEatersPack;
 	}
 
-	public Individual[] getAnts() {
-		return ants;
+	public Individual[] getAllAnts() {
+		return allAnts;
 	}
 
-	public Individual[] getAntEaters() {
-		return antEaters;
+	public Individual[] getAllAntEaters() {
+		return allAntEaters;
 	}
 
 	private EncodedField initialField;
+	private Individual[] antsPack;
+	private Individual[] antEatersPack;
 
 	public void setField(EncodedField eField) {
 		EncodedField copy = (initialField = eField).clone();
 		field = copy.getField();
-		copy.updateAntsAndAntEaterPositions(ants);
-		Arrays.stream(ants).forEach(Individual::refresh);
-
-		antEater = copy.getAntEater();
-		if (antEater != null) {
-			antEater.refresh();
-		}
+		copy.updateIndividualsPositionsAndRefresh();
+		antsPack = copy.getAnts().toArray(new Individual[copy.getAnts().size()]);
+		antEatersPack = copy.getAntEaters().toArray(new Individual[copy.getAntEaters().size()]);
+		
 		steps = 0;
 	}
 
@@ -43,7 +46,8 @@ public class WorldRepeater extends World {
 
 	@Override
 	public void doStep() {
-		super.doStep();
+		super.doStep(antsPack);
+		super.doStep(antEatersPack);
 		steps++;
 	}
 

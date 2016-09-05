@@ -1,13 +1,25 @@
 package ru.ifmo.ctddev.sushencev.anteater;
 
-import java.util.Map;
+public class EncodedGeneration {
+	private int gen;
+	private Individual[] ants;
+	private Individual[] antEaters;
 
-import ru.ifmo.ctddev.sushencev.anteater.Util.Pair;
-
-public class EncodedGeneration extends Pair<Map<String, Integer>, Pair<Individual[], Individual[]>> {
-
-	public EncodedGeneration(Map<String, Integer> first, Pair<Individual[], Individual[]> second) {
-		super(first, second);
+	public EncodedGeneration(int gen, Individual[] ants, Individual[] antEaters) {
+		this.gen = gen;
+		this.ants = ants;
+		this.antEaters = antEaters;
 	}
-
+	
+	public int getGenerationNumber() {
+		return gen;
+	}
+	
+	public Individual[] getAnts() {
+		return ants;
+	}
+	
+	public Individual[] getAntEaters() {
+		return antEaters;
+	}
 }

@@ -17,7 +17,7 @@ import ru.ifmo.ctddev.sushencev.anteater.Cell;
 import ru.ifmo.ctddev.sushencev.anteater.Cell.Type;
 import ru.ifmo.ctddev.sushencev.anteater.Individual;
 import ru.ifmo.ctddev.sushencev.anteater.Util;
-import ru.ifmo.ctddev.sushencev.anteater.World;
+import ru.ifmo.ctddev.sushencev.anteater.WorldRepeater;
 
 public class FieldCanvas extends Canvas {
 	private static final long serialVersionUID = 8109184974840919569L;
@@ -69,9 +69,9 @@ public class FieldCanvas extends Canvas {
 	private int n, m;
 	private int sizeX, sizeY;
 
-	private World world;
+	private WorldRepeater world;
 
-	public void setWorld(World world) {
+	public void setWorld(WorldRepeater world) {
 		Util.log("setting world " + world.hashCode());
 		this.world = world;
 
@@ -194,6 +194,11 @@ public class FieldCanvas extends Canvas {
 		g.drawRect(j * sizeX + 2, i * sizeY + 2, sizeX - 3, sizeY - 3);
 	}
 
+	private float getMaxFitness(Individual[] individuals) {
+		return Arrays.stream(individuals).max((a, b) -> Float.compare(a.getFitness(), b
+				.getFitness())).get().getFitness();
+	}
+
 	@Override
 	public void paint(Graphics g) {
 		if (world == null) {
@@ -202,8 +207,9 @@ public class FieldCanvas extends Canvas {
 
 		drawGrid(g);
 
-		float maxFitness = Arrays.stream(world.getAnts()).max((a, b) -> Float.compare(a
-				.getFitness(), b.getFitness())).get().getFitness();
+		float antsMaxFitness = getMaxFitness(world.getAntsPack());
+		float antEatersMaxFitness = getMaxFitness(world.getAntEatersPack());
+		;
 
 		int foodLeft = 0;
 		for (int i = 0; i < n; i++) {
@@ -226,7 +232,9 @@ public class FieldCanvas extends Canvas {
 					Individual ind = c.getIndividual();
 
 					Color borderColor = Color.WHITE;
-					if (!ind.isAntEater() && ind.getFitness() == maxFitness) {
+					if (ind.isAntEater() && ind.getFitness() == antEatersMaxFitness && world
+							.getAllAntEaters().length != 1 || !ind.isAntEater() && ind
+									.getFitness() == antsMaxFitness) {
 						borderColor = Color.YELLOW;
 					}
 					if (ind == selectedIndividual) {
@@ -255,7 +263,7 @@ public class FieldCanvas extends Canvas {
 						Automata chr = ind.getChromosome();
 						if (chr != null) {
 							sb.append("sight: ");
-							sb.append(ind.checkSight().getMask());
+							sb.append(ind.checkSight(world.getField()).getMask());
 							sb.append("<br>currect state number: ");
 							sb.append(chr.getCurStateNumber());
 							sb.append("<br>states: ");

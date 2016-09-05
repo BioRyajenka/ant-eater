@@ -1,9 +1,6 @@
 package ru.ifmo.ctddev.sushencev.anteater;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class WorldLogger extends World {
@@ -11,26 +8,17 @@ public class WorldLogger extends World {
 
 	private transient Logger logger;
 
-	public WorldLogger(int antsNumber, int antEatersNumber, int maxStatesInMachine,
-			Sight antSight, Sight antEaterSight, SelectionStrategy selectionStrategy,
-			WorldGenerator worldGenerator, String logFileName, boolean logging,
-			int antEaterPopulationSize, int tries)
-			throws IOException {
-		super(antsNumber, antEatersNumber, maxStatesInMachine, antSight, antEaterSight,
-				selectionStrategy, worldGenerator);
-		logger = new Logger(logFileName);
+	public WorldLogger(IndividualsContainer antsContainer,
+			IndividualsContainer antEatersContainer, WorldGenerator worldGenerator,
+			String logFileName, boolean logging, int tries, int aeps) throws IOException {
+		super(antsContainer, antEatersContainer, worldGenerator);
 
+		logger = new Logger(logFileName);
 		this.logging = logging;
-		
-		logger.putWorldSettings(antEaterPopulationSize, tries);
+
+		logger.putWorldSettings(tries, aeps);
 
 		onGenerationCreated();
-
-		// see WorldRepeater's constructor
-		if (antEaters.length > 0) {
-			antEater = antEaters[currentAntEater = 0];
-		}
-
 		onWorldRefreshed();
 	}
 
@@ -50,8 +38,10 @@ public class WorldLogger extends World {
 	private Statistics antEatersStatistics = new Statistics("ant-eaters");
 
 	private void collectStatistics() {
-		int antsRes = Arrays.stream(ants).collect(Collectors.summingDouble(Individual::getFitness)).intValue();
-		int antEatersRes = Arrays.stream(antEaters).collect(Collectors.summingDouble(Individual::getFitness)).intValue();
+		int antsRes = antsContainer.stream().collect(Collectors.summingDouble(
+				Individual::getFitness)).intValue();
+		int antEatersRes = antEatersContainer.stream().collect(Collectors.summingDouble(
+				Individual::getFitness)).intValue();
 
 		antsStatistics.setPlot(gen - 1, antsRes);
 		antEatersStatistics.setPlot(gen - 1, antEatersRes);
@@ -59,7 +49,8 @@ public class WorldLogger extends World {
 
 	@Override
 	public void nextAge() {
-		collectStatistics();			
+		collectStatistics();
+		antEatersContainer.reset();
 
 		super.nextAge();
 	}
@@ -68,13 +59,12 @@ public class WorldLogger extends World {
 	protected void onGenerationCreated() {
 		if (logger == null)
 			return;
-		Map<String, Integer> description = new HashMap<>();
-		description.put("gen", gen++);
 
 		if (logging) {
-			logger.putNextGeneration(description, ants, antEaters);
+			logger.putNextGeneration(gen, antsContainer.getAll(), antEatersContainer.getAll());
 		}
 
+		gen++;
 	}
 
 	@Override
@@ -82,7 +72,7 @@ public class WorldLogger extends World {
 		if (logger == null)
 			return;
 		if (logging) {
-			logger.putField(field, ants, antEater);
+			logger.putField(field, antsContainer.getPack(), antEatersContainer.getPack());
 		}
 	}
 
