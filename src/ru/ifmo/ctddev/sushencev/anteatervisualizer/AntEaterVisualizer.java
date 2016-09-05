@@ -107,89 +107,59 @@ public class AntEaterVisualizer {
 		});
 
 		GroupLayout gl_worldTab = new GroupLayout(worldTab);
-		gl_worldTab.setHorizontalGroup(gl_worldTab.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_worldTab.createSequentialGroup().addContainerGap().addComponent(
-						fieldCanvas, GroupLayout.PREFERRED_SIZE, 541,
-						GroupLayout.PREFERRED_SIZE).addGroup(gl_worldTab.createParallelGroup(
-								Alignment.LEADING).addGroup(Alignment.TRAILING, gl_worldTab
-										.createSequentialGroup().addGap(10).addGroup(
-												gl_worldTab.createParallelGroup(
-														Alignment.TRAILING).addComponent(
-																antEaterLabel,
-																GroupLayout.DEFAULT_SIZE, 142,
-																Short.MAX_VALUE).addGroup(
-																		gl_worldTab
-																				.createSequentialGroup()
-																				.addComponent(
-																						generationLabel,
-																						GroupLayout.DEFAULT_SIZE,
-																						72,
-																						Short.MAX_VALUE)
-																				.addGap(70))
-														.addComponent(tryLabel,
-																GroupLayout.DEFAULT_SIZE, 142,
-																Short.MAX_VALUE))
-										.addPreferredGap(ComponentPlacement.RELATED).addGroup(
-												gl_worldTab.createParallelGroup(
-														Alignment.LEADING).addComponent(
-																tryComboBox,
-																GroupLayout.PREFERRED_SIZE, 62,
-																GroupLayout.PREFERRED_SIZE)
-														.addComponent(antEaterComboBox,
-																GroupLayout.PREFERRED_SIZE, 62,
-																GroupLayout.PREFERRED_SIZE)
-														.addComponent(generationComboBox,
-																GroupLayout.PREFERRED_SIZE, 62,
-																GroupLayout.PREFERRED_SIZE)))
-								.addComponent(viewAutomataButton, Alignment.TRAILING).addGroup(
-										Alignment.TRAILING, gl_worldTab.createSequentialGroup()
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addComponent(playerPanel,
-														GroupLayout.PREFERRED_SIZE, 209,
-														Short.MAX_VALUE)).addGroup(gl_worldTab
-																.createSequentialGroup()
-																.addPreferredGap(
-																		ComponentPlacement.RELATED)
-																.addComponent(
-																		descriptionLabel)))
-						.addContainerGap()));
-		gl_worldTab.setVerticalGroup(gl_worldTab.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_worldTab.createSequentialGroup().addContainerGap().addGroup(
-						gl_worldTab.createParallelGroup(Alignment.LEADING).addComponent(
-								fieldCanvas, GroupLayout.DEFAULT_SIZE,
-								GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addGroup(gl_worldTab
-										.createSequentialGroup().addGroup(gl_worldTab
-												.createParallelGroup(Alignment.BASELINE)
-												.addComponent(generationLabel).addComponent(
-														generationComboBox,
-														GroupLayout.PREFERRED_SIZE,
-														GroupLayout.DEFAULT_SIZE,
-														GroupLayout.PREFERRED_SIZE))
-										.addPreferredGap(ComponentPlacement.RELATED).addGroup(
-												gl_worldTab.createParallelGroup(
-														Alignment.BASELINE).addComponent(
-																antEaterLabel).addComponent(
-																		antEaterComboBox,
-																		GroupLayout.PREFERRED_SIZE,
-																		GroupLayout.DEFAULT_SIZE,
-																		GroupLayout.PREFERRED_SIZE))
-										.addPreferredGap(ComponentPlacement.RELATED).addGroup(
-												gl_worldTab.createParallelGroup(
-														Alignment.BASELINE).addComponent(
-																tryLabel).addComponent(
-																		tryComboBox,
-																		GroupLayout.PREFERRED_SIZE,
-																		GroupLayout.DEFAULT_SIZE,
-																		GroupLayout.PREFERRED_SIZE))
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(playerPanel, GroupLayout.PREFERRED_SIZE,
-												120, GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(descriptionLabel).addPreferredGap(
-												ComponentPlacement.RELATED, 115,
-												Short.MAX_VALUE).addComponent(
-														viewAutomataButton)))
-						.addContainerGap()));
+		gl_worldTab.setHorizontalGroup(
+			gl_worldTab.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_worldTab.createSequentialGroup()
+					.addGap(10)
+					.addComponent(fieldCanvas, GroupLayout.PREFERRED_SIZE, 539, Short.MAX_VALUE)
+					.addGap(10)
+					.addGroup(gl_worldTab.createParallelGroup(Alignment.TRAILING)
+						.addGroup(gl_worldTab.createSequentialGroup()
+							.addGroup(gl_worldTab.createParallelGroup(Alignment.TRAILING)
+								.addComponent(antEaterLabel, GroupLayout.PREFERRED_SIZE, 142, GroupLayout.PREFERRED_SIZE)
+								.addGroup(gl_worldTab.createSequentialGroup()
+									.addComponent(generationLabel, GroupLayout.PREFERRED_SIZE, 72, GroupLayout.PREFERRED_SIZE)
+									.addGap(70))
+								.addComponent(tryLabel, GroupLayout.PREFERRED_SIZE, 142, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_worldTab.createParallelGroup(Alignment.LEADING)
+								.addComponent(tryComboBox, GroupLayout.PREFERRED_SIZE, 62, GroupLayout.PREFERRED_SIZE)
+								.addComponent(antEaterComboBox, GroupLayout.PREFERRED_SIZE, 62, GroupLayout.PREFERRED_SIZE)
+								.addComponent(generationComboBox, GroupLayout.PREFERRED_SIZE, 62, GroupLayout.PREFERRED_SIZE)))
+						.addComponent(viewAutomataButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addGroup(gl_worldTab.createParallelGroup(Alignment.LEADING)
+							.addGroup(gl_worldTab.createSequentialGroup()
+								.addPreferredGap(ComponentPlacement.RELATED)
+								.addComponent(descriptionLabel))
+							.addComponent(playerPanel, GroupLayout.PREFERRED_SIZE, 209, GroupLayout.PREFERRED_SIZE)))
+					.addGap(10))
+		);
+		gl_worldTab.setVerticalGroup(
+			gl_worldTab.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_worldTab.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(gl_worldTab.createParallelGroup(Alignment.LEADING)
+						.addComponent(fieldCanvas, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addGroup(gl_worldTab.createSequentialGroup()
+							.addGroup(gl_worldTab.createParallelGroup(Alignment.BASELINE)
+								.addComponent(generationLabel)
+								.addComponent(generationComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_worldTab.createParallelGroup(Alignment.BASELINE)
+								.addComponent(antEaterLabel)
+								.addComponent(antEaterComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addGroup(gl_worldTab.createParallelGroup(Alignment.BASELINE)
+								.addComponent(tryLabel)
+								.addComponent(tryComboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(playerPanel, GroupLayout.PREFERRED_SIZE, 120, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED)
+							.addComponent(descriptionLabel)
+							.addPreferredGap(ComponentPlacement.RELATED, 115, Short.MAX_VALUE)
+							.addComponent(viewAutomataButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
+					.addContainerGap())
+		);
 		worldTab.setLayout(gl_worldTab);
 
 		JPanel statisticsTab = new JPanel();
@@ -204,20 +174,27 @@ public class AntEaterVisualizer {
 			}
 		});
 		GroupLayout gl_panel = new GroupLayout(statisticsTab);
-		gl_panel.setHorizontalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(
-				gl_panel.createSequentialGroup().addGroup(gl_panel.createParallelGroup(
-						Alignment.LEADING).addGroup(gl_panel.createSequentialGroup()
-								.addContainerGap().addComponent(recolorStatisticsButton))
-						.addGroup(gl_panel.createSequentialGroup().addGap(10).addComponent(
-								statisticsCanvas, GroupLayout.PREFERRED_SIZE, 756,
-								GroupLayout.PREFERRED_SIZE))).addContainerGap(14,
-										Short.MAX_VALUE)));
-		gl_panel.setVerticalGroup(gl_panel.createParallelGroup(Alignment.TRAILING).addGroup(
-				Alignment.LEADING, gl_panel.createSequentialGroup().addContainerGap()
-						.addComponent(recolorStatisticsButton).addPreferredGap(
-								ComponentPlacement.RELATED).addComponent(statisticsCanvas,
-										GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)
-						.addContainerGap()));
+		gl_panel.setHorizontalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addGroup(gl_panel.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_panel.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(recolorStatisticsButton))
+						.addGroup(gl_panel.createSequentialGroup()
+							.addGap(10)
+							.addComponent(statisticsCanvas, GroupLayout.DEFAULT_SIZE, 756, Short.MAX_VALUE)))
+					.addGap(14))
+		);
+		gl_panel.setVerticalGroup(
+			gl_panel.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_panel.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(recolorStatisticsButton)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(statisticsCanvas, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+					.addContainerGap())
+		);
 		statisticsTab.setLayout(gl_panel);
 
 		JMenuBar menuBar = new JMenuBar();
