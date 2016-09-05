@@ -63,7 +63,7 @@ public class RandomWorldGenerator implements WorldGenerator {
 	private void placeOneAntEater(Cell[][] field, Individual antEater) {
 		final int height = field.length;
 		final int width = field[0].length;
-		field[width / 2][height / 2].setIndividual(antEater);
+		field[height / 2][width / 2].setIndividual(antEater);
 		antEater.setPosition(width / 2, height / 2, Util.nextInt(4));
 	}
 

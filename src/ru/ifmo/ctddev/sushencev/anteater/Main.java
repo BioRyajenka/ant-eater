@@ -7,7 +7,7 @@ import ru.ifmo.ctddev.sushencev.anteater.Cell.Type;
 public class Main {
 	public static void main(String[] args) throws IOException {
 		int width = 25;
-		int height = 25;
+		int height = 50;
 		int antPopulationSize = 20;
 		int antEaterPopulationSize = 10;
 		float crossingoverProbability = .3f;

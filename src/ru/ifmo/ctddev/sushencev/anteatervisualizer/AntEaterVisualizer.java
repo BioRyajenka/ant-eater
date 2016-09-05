@@ -53,6 +53,9 @@ public class AntEaterVisualizer {
 	private FieldCanvas fieldCanvas;
 	private StatisticsCanvas statisticsCanvas;
 
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(180, 140, 803, 499);
