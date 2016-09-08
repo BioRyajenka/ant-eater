@@ -1,10 +1,10 @@
 visualizer
 	save world settings
 	predict selection
-	ant eater (ant try?) selection
-	hall of fame
+	ant eater (ant try?) choosing
+	hall of fame (save best generations for each log)
 	make it reusable
 	make statistics faster
 project
 	alter mutation such that it will be able to add new or remove existing vertices
-	fix bug with states amount
+	deal with bug with states amount

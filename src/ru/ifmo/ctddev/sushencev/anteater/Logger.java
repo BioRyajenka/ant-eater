@@ -4,10 +4,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
+import ru.ifmo.ctddev.sushencev.anteater.worldgenerators.WorldGenerator;
+
 public class Logger implements AutoCloseable {
 	private FileOutputStream fos;
 	private ObjectOutputStream oos;
-	
+
 	public final static byte GENERATION_BYTE = 0;
 	public final static byte FIELD_BYTE = 1;
 	public final static byte STATISTICS_BYTE = 2;
@@ -17,11 +19,11 @@ public class Logger implements AutoCloseable {
 		fos = new FileOutputStream(logFileName);
 		oos = new ObjectOutputStream(fos);
 	}
-	
+
 	public void putWorldSettings(int tries, int aeps) {
 		try {
 			oos.writeByte(SETTINGS_BYTE);
-			
+
 			oos.writeInt(tries);
 			oos.writeInt(aeps);
 		} catch (IOException e) {
@@ -29,19 +31,21 @@ public class Logger implements AutoCloseable {
 		}
 	}
 
-	public void putNextGeneration(int gen, Individual[] ants, Individual[] antEaters) {
+	public void putNextGeneration(int gen, Individual[] ants, Individual[] antEaters,
+			WorldGenerator worldGenerator) {
 		try {
 			oos.reset();
-			
+
 			renameAnts(ants, "ant");
 			renameAnts(antEaters, "antEater");
-			
+
 			oos.writeByte(GENERATION_BYTE);
-			
+
 			oos.writeInt(gen);
-			
+
 			oos.writeObject(ants);
 			oos.writeObject(antEaters);
+			oos.writeObject(worldGenerator);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -58,14 +62,14 @@ public class Logger implements AutoCloseable {
 					oos.writeUnshared(cell);
 				}
 			}
-			
+
 			writeIndividualsRots(ants);
 			writeIndividualsRots(antEaters);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	private void writeIndividualsRots(Individual[] ants) throws IOException {
 		oos.writeInt(ants.length);
 		for (Individual a : ants) {
@@ -85,7 +89,7 @@ public class Logger implements AutoCloseable {
 	public void putStatistics(Statistics antsStatistics) {
 		try {
 			oos.writeByte(STATISTICS_BYTE);
-			
+
 			oos.writeObject(antsStatistics);
 		} catch (IOException e) {
 			throw new RuntimeException(e);

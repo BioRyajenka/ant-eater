@@ -1,21 +1,18 @@
 package ru.ifmo.ctddev.sushencev.anteater;
 
-import java.io.Serializable;
-import java.util.Arrays;
-
 import ru.ifmo.ctddev.sushencev.anteater.Automata.OutputSignal;
 import ru.ifmo.ctddev.sushencev.anteater.Cell.Type;
 import ru.ifmo.ctddev.sushencev.anteater.Individual.Position;
+import ru.ifmo.ctddev.sushencev.anteater.Util.IntPair;
+import ru.ifmo.ctddev.sushencev.anteater.worldgenerators.WorldGenerator;
 
-public class World implements Serializable {
-	private static final long serialVersionUID = -1313054894531054367L;
+public class World {
+	protected Cell[][] field;
 
-	protected transient Cell[][] field;
+	protected IndividualsContainer antsContainer;
+	protected IndividualsContainer antEatersContainer;
 
-	protected transient IndividualsContainer antsContainer;
-	protected transient IndividualsContainer antEatersContainer;
-
-	private transient WorldGenerator worldGenerator;
+	protected WorldGenerator worldGenerator;
 
 	public World(IndividualsContainer antsContainer, IndividualsContainer antEatersContainer,
 			WorldGenerator worldGenerator) {
@@ -66,7 +63,7 @@ public class World implements Serializable {
 	}
 
 	private void refreshWorld() {
-		if (worldGenerator == null)
+		if (antsContainer == null)
 			return;
 
 		antsContainer.refreshPack();
@@ -83,11 +80,11 @@ public class World implements Serializable {
 	}
 	
 	protected void doStep(Individual[] individuals) {
-		Arrays.stream(individuals).forEach(i -> {
+		for (Individual i : individuals) {
 			if (!i.isDead()) {
-				processOutputSignal(i, i.doStep(field));
+				processOutputSignal(i, i.doStep(field, worldGenerator));
 			}
-		});
+		}
 	}
 
 	public void doStep() {
@@ -106,8 +103,12 @@ public class World implements Serializable {
 			i.getPosition().rot = (i.getPosition().rot + 1) % 4;
 			break;
 		case FORWARD:
-			Position pos = getForwardPosition(i.getPosition(), field[0].length, field.length);
-			Cell nc = field[pos.y][pos.x];
+			IntPair pos = getForwardCoordinates(i.getPosition(), worldGenerator);
+			if (pos == null) {
+				i.die();
+				break;
+			}
+			Cell nc = field[pos.second][pos.first];
 			if (i.isAntEater()) {
 				if (nc.isOccupied()) {
 					if (nc.getIndividual().isAntEater()) {
@@ -130,39 +131,29 @@ public class World implements Serializable {
 			}
 			nc.setIndividual(i);
 			field[i.getPosition().y][i.getPosition().x].setIndividual(null);
-			i.setPosition(pos);
+			i.setPosition(new Position(pos.first, pos.second, i.getPosition().rot));
 			break;
 		}
 	}
 
-	protected static Position getForwardPosition(Position pos, int width, int height) {
+	public static IntPair getForwardCoordinates(Position pos, WorldGenerator wg) {
 		int x = pos.x;
 		int y = pos.y;
 		int rot = pos.rot;
 
-		if (rot == 0)
-			y--;
-		if (rot == 1)
-			x++;
-		if (rot == 2)
-			y++;
-		if (rot == 3)
-			x--;
-
-		// torus
-		if (y >= height)
-			y -= height;
-		if (y < 0)
-			y += height;
-		if (x >= width)
-			x -= width;
-		if (x < 0)
-			x += width;
-
-		return new Position(x, y, rot);
+		if (rot == 0) y--;
+		if (rot == 1) x++;
+		if (rot == 2) y++;
+		if (rot == 3) x--;
+		
+		return wg.correctCoordinates(x, y);
 	}
 
 	public Cell[][] getField() {
 		return field;
+	}
+	
+	public WorldGenerator getWorldGenerator() {
+		return worldGenerator;
 	}
 }

@@ -50,7 +50,7 @@ public class Util {
 			while (true) {
 				try {
 					int byt = System.in.read();
-					if (byt == 113) {//q
+					if (byt == 113) {// q
 						log("q pressed. quitting");
 						quitPressed = true;
 						break;
@@ -66,10 +66,20 @@ public class Util {
 		return rand.nextInt(modulo);
 	}
 	
+	public static float nextNormalDistribution(float mean, float deviation) {
+		return (float) (rand.nextGaussian() * deviation + mean);
+	}
+
+	public static float normalDistribution(float mean, float deviation, float x) {
+		float variance = deviation * deviation;
+		return (float) (1 / Math.sqrt(2 * variance * Math.PI) * Math.exp(-(x - mean) * (x
+				- mean) / (2 * variance)));
+	}
+
 	public static <T> T randomElement(T[] arr) {
 		return arr[nextInt(arr.length)];
 	}
-	
+
 	public static <T> T[] randomSubVector(T[] arr, int newSize, T[] res) {
 		List<T> temp = new ArrayList<T>(Arrays.asList(arr));
 		Collections.shuffle(temp);
@@ -83,7 +93,7 @@ public class Util {
 	public static boolean dice(float prob) {
 		return dice() < prob;
 	}
-	
+
 	public static int[] generateRandomVector(int length, int maxValue) {
 		int[] res = new int[length];
 		for (int i = 0; i < res.length; i++) {
@@ -91,9 +101,17 @@ public class Util {
 		}
 		return res;
 	}
+	
+	public static float dist(float x1, float y1, float x2, float y2) {
+		return (float) Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+	}
 
-	public static int mdist(int x1, int y1, int x2, int y2) {
+	public static int manhattanDist(int x1, int y1, int x2, int y2) {
 		return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+	}
+	
+	public static boolean inBounds(int x, int l, int r) {
+		return x >= l && x < r;
 	}
 
 	public static class IntPair extends Pair<Integer, Integer> {
@@ -111,12 +129,12 @@ public class Util {
 			this.second = second;
 		}
 	}
-	
+
 	private static String getCallerClassName() {
 		StackTraceElement[] stElements = Thread.currentThread().getStackTrace();
 		for (StackTraceElement ste : stElements) {
-			if (!ste.getClassName().equals(Util.class.getName()) && ste.getClassName()
-					.indexOf("java.lang.Thread") != 0) {
+			if (!ste.getClassName().equals(Util.class.getName()) && ste.getClassName().indexOf(
+					"java.lang.Thread") != 0) {
 				return ste.getFileName();
 			}
 		}

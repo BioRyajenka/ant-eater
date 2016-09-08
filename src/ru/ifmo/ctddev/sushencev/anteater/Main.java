@@ -3,11 +3,13 @@ package ru.ifmo.ctddev.sushencev.anteater;
 import java.io.IOException;
 
 import ru.ifmo.ctddev.sushencev.anteater.Cell.Type;
+import ru.ifmo.ctddev.sushencev.anteater.worldgenerators.RandomWorldGenerator;
+import ru.ifmo.ctddev.sushencev.anteater.worldgenerators.WorldGenerator;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
 		int width = 25;
-		int height = 50;
+		int height = 25;
 		int antPopulationSize = 20;
 		int antEaterPopulationSize = 10;
 		float crossingoverProbability = .3f;
@@ -17,8 +19,10 @@ public class Main {
 		int steps = 100;
 		int tries = 10;
 
-		Sight antSight = new SimpleSightWithObstacles(c -> c.getType() == Type.FOOD, 1);
-		Sight antEaterSight = new SimpleSight(Cell::hasIndividual, 1);
+		Sight antSight = new SimpleSightWithObstacles(c -> c.getType() == Type.FOOD, 1, c -> c
+				.hasIndividual());
+		Sight antEaterSight = new SimpleSightWithObstacles(c -> c.hasIndividual() && !c
+				.getIndividual().isAntEater(), 2, c -> false);
 
 		SelectionStrategy selectionStrategy = new TwoRandomSelectionStrategy(
 				crossingoverProbability, mutationProbability);
@@ -27,8 +31,10 @@ public class Main {
 		// crossingoverProbability, mutationProbability);
 		selectionStrategy = new ElitisticSelectionStrategy(selectionStrategy, 3);
 
-		final int generations = 1000;
-		WorldGenerator worldGenerator = new RandomWorldGenerator(width, height, 0.5);
+		final int generations = 10000;
+		WorldGenerator worldGenerator = new RandomWorldGenerator(width, height, 0.5f);
+		// WorldGenerator worldGenerator = new WallWorldGenerator(width,
+		// height);
 
 		String logFileName = "log_" + Util.randomSeed;
 
@@ -47,6 +53,7 @@ public class Main {
 			}
 
 			for (int aei = 0; aei < antEaterPopulationSize; aei++) {
+				// Util.log("aei " + aei);
 				for (int tri = 0; tri < tries; tri++) {
 					// Util.log("try " + tri);
 					for (int step = 0; step < steps; step++) {

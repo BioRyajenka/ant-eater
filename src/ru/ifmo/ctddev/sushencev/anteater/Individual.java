@@ -5,6 +5,7 @@ import java.io.Serializable;
 import ru.ifmo.ctddev.sushencev.anteater.Automata.InputSignal;
 import ru.ifmo.ctddev.sushencev.anteater.Automata.OutputSignal;
 import ru.ifmo.ctddev.sushencev.anteater.Util.Pair;
+import ru.ifmo.ctddev.sushencev.anteater.worldgenerators.WorldGenerator;
 
 public class Individual implements Serializable {
 	private static final long serialVersionUID = -87288283039935538L;
@@ -39,15 +40,15 @@ public class Individual implements Serializable {
 		this.antEater = antEater;
 	}
 
-	public InputSignal checkSight(Cell[][] field) {
-		return sight.check(field, position);
+	public InputSignal checkSight(Cell[][] field, WorldGenerator wg) {
+		return sight.check(field, position, wg);
 	}
 
-	public OutputSignal doStep(Cell[][] field) {
+	public OutputSignal doStep(Cell[][] field, WorldGenerator wg) {
 		if (dead) {
 			throw new RuntimeException("dead stay dumb");
 		}
-		return chromosome.doStep(checkSight(field));
+		return chromosome.doStep(checkSight(field, wg));
 	}
 
 	public void incEatenFoodAmount() {

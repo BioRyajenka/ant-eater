@@ -1,13 +1,13 @@
 package ru.ifmo.ctddev.sushencev.anteater;
 
+import ru.ifmo.ctddev.sushencev.anteater.worldgenerators.WorldGenerator;
+
 public class WorldRepeater extends World {
-	private static final long serialVersionUID = 2111390727759634411L;
-	
 	private Individual[] allAnts;
 	private Individual[] allAntEaters;
 	
-	public WorldRepeater(Individual[] allAnts, Individual[] allAntEaters) {
-		super(null, null, null);
+	public WorldRepeater(Individual[] allAnts, Individual[] allAntEaters, WorldGenerator wg) {
+		super(null, null, wg);
 		this.allAnts = allAnts;
 		this.allAntEaters = allAntEaters;
 	}

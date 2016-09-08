@@ -78,12 +78,9 @@ public class FieldCanvas extends Canvas {
 		n = world.getField().length;
 		m = world.getField()[0].length;
 
-		sizeX = getWidth() / m;
-		sizeY = getHeight() / n;
-
 		repaint();
 	}
-
+	
 	private void drawGrid(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setStroke(new BasicStroke(1));
@@ -204,6 +201,9 @@ public class FieldCanvas extends Canvas {
 		if (world == null) {
 			return;
 		}
+		
+		sizeX = getWidth() / m;
+		sizeY = getHeight() / n;
 
 		drawGrid(g);
 
@@ -230,10 +230,16 @@ public class FieldCanvas extends Canvas {
 				Cell c = world.getField()[i][j];
 				if (c.hasIndividual()) {
 					Individual ind = c.getIndividual();
+					
+					if (ind == selectedIndividual) {
+						//Util.log("1: " + ind.isAntEater());
+						Util.log("error: " + world.getAllAntEaters().length);
+					}
+					//TODO: ERROR: world.getAllAntEaters == 10
 
 					Color borderColor = Color.WHITE;
 					if (ind.isAntEater() && ind.getFitness() == antEatersMaxFitness && world
-							.getAllAntEaters().length != 1 || !ind.isAntEater() && ind
+							.getAntEatersPack().length != 1 || !ind.isAntEater() && ind
 									.getFitness() == antsMaxFitness) {
 						borderColor = Color.YELLOW;
 					}
@@ -263,7 +269,7 @@ public class FieldCanvas extends Canvas {
 						Automata chr = ind.getChromosome();
 						if (chr != null) {
 							sb.append("sight: ");
-							sb.append(ind.checkSight(world.getField()).getMask());
+							sb.append(ind.checkSight(world.getField(), world.getWorldGenerator()).getMask());
 							sb.append("<br>currect state number: ");
 							sb.append(chr.getCurStateNumber());
 							sb.append("<br>states: ");

@@ -2,7 +2,9 @@ package ru.ifmo.ctddev.sushencev.anteater;
 
 import ru.ifmo.ctddev.sushencev.anteater.Automata.InputSignal;
 import ru.ifmo.ctddev.sushencev.anteater.Individual.Position;
+import ru.ifmo.ctddev.sushencev.anteater.Util.IntPair;
 import ru.ifmo.ctddev.sushencev.anteater.Util.SerializablePredicate;
+import ru.ifmo.ctddev.sushencev.anteater.worldgenerators.WorldGenerator;
 
 public class SimpleSight implements Sight {
 	private static final long serialVersionUID = 1561910412376252590L;
@@ -16,7 +18,7 @@ public class SimpleSight implements Sight {
 	}
 
 	@Override
-	public InputSignal check(Cell[][] field, Position position) {
+	public InputSignal check(Cell[][] field, Position position, WorldGenerator wg) {
 		int rot = position.rot;
 		int x = position.x;
 		int y = position.y;
@@ -36,8 +38,8 @@ public class SimpleSight implements Sight {
 					: -1) {
 				for (int dx = rot == 0 ? -r : r; rot == 0 ? dx <= r : dx >= -r; dx += rot == 0
 						? 1 : -1) {
-					if (Util.mdist(0, 0, dx, dy) <= r && (dx != 0 || dy != 0)) {
-						mask = processCell(x, y, dx, dy, field, i++, mask);
+					if (Util.manhattanDist(0, 0, dx, dy) <= r && (dx != 0 || dy != 0)) {
+						mask = processCell(x, y, dx, dy, field, i++, mask, wg);
 					}
 				}
 			}
@@ -47,8 +49,8 @@ public class SimpleSight implements Sight {
 					: 1) {
 				for (int dy = rot == 1 ? -r : r; rot == 1 ? dy <= r : dy >= -r; dy += rot == 1
 						? 1 : -1) {
-					if (Util.mdist(0, 0, dx, dy) <= r && (dx != 0 || dy != 0)) {
-						mask = processCell(x, y, dx, dy, field, i++, mask);
+					if (Util.manhattanDist(0, 0, dx, dy) <= r && (dx != 0 || dy != 0)) {
+						mask = processCell(x, y, dx, dy, field, i++, mask, wg);
 					}
 				}
 			}
@@ -62,22 +64,17 @@ public class SimpleSight implements Sight {
 		return 1 << (r * (r + 2));
 	}
 
-	private int processCell(int x, int y, int dx, int dy, Cell[][] field, int i, int mask) {
+	private int processCell(int x, int y, int dx, int dy, Cell[][] field, int i, int mask, WorldGenerator wg) {
 		int nx = x + dx;
 		int ny = y + dy;
 
-		int height = field.length;
-		int width = field[0].length;
-
-		// torus
-		if (nx >= width)
-			nx -= width;
-		if (nx < 0)
-			nx += width;
-		if (ny >= height)
-			ny -= height;
-		if (ny < 0)
-			ny += height;
+		IntPair corrected = wg.correctCoordinates(nx, ny);
+		if (corrected == null) {
+			// doesn't see obstacle
+			return mask;
+		}
+		nx = corrected.first;
+		ny = corrected.second;
 
 		return isFoodFunction.test(field[ny][nx]) ? (mask | (1 << i)) : mask;
 	}

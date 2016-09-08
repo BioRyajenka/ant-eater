@@ -28,10 +28,10 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import ru.ifmo.ctddev.sushencev.anteater.Individual;
 import ru.ifmo.ctddev.sushencev.anteater.LogLoader;
 import ru.ifmo.ctddev.sushencev.anteater.LogLoader.LGeneration;
-import ru.ifmo.ctddev.sushencev.anteater.RandomWorldGenerator;
 import ru.ifmo.ctddev.sushencev.anteater.Statistics;
 import ru.ifmo.ctddev.sushencev.anteater.Util.Pair;
-import ru.ifmo.ctddev.sushencev.anteater.WorldGenerator;
+import ru.ifmo.ctddev.sushencev.anteater.worldgenerators.RandomWorldGenerator;
+import ru.ifmo.ctddev.sushencev.anteater.worldgenerators.WorldGenerator;
 
 public class CreateParadiseTestFrame {
 	private JFrame jf;
@@ -45,10 +45,10 @@ public class CreateParadiseTestFrame {
 	private JComboBox<WorldType> worldTypeComboBox;
 
 	private enum WorldType {
-		RANDOM_50(new RandomWorldGenerator(25, 25, 0.50)),
-		RANDOM_25(new RandomWorldGenerator(25, 25, 0.25)),
-		RANDOM_10(new RandomWorldGenerator(25, 25, 0.10)),
-		RANDOM_05(new RandomWorldGenerator(25, 25, 0.05));
+		RANDOM_50(new RandomWorldGenerator(25, 25, 0.50f)),
+		RANDOM_25(new RandomWorldGenerator(25, 25, 0.25f)),
+		RANDOM_10(new RandomWorldGenerator(25, 25, 0.10f)),
+		RANDOM_05(new RandomWorldGenerator(25, 25, 0.05f));
 
 		private WorldGenerator worldGenerator;
 

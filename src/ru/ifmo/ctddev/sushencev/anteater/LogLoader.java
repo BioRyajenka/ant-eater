@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ru.ifmo.ctddev.sushencev.anteater.Util.Pair;
+import ru.ifmo.ctddev.sushencev.anteater.worldgenerators.WorldGenerator;
 
 public class LogLoader implements AutoCloseable {
 	private FileInputStream fis;
@@ -43,7 +44,9 @@ public class LogLoader implements AutoCloseable {
 
 			Individual[] ants = (Individual[]) ois.readObject();
 			Individual[] antEaters = (Individual[]) ois.readObject();
-			return new EncodedGeneration(gen, ants, antEaters);
+			Util.log("loaded " + antEaters.length + " ant eaters");
+			WorldGenerator worldGenerator = (WorldGenerator) ois.readObject();
+			return new EncodedGeneration(gen, ants, antEaters, worldGenerator);
 		} catch (IOException | ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
@@ -140,7 +143,7 @@ public class LogLoader implements AutoCloseable {
 					int gen = p.getGenerationNumber();
 					Util.log("loading gen: " + gen);
 					data.put(gen, new LGeneration(new WorldRepeater(p.getAnts(), p
-							.getAntEaters())));
+							.getAntEaters(), p.getWorldGenerator())));
 
 					Map<Integer, LAntEater> aes = data.get(gen).antEaters;
 					for (int aei = 0; aei < aeps; aei++) {

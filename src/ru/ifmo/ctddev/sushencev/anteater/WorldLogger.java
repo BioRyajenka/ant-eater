@@ -3,9 +3,9 @@ package ru.ifmo.ctddev.sushencev.anteater;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-public class WorldLogger extends World {
-	private static final long serialVersionUID = -2487826639297154145L;
+import ru.ifmo.ctddev.sushencev.anteater.worldgenerators.WorldGenerator;
 
+public class WorldLogger extends World {
 	private transient Logger logger;
 
 	public WorldLogger(IndividualsContainer antsContainer,
@@ -61,7 +61,7 @@ public class WorldLogger extends World {
 			return;
 
 		if (logging) {
-			logger.putNextGeneration(gen, antsContainer.getAll(), antEatersContainer.getAll());
+			logger.putNextGeneration(gen, antsContainer.getAll(), antEatersContainer.getAll(), worldGenerator);
 		}
 
 		gen++;
