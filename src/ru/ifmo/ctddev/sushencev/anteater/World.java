@@ -60,6 +60,7 @@ public class World {
 
 	public void nextTry() {
 		refreshWorld();
+		antsContainer.reset();
 	}
 
 	private void refreshWorld() {

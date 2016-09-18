@@ -3,7 +3,13 @@ package ru.ifmo.ctddev.sushencev.anteater;
 import ru.ifmo.ctddev.sushencev.anteater.worldgenerators.WorldGenerator;
 
 public class WorldRepeater extends World {
+	/**
+	 * all ants (not the pack)
+	 */
 	private Individual[] allAnts;
+	/**
+	 * all ant-eaters (not the pack)
+	 */
 	private Individual[] allAntEaters;
 	
 	public WorldRepeater(Individual[] allAnts, Individual[] allAntEaters, WorldGenerator wg) {

@@ -218,7 +218,7 @@ public class ParadiseTest {
 
 		Cell[][] field = worldGenerator.generateWorld(ants, antEaters);
 		int[] antsRots = Util.generateRandomVector(ants.length, 4);
-		int[] antEatersRots = Util.generateRandomVector(ants.length, 4);
+		int[] antEatersRots = Util.generateRandomVector(antEaters.length, 4);
 		EncodedField encodedField = new EncodedField(field, antsRots, antEatersRots);
 		world = new WorldRepeater(antsList.toArray(new Individual[antsList.size()]), null,
 				worldGenerator);

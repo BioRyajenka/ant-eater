@@ -37,6 +37,10 @@ public class EncodedField implements Cloneable {
 	}
 	
 	private void updateRots(List<Individual> individuals, int[] rots) {
+		if (individuals.size() != rots.length) {
+			throw new AssertionError("individuals.size() = " + individuals.size() + " rots.length = " + rots.length);
+		}
+		
 		for (int i = 0; i < rots.length; i++) {
 			individuals.get(i).getPosition().rot = rots[i];
 		}

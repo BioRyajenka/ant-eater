@@ -231,12 +231,6 @@ public class FieldCanvas extends Canvas {
 				if (c.hasIndividual()) {
 					Individual ind = c.getIndividual();
 					
-					if (ind == selectedIndividual) {
-						//Util.log("1: " + ind.isAntEater());
-						Util.log("error: " + world.getAllAntEaters().length);
-					}
-					//TODO: ERROR: world.getAllAntEaters == 10
-
 					Color borderColor = Color.WHITE;
 					if (ind.isAntEater() && ind.getFitness() == antEatersMaxFitness && world
 							.getAntEatersPack().length != 1 || !ind.isAntEater() && ind

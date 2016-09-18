@@ -22,7 +22,7 @@ public class Main {
 		Sight antSight = new SimpleSightWithObstacles(c -> c.getType() == Type.FOOD, 1, c -> c
 				.hasIndividual());
 		Sight antEaterSight = new SimpleSightWithObstacles(c -> c.hasIndividual() && !c
-				.getIndividual().isAntEater(), 2, c -> false);
+				.getIndividual().isAntEater(), 1, c -> false);
 
 		SelectionStrategy selectionStrategy = new TwoRandomSelectionStrategy(
 				crossingoverProbability, mutationProbability);
