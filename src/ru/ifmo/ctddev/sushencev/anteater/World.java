@@ -67,8 +67,8 @@ public class World {
 		if (antsContainer == null)
 			return;
 
-		antsContainer.refreshPack();
-		antEatersContainer.refreshPack();
+		antsContainer.refreshPackAutomata();
+		antEatersContainer.refreshPackAutomata();
 
 		field = worldGenerator.generateWorld(antsContainer.getPack(), antEatersContainer
 				.getPack());
@@ -156,5 +156,10 @@ public class World {
 	
 	public WorldGenerator getWorldGenerator() {
 		return worldGenerator;
+	}
+	
+	// for debug
+	public Individual getCurrentAntEater() {
+		return antEatersContainer.getPack()[0];
 	}
 }

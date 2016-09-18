@@ -192,6 +192,7 @@ public class FieldCanvas extends Canvas {
 	}
 
 	private float getMaxFitness(Individual[] individuals) {
+		if (individuals.length == 0) return 0;
 		return Arrays.stream(individuals).max((a, b) -> Float.compare(a.getFitness(), b
 				.getFitness())).get().getFitness();
 	}
@@ -209,7 +210,6 @@ public class FieldCanvas extends Canvas {
 
 		float antsMaxFitness = getMaxFitness(world.getAntsPack());
 		float antEatersMaxFitness = getMaxFitness(world.getAntEatersPack());
-		;
 
 		int foodLeft = 0;
 		for (int i = 0; i < n; i++) {

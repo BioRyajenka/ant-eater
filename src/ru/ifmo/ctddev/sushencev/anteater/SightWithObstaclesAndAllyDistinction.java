@@ -6,12 +6,12 @@ import ru.ifmo.ctddev.sushencev.anteater.Util.IntPair;
 import ru.ifmo.ctddev.sushencev.anteater.Util.SerializablePredicate;
 import ru.ifmo.ctddev.sushencev.anteater.worldgenerators.WorldGenerator;
 
-public class SimpleSightWithObstacles extends SimpleSight {
+public class SightWithObstaclesAndAllyDistinction extends SimpleSight {
 	private static final long serialVersionUID = -3706879132121519471L;
 	
 	private SerializablePredicate<Cell> isObstacleFunction;
 
-	public SimpleSightWithObstacles(SerializablePredicate<Cell> isFoodFunction, int range, SerializablePredicate<Cell> isObstacleFunction) {
+	public SightWithObstaclesAndAllyDistinction(SerializablePredicate<Cell> isFoodFunction, int range, SerializablePredicate<Cell> isObstacleFunction) {
 		super(isFoodFunction, range);
 		this.isObstacleFunction = isObstacleFunction;
 	}
@@ -21,17 +21,17 @@ public class SimpleSightWithObstacles extends SimpleSight {
     	int mask = super.check(field, position, wg).getMask();
     	IntPair fp = World.getForwardCoordinates(position, wg);
 		if (fp == null || isObstacleFunction.test(field[fp.second][fp.first])) {
-			boolean isAE = field[position.y][position.x].getIndividual().isAntEater();
-			if (fp != null && isAE) {
-				Util.log("wtf1: " + isObstacleFunction.test(field[fp.second][fp.first]));
-			}
 			mask += super.getInputSignalsNumber();
+		} else {
+			if (field[fp.second][fp.first].hasIndividual()) {//ally 
+				mask += 2 * super.getInputSignalsNumber();
+			}
 		}
 		return new InputSignal(mask);
     }
     
     @Override
 	public int getInputSignalsNumber() {
-		return super.getInputSignalsNumber() * 2;
+		return super.getInputSignalsNumber() * 3;
 	}
 }

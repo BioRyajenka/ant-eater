@@ -11,9 +11,15 @@ public class Statistics implements Serializable {
 
 	private Map<Integer, Integer> data = new HashMap<>();
 	private String description;
+	private float scale;
 	
 	public Statistics(String description) {
+		this(description, 1);
+	}
+	
+	public Statistics(String description, float scale) {
 		this.description = description;
+		this.scale = scale;
 	}
 	
 	public String getDescription() {
@@ -21,7 +27,7 @@ public class Statistics implements Serializable {
 	}
 	
 	public void setPlot(int x, int y) {
-		data.put(x, y);
+		data.put(x, (int) (y * scale));
 	}
 	
 	public int get(int x) {

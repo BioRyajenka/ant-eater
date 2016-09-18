@@ -18,10 +18,10 @@ public class WallWorldGenerator extends AbstractWorldGenerator {
 
 	@Override
 	protected void generateFood(Cell[][] field) {
-		final int foodAmount = width * height / 8;
+		final int foodAmount = width * height / 3;
 
 		doNTimes(foodAmount, (x, y) -> field[y][x].isOccupied(), size -> {
-			int res = (int) (Math.abs(Util.nextNormalDistribution(0, .4f)) * size / 4);
+			int res = (int) (Math.abs(Util.nextNormalDistribution(0, .4f)) * size * 2 / 3);
 			res = Math.max(Math.min(res, size - 1), 0);
 			return size - res - 1;
 		}, (x, y) -> {

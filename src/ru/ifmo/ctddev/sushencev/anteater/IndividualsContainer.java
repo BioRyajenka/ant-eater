@@ -63,11 +63,12 @@ public class IndividualsContainer {
 		return Arrays.stream(pack);
 	}
 
-	public void refreshPack() {
+	public void refreshPackAutomata() {
 		Arrays.stream(pack).forEach(Individual::refreshAutomata);
 	}
 
 	public void nextGeneration() {
+		if (individuals.length == 0) return;
 		individuals = selectionStrategy.doSelectionAndMutation(individuals);
 
 		// refresh

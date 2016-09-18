@@ -68,7 +68,7 @@ public final class PlayerPanel extends JPanel {
 		jftf.setColumns(2);
 
 		// from 0 to 9, in 1.0 steps start value 5
-		SpinnerNumberModel model = new SpinnerNumberModel(10.0, 1.0, 50.0, 1.0);
+		SpinnerNumberModel model = new SpinnerNumberModel(5.0, 1.0, 50.0, 1.0);
 		frameSpinner.setModel(model);
 		frameSpinner.addChangeListener(e -> timer.setDelay((int) (1000 / (double) frameSpinner.getValue())));
 

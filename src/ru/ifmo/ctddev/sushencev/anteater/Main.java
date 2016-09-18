@@ -3,7 +3,7 @@ package ru.ifmo.ctddev.sushencev.anteater;
 import java.io.IOException;
 
 import ru.ifmo.ctddev.sushencev.anteater.Cell.Type;
-import ru.ifmo.ctddev.sushencev.anteater.worldgenerators.RandomWorldGenerator;
+import ru.ifmo.ctddev.sushencev.anteater.worldgenerators.WallWorldGenerator;
 import ru.ifmo.ctddev.sushencev.anteater.worldgenerators.WorldGenerator;
 
 public class Main {
@@ -17,12 +17,12 @@ public class Main {
 		int maxStatesInMachine = 5;
 
 		int steps = 100;
-		int tries = 10;
+		int tries = 4;
 
-		Sight antSight = new SimpleSightWithObstacles(c -> c.getType() == Type.FOOD, 1, c -> c
+		Sight antSight = new SightWithObstaclesAndAllyDistinction(c -> c.getType() == Type.FOOD, 1, c -> c
 				.hasIndividual());
-		Sight antEaterSight = new SimpleSightWithObstacles(c -> c.hasIndividual() && !c
-				.getIndividual().isAntEater(), 1, c -> false);
+		Sight antEaterSight = new SightWithObstaclesAndAllyDistinction(c -> c.hasIndividual() && !c
+				.getIndividual().isAntEater(), 2, c -> false);
 
 		SelectionStrategy selectionStrategy = new TwoRandomSelectionStrategy(
 				crossingoverProbability, mutationProbability);
@@ -31,18 +31,20 @@ public class Main {
 		// crossingoverProbability, mutationProbability);
 		selectionStrategy = new ElitisticSelectionStrategy(selectionStrategy, 3);
 
-		final int generations = 10000;
-		WorldGenerator worldGenerator = new RandomWorldGenerator(width, height, 0.5f);
-		// WorldGenerator worldGenerator = new WallWorldGenerator(width,
-		// height);
+		final int generations = 2000;
+		//WorldGenerator worldGenerator = new RandomWorldGenerator(width, height, 0.5f);
+		WorldGenerator worldGenerator = new WallWorldGenerator(width, height);
 
 		String logFileName = "log_" + Util.randomSeed;
+		
+		IndividualsContainer emptyContainer = new IndividualsContainer(0, 0, null, 0, null, false);
 
 		IndividualsContainer antsContainer = new IndividualsContainer(antPopulationSize,
 				antPopulationSize, antSight, maxStatesInMachine, selectionStrategy, false);
 		IndividualsContainer antEatersContainer = new IndividualsContainer(
 				antEaterPopulationSize, 1, antEaterSight, maxStatesInMachine,
 				selectionStrategy, true);
+		//IndividualsContainer antEatersContainer = emptyContainer;
 
 		WorldLogger w = new WorldLogger(antsContainer, antEatersContainer, worldGenerator,
 				logFileName, false, tries, antEaterPopulationSize);
@@ -53,11 +55,13 @@ public class Main {
 			}
 
 			for (int aei = 0; aei < antEaterPopulationSize; aei++) {
-				// Util.log("aei " + aei);
+				//Util.log("aei " + aei);
 				for (int tri = 0; tri < tries; tri++) {
-					// Util.log("try " + tri);
+					//Util.log("try " + tri);
 					for (int step = 0; step < steps; step++) {
-						// Util.log("step " + step);
+						if (tri < 2 && step == 0) {
+						//Util.log("step " + step + ", ai: " + w.getCurrentAntEater().hashCode());
+						}
 						w.doStep();
 					}
 					if (tri != tries - 1) {
