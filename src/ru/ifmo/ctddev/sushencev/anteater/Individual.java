@@ -43,6 +43,13 @@ public class Individual implements Serializable {
 	public InputSignal checkSight(Cell[][] field, WorldGenerator wg) {
 		return sight.check(field, position, wg);
 	}
+	
+	public OutputSignal checkStep(Cell[][] field, WorldGenerator wg) {
+		if (dead) {
+			return null;
+		}
+		return chromosome.checkStep(checkSight(field, wg));
+	}
 
 	public OutputSignal doStep(Cell[][] field, WorldGenerator wg) {
 		if (dead) {
@@ -76,6 +83,9 @@ public class Individual implements Serializable {
 	}
 	
 	public void die() {
+		if (isAntEater()) {
+			//Util.log
+		}
 		dead = true;
 	}
 	

@@ -65,6 +65,10 @@ public class WorldLogger extends World {
 		}
 
 		gen++;
+		
+		if (gen == 2000) {
+			gen = 20* 100;
+		}
 	}
 
 	@Override

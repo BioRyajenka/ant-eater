@@ -40,27 +40,20 @@ public class World {
 		refreshWorld();
 	}
 	
-	//public boolean hasNextAntsPack() {
-	//	return antsContainer.hasNextPack();
-	//}
-	
 	public void nextAntsPack() {
 		antsContainer.nextPack();
 		refreshWorld();
 	}
-	
-	//public boolean hasNextAntEatersPack() {
-	//	return antEatersContainer.hasNextPack();
-	//}
 
 	public void nextAntEatersPack() {
 		antEatersContainer.nextPack();
+		antsContainer.reset();
 		refreshWorld();
 	}
-
+	
 	public void nextTry() {
-		refreshWorld();
 		antsContainer.reset();
+		refreshWorld();
 	}
 
 	private void refreshWorld() {
@@ -77,7 +70,7 @@ public class World {
 	}
 
 	protected void onWorldRefreshed() {
-
+		
 	}
 	
 	protected void doStep(Individual[] individuals) {

@@ -42,7 +42,7 @@ public class Util {
 
 	static {
 		randomSeed = rand.nextLong();
-		// randomSeed = -8904520990100767751l;
+		//randomSeed = -6760928705423734968l;
 		rand.setSeed(randomSeed);
 		log("seed is " + randomSeed);
 

@@ -54,6 +54,11 @@ public class Automata implements Serializable {
 
 		refresh();
 	}
+	
+	public OutputSignal checkStep(InputSignal inputSignal) {
+		int output = curState.output[inputSignal.mask];
+		return OutputSignal.values()[output];
+	}
 
 	public OutputSignal doStep(InputSignal inputSignal) {
 		int nextState = curState.nextState[inputSignal.mask];

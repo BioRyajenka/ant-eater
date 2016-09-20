@@ -32,7 +32,8 @@ public class FieldCanvas extends Canvas {
 		addMouseListener(new MouseListener() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (world == null) {
+				//second check may occur when minimizing window
+				if (world == null || sizeX == 0) {
 					return;
 				}
 				int i = e.getY() / sizeY;
@@ -80,7 +81,7 @@ public class FieldCanvas extends Canvas {
 
 		repaint();
 	}
-	
+
 	private void drawGrid(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setStroke(new BasicStroke(1));
@@ -192,7 +193,8 @@ public class FieldCanvas extends Canvas {
 	}
 
 	private float getMaxFitness(Individual[] individuals) {
-		if (individuals.length == 0) return 0;
+		if (individuals.length == 0)
+			return 0;
 		return Arrays.stream(individuals).max((a, b) -> Float.compare(a.getFitness(), b
 				.getFitness())).get().getFitness();
 	}
@@ -202,7 +204,7 @@ public class FieldCanvas extends Canvas {
 		if (world == null) {
 			return;
 		}
-		
+
 		sizeX = getWidth() / m;
 		sizeY = getHeight() / n;
 
@@ -230,7 +232,7 @@ public class FieldCanvas extends Canvas {
 				Cell c = world.getField()[i][j];
 				if (c.hasIndividual()) {
 					Individual ind = c.getIndividual();
-					
+
 					Color borderColor = Color.WHITE;
 					if (ind.isAntEater() && ind.getFitness() == antEatersMaxFitness && world
 							.getAntEatersPack().length != 1 || !ind.isAntEater() && ind
@@ -263,9 +265,17 @@ public class FieldCanvas extends Canvas {
 						Automata chr = ind.getChromosome();
 						if (chr != null) {
 							sb.append("sight: ");
-							sb.append(ind.checkSight(world.getField(), world.getWorldGenerator()).getMask());
+							sb.append(ind.checkSight(world.getField(), world
+									.getWorldGenerator()).getMask());
 							sb.append("<br>currect state number: ");
 							sb.append(chr.getCurStateNumber());
+							sb.append("<br>current action: ");
+							if (ind.isDead()) {
+								sb.append("<font color=\"red\">dead</font>");
+							} else {
+								sb.append(ind.checkStep(world.getField(), world
+										.getWorldGenerator()).name());
+							}
 							sb.append("<br>states: ");
 							sb.append(chr.getStatesNumber());
 							sb.append("<br>");
